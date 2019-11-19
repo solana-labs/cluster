@@ -4,7 +4,7 @@ After=network.target
 StartLimitIntervalSec=0
 
 [Service]
-EnvironmentFile=/home/solana/service-env.sh
+EnvironmentFile=/solana-service-env.sh
 Type=simple
 Restart=always
 RestartSec=1
@@ -14,11 +14,11 @@ ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-val
   --dynamic-port-range 8000-8010 \
   --entrypoint mainnet.solana.com:8001 \
   --gossip-port 8001 \
-  --rpc-port 80 \
+  --identity /home/solana/bootstrap-leader-identity.json \
   --ledger /home/solana/ledger \
   --log - \
-  --no-voting \
-  --expected-genesis-blockhash $EXPECTED_GENESIS_BLOCKHASH \
+  --no-genesis-fetch \
+  --voting-keypair /home/solana/bootstrap-leader-vote.json \
 
 [Install]
 WantedBy=multi-user.target

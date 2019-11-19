@@ -10,50 +10,22 @@
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh mainnet-solana-com`
 
-### Machine Setup
-First complete the [Common Machine Setup](#common-machine-setup).
-
-Copy in the service environment:
+### Setup
 ```
-$ gcloud --project solana-mainnet compute scp service-env.sh mainnet-solana-com:/tmp
-$ gcloud --project solana-mainnet compute ssh mainnet-solana-com -- sudo --login -u solana cp /tmp/service-env.sh .
+$ ./setup-machine.sh mainnet-solana-com
 ```
-
-Then ssh into the machine and:
-```
-$ sudo vim /etc/systemd/system/solana-entrypoint.service
-```
-and copy in the contents of the file `solana-entrypoint.service`.
-
-
-Run the following to activate the service:
-```
-$ sudo systemctl daemon-reload
-$ sudo systemctl start solana-entrypoint
-$ sudo systemctl enable solana-entrypoint
-$ sudo systemctl status solana-entrypoint
-$ sudo reboot
-```
-
-The entrypoint should come up automatically upon reboot.
 
 ### Monitoring
 ```
-$ gcloud --project solana-mainnet compute ssh mainnet-solana-com -- journalctl -u solana-entrypoint -f
+$ ./monitor-machine.sh mainnet-solana-com
 ```
 
-### Solana Software Upgrade
+### Software Upgrade
 ```
-$ sudo systemctl stop solana-entrypoint
-$ sudo --login -u solana solana-install update
-$ sudo systemctl start solana-entrypoint
-$ sudo systemctl status solana-entrypoint
+$ ./update-machine.sh mainnet-solana-com
 ```
 
 ## RPC Node
-First complete the [Common Machine Setup].
-
-/home/solana/service-env.sh
 _TBD_
 
 ## Bootstrap Leader Node
@@ -62,18 +34,3 @@ _TBD_
 ## Warehouse Node
 _TBD_
 
-
-
-### Common Machine Setup
-
-Once the machine is created, ssh into it as your normal user and:
-```
-$ sudo apt-get update
-$ sudo apt-get install vim
-$ sudo adduser solana --gecos "" --disabled-password --quiet
-$ sudo deluser solana google-sudoers
-$ sudo --login -u solana
-$ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.20.3/install/solana-install-init.sh | sh -s
-$ export PATH="/home/solana/.local/share/solana/install/active_release/bin:$PATH"
-$ solana-install init edge
-```

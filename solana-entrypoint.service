@@ -4,12 +4,13 @@ After=network.target
 StartLimitIntervalSec=0
 
 [Service]
-EnvironmentFile=/home/solana/service-env.sh
+EnvironmentFile=/solana-service-env.sh
 Type=simple
 Restart=always
 RestartSec=1
 User=solana
-ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-gossip spy --gossip-port 34.83.130.52:8001
+ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-gossip \
+  spy --gossip-port $SOLANA_ENTRYPOINT_IP:8001
 
 [Install]
 WantedBy=multi-user.target

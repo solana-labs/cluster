@@ -1,0 +1,24 @@
+[Unit]
+Description=Solana RPC Node
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+EnvironmentFile=/solana-service-env.sh
+Type=simple
+Restart=always
+RestartSec=1
+User=solana
+LimitNOFILE=65536
+ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-validator \
+  --dynamic-port-range 8000-8010 \
+  --entrypoint mainnet.solana.com:8001 \
+  --gossip-port 8001 \
+  --ledger /home/solana/ledger \
+  --log - \
+  --no-genesis-fetch \
+  --no-voting \
+  --rpc-port 80 \
+
+[Install]
+WantedBy=multi-user.target
