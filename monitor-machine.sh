@@ -8,4 +8,4 @@ if [[ -z $instanceName ]]; then
 fi
 
 set -x
-gcloud --project solana-mainnet compute ssh "$instanceName" -- journalctl -u "solana-\*" -f
+gcloud --project solana-mainnet compute ssh "$instanceName" -- journalctl -u solanad -f

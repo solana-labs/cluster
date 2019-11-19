@@ -1,1 +1,5 @@
-/solana-service-env.sh
+/bootstrap-leader-identity.json
+/bootstrap-leader-stake-account.json
+/bootstrap-leader-vote-account.json
+/ledger/
+/service-env.sh

@@ -1,73 +1,95 @@
 
+# Machine Overview
+
+Each machine is configured as similarly as possible.  The solana sofware runs
+under the user `solanad` as a systemd service.  The name of the systemd service
+is the same across all nodes, `solanad`.
+
+The ledger is stored in /home/solanad/ledger
 
 ## Cluster Entrypoint Node
 * DNS: mainnet.solana.com
 * Static IP: 34.83.130.52
-* GCE Resource Name: mainnet-solana-com
+* GCE Instance Name: entrypoint-mainnet-solana-com
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
 * Machine type: n1-standard-1
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh mainnet-solana-com`
+* ssh: `gcloud --project solana-mainnet compute ssh entrypoint-mainnet-solana-com`
 
-### Create command
-
-```bash
-gcloud --project solana-mainnet compute instances create \
-  mainnet-solana-com \
-  --zone us-west1-b \
-  --machine-type n1-standard-1 \
-  --boot-disk-size=200GB \
-  --tags solana-validator-minimal \
-  --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-  --address mainnet-solana-com
-```
-
-then run:
-```
-./setup-machine.sh mainnet-solana-com
-```
-
-### Monitoring
-```
-$ ./monitor-machine.sh mainnet-solana-com
-```
-
-### Software Upgrade
-```
-$ ./update-machine.sh mainnet-solana-com
-```
+## Bootstrap Leader Node
+* DNS: none
+* Static IP: none
+* GCE Instance Name: bootstrap-leader-mainnet-solana-com
+* OS Image: Ubuntu 18.04 LTS Minimal
+* Boot disk: Standard disk, 2TB
+* Machine type: n1-standard-8
+* Region: us-west-1
+* ssh: `gcloud --project solana-mainnet compute ssh bootstrap-leader-mainnet-solana-com`
 
 ## RPC Node
 * DNS: api.mainnet.solana.com
 * Static IP: 34.82.79.31
-* GCE Resource Name: api.mainnet-solana-com
+* GCE Resource Name: api-mainnet-solana-com
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh api-mainnet-solana-com`
 
-### Create command
-```bash
-gcloud --project solana-mainnet compute instances create \
-  api-mainnet-solana-com \
-  --zone us-west1-b \
-  --machine-type n1-standard-8 \
-  --boot-disk-size=2TB \
-  --tags solana-validator-minimal,solana-validator-rpc \
-  --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-  --address api-mainnet-solana-com
+# Workflows
+
+## Changing the deployed Solana software version
+There are two places to be modified to update the Solana software version to deploy:
+1. On your machine as genesis will be build on your local machine.  Run `solana-install init <desired version>`.
+1. Modify the `SOLANA_VERSION=` variable in `remote-machine-setup.sh`.
+
+## Launch a development mainnet
+A development mainnet can be created at any time by anybody.   The instances
+will be created in the standard GCE development project, scoped by your
+username.
+
+Procedure:
+1. Ensure the desired Solana release is installed on your machine
+1. Run `./genesis.sh` to produce the genesis configuration
+1. Run `./launch-mainnet.sh` to create the development mainnet instances
+
+When done run `./delete-mainnet.sh` to delete the instances.
+
+## Launch *THE* mainnet
+Same as launching a development mainnet except:
+b. You need access to the `solana-mainnet` GCE project
+a. `export PRODUCTION=1` before running `./launch-mainnet.sh`
+
+The `./launch-mainnet.sh` script programmatically creates and configures the
+mainnet instances.
+
+## Manipulating the systemd service
+The file `/etc/systemd/system/solanad.service` describes the systemd service for
+each of the instances.
+
+From a shell on the instance, view the current status of the services with
+```
+$ sudo systemctl status solanad
 ```
 
-then run:
+Follow logs with:
 ```
-./setup-machine.sh api-mainnet-solana-com
+$ journalctl -u solanad -f
 ```
 
-## Bootstrap Leader Node
-_TBD_
+If `/etc/systemd/system/solanad.service` is modified, apply the changes with:
+```
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart solanad
+```
 
-## Warehouse Node
-_TBD_
+## Updating the solana software
+From a shell on the instance run:
+```
+$ /solana-update.sh 0.21.0
+```
+
+There's no mechanism to automatically update the software across all the nodes
+at once.
 

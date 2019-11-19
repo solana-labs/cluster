@@ -4,21 +4,22 @@ After=network.target
 StartLimitIntervalSec=0
 
 [Service]
-EnvironmentFile=/solana-service-env.sh
+EnvironmentFile=/home/solanad/service-env.sh
 Type=simple
 Restart=always
 RestartSec=1
-User=solana
+User=solanad
 LimitNOFILE=65536
-ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-validator \
-  --dynamic-port-range 8000-8010 \
-  --entrypoint mainnet.solana.com:8001 \
+ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-validator \
+  --dynamic-port-range 8001-8010 \
+  --entrypoint ${ENTRYPOINT}:8001 \
   --gossip-port 8001 \
-  --identity /home/solana/bootstrap-leader-identity.json \
-  --ledger /home/solana/ledger \
+  --identity /home/solanad/bootstrap-leader-identity.json \
+  --ledger /home/solanad/ledger \
   --log - \
   --no-genesis-fetch \
-  --voting-keypair /home/solana/bootstrap-leader-vote.json \
+  --voting-keypair /home/solanad/bootstrap-leader-vote-account.json \
+  --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
 
 [Install]
 WantedBy=multi-user.target
