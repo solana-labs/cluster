@@ -1,0 +1,14 @@
+[Unit]
+Description=Solana Entrypoint
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=solana
+ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-gossip spy --gossip-port 34.83.130.52:8001
+
+[Install]
+WantedBy=multi-user.target
