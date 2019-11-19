@@ -1,14 +1,14 @@
 
 
 ## Cluster Entrypoint Node
-DNS: mainnet.solana.com
-Static IP: 34.83.130.52
-GCE Resource Name: mainnet-solana-com
-OS Image: Ubuntu 18.04 LTS Minimal
-Boot disk: Standard disk, 10GB
-Machine type: n1-standard-1
-Region: us-west-1
-ssh: `gcloud --project solana-mainnet compute ssh mainnet-solana-com`
+* DNS: mainnet.solana.com
+* Static IP: 34.83.130.52
+* GCE Resource Name: mainnet-solana-com
+* OS Image: Ubuntu 18.04 LTS Minimal
+* Boot disk: Standard disk, 10GB
+* Machine type: n1-standard-1
+* Region: us-west-1
+* ssh: `gcloud --project solana-mainnet compute ssh mainnet-solana-com`
 
 
 ### Machine Setup
