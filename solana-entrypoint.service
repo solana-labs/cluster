@@ -4,6 +4,7 @@ After=network.target
 StartLimitIntervalSec=0
 
 [Service]
+EnvironmentFile=/home/solana/service-env.sh
 Type=simple
 Restart=always
 RestartSec=1

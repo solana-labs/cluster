@@ -1,0 +1,24 @@
+[Unit]
+Description=Solana RPC Node
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+EnvironmentFile=/home/solana/service-env.sh
+Type=simple
+Restart=always
+RestartSec=1
+User=solana
+LimitNOFILE=65536
+ExecStart=/home/solana/.local/share/solana/install/active_release/bin/solana-validator \
+  --dynamic-port-range 8000-8010 \
+  --entrypoint mainnet.solana.com:8001 \
+  --gossip-port 8001 \
+  --rpc-port 80 \
+  --ledger /home/solana/ledger \
+  --log - \
+  --no-voting \
+  --expected-genesis-blockhash $EXPECTED_GENESIS_BLOCKHASH \
+
+[Install]
+WantedBy=multi-user.target

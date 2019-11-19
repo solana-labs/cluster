@@ -10,9 +10,14 @@
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh mainnet-solana-com`
 
-
 ### Machine Setup
 First complete the [Common Machine Setup](#common-machine-setup).
+
+Copy in the service environment:
+```
+$ gcloud --project solana-mainnet compute scp service-env.sh mainnet-solana-com:/tmp
+$ gcloud --project solana-mainnet compute ssh mainnet-solana-com -- sudo --login -u solana cp /tmp/service-env.sh .
+```
 
 Then ssh into the machine and:
 ```
@@ -46,6 +51,9 @@ $ sudo systemctl status solana-entrypoint
 ```
 
 ## RPC Node
+First complete the [Common Machine Setup].
+
+/home/solana/service-env.sh
 _TBD_
 
 ## Bootstrap Leader Node
