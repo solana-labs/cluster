@@ -58,7 +58,7 @@ _TBD_
 
 ### Common Machine Setup
 
-Once the machine is created, ssh into it from the GCE web ssh feature and:
+Once the machine is created, ssh into it as your normal user and:
 ```
 $ sudo apt-get update
 $ sudo apt-get install vim
