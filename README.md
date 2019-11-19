@@ -12,7 +12,7 @@
 
 
 ### Machine Setup
-First complete the [Common Machine Setup].
+First complete the [Common Machine Setup](#common-machine-setup).
 
 Then ssh into the machine and:
 ```
