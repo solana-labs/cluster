@@ -34,6 +34,6 @@ du -ah ledger
 
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
-  echo SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_writer,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+  echo SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
 ) | tee service-env.sh
 
