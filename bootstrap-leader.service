@@ -1,5 +1,5 @@
 [Unit]
-Description=Solana RPC Node
+Description=Solana Bootstrap Leader
 After=network.target
 StartLimitIntervalSec=0
 

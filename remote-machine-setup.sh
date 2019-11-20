@@ -20,8 +20,8 @@ sudo --login -u solanad -- bash -c "
 "
 
 # Move the systemd service file into /etc
-sudo cp ./solana-*.service /etc/systemd/system/solanad.service
-rm ./solana-*.service
+sudo cp ./*.service /etc/systemd/system/solanad.service
+rm ./*.service
 sudo systemctl daemon-reload
 
 # Move the remainder of the files in the home directory over to the solanad user

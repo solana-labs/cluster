@@ -125,7 +125,7 @@ echo ==========================================================
   gcloud --project $PROJECT compute scp --recurse \
     remote-machine-setup.sh \
     service-env.sh \
-    solana-entrypoint.service \
+    entrypoint.service \
     "$ENTRYPOINT_INSTANCE":
 )
 
@@ -141,7 +141,7 @@ echo ==========================================================
     remote-machine-setup.sh \
     ledger \
     service-env.sh \
-    solana-bs.service \
+    bootstrap-leader.service \
     "$BOOTSTRAP_LEADER_INSTANCE":
 )
 
@@ -154,7 +154,7 @@ echo ==========================================================
     remote-machine-setup.sh \
     ledger \
     service-env.sh \
-    solana-api.service \
+    api.service \
     "$API_INSTANCE":
 )
 
