@@ -58,8 +58,8 @@ When done run `./delete-mainnet.sh` to delete the instances.
 
 ## Launch *THE* mainnet
 Same as launching a development mainnet except:
-b. You need access to the `solana-mainnet` GCE project
-a. `export PRODUCTION=1` before running `./launch-mainnet.sh`
+1. You need access to the `solana-mainnet` GCE project
+1. `export PRODUCTION=1` before running `./launch-mainnet.sh`
 
 The `./launch-mainnet.sh` script programmatically creates and configures the
 mainnet instances.
