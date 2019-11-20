@@ -37,6 +37,13 @@ The ledger is stored in /home/solanad/ledger
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh api-mainnet-solana-com`
 
+# Metrics
+```
+SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_writer,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+```
+
+Metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/testnet-monitor-edge?orgId=2&from=now-5m&to=now&refresh=5s&var-testnet=mainnet&var-hostid=All)
+
 # Workflows
 
 ## Changing the deployed Solana software version
