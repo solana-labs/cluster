@@ -112,7 +112,7 @@ echo ==========================================================
 echo Waiting for instances to boot
 echo ==========================================================
 for instance in ${INSTANCES[@]}; do
-  while ! gcloud --project $PROJECT compute ssh "$instance" -- true; do
+  while ! gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- true; do
     echo "Waiting for \"$instance\" to boot"
     sleep 5s
   done
@@ -122,7 +122,7 @@ echo ==========================================================
 echo "Transferring files to $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
-  gcloud --project $PROJECT compute scp --recurse \
+  gcloud --project $PROJECT compute scp --zone $ZONE --recurse \
     remote-machine-setup.sh \
     service-env.sh \
     entrypoint.service \
@@ -134,7 +134,7 @@ echo "Transferring files to $BOOTSTRAP_LEADER_INSTANCE"
 echo ==========================================================
 (
   set -x
-  gcloud --project $PROJECT compute scp --recurse \
+  gcloud --project $PROJECT compute scp --zone $ZONE --recurse \
     bootstrap-leader-identity.json \
     bootstrap-leader-stake-account.json \
     bootstrap-leader-vote-account.json \
@@ -150,7 +150,7 @@ echo "Transferring files to $API_INSTANCE"
 echo ==========================================================
 (
   set -x
-  gcloud --project $PROJECT compute scp --recurse \
+  gcloud --project $PROJECT compute scp --zone $ZONE --recurse \
     remote-machine-setup.sh \
     ledger \
     service-env.sh \
@@ -164,7 +164,7 @@ for instance in $INSTANCES; do
   echo ==========================================================
   (
     set -x
-    gcloud --project $PROJECT compute ssh "$instance" -- bash remote-machine-setup.sh
+    gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- bash remote-machine-setup.sh
   )
 done
 
