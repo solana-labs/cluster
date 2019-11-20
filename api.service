@@ -15,6 +15,7 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --entrypoint ${ENTRYPOINT}:8001 \
   --gossip-port 8001 \
   --ledger /home/solanad/ledger \
+  --limit-ledger-size \
   --log - \
   --no-genesis-fetch \
   --no-voting \

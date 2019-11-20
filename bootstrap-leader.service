@@ -16,6 +16,7 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --gossip-port 8001 \
   --identity /home/solanad/bootstrap-leader-identity.json \
   --ledger /home/solanad/ledger \
+  --limit-ledger-size \
   --log - \
   --no-genesis-fetch \
   --voting-keypair /home/solanad/bootstrap-leader-vote-account.json \
