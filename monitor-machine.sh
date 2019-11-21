@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
 source env.sh
 
 instanceName=$1
