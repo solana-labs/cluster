@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
+source env.sh
+
 instanceName=$1
 
 if [[ -z $instanceName ]]; then
@@ -8,4 +11,4 @@ if [[ -z $instanceName ]]; then
 fi
 
 set -x
-gcloud --project solana-mainnet compute ssh "$instanceName" -- journalctl -u solanad -f
+gcloud --project $PROJECT compute ssh --zone $ZONE "$instanceName" -- journalctl -u solanad -f
