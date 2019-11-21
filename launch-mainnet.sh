@@ -8,16 +8,9 @@
 set -e
 
 cd "$(dirname "$0")"
+source env.sh
 
-INSTANCE_PREFIX=
-PROJECT=solana-mainnet
-ZONE=us-west1-b
 SOLANA_VERSION=edge
-
-if [[ -z $PRODUCTION ]]; then
-  INSTANCE_PREFIX="$(whoami)-test-"
-  PROJECT=principal-lane-200702
-fi
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint-mainnet-solana-com
 BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}bootstrap-leader-mainnet-solana-com
