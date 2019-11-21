@@ -27,6 +27,7 @@ INSTANCES="$ENTRYPOINT_INSTANCE $BOOTSTRAP_LEADER_INSTANCE $API_INSTANCE"
 if [[ $(basename "$0" .sh) = delete-mainnet ]]; then
   (
     set -x
+    # shellcheck disable=SC2086 # Don't want to double quote INSTANCES
     gcloud --project $PROJECT compute instances delete $INSTANCES --zone $ZONE
   )
   exit 0
@@ -42,6 +43,22 @@ if [[ ! -d ledger ]]; then
   echo "Error: ledger/ directory does not exist"
   exit 1
 fi
+
+
+GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"
+if [[ -n $PRODUCTION ]]; then
+  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+elif [[ -z $SOLANA_METRICS_CONFIG ]]; then
+  echo Note: SOLANA_METRICS_CONFIG is not configured
+fi
+
+(
+  echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
+  if [[ -n $SOLANA_METRICS_CONFIG ]]; then
+    echo SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
+  fi
+) | tee service-env.sh
+
 
 for instance in $INSTANCES; do
   echo "Checking that \"$instance\" does not exist"
@@ -111,6 +128,7 @@ RPC_URL="http://$RPC:8899/"
 echo ==========================================================
 echo Waiting for instances to boot
 echo ==========================================================
+# shellcheck disable=SC2068 # Don't want to double quote INSTANCES
 for instance in ${INSTANCES[@]}; do
   while ! gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- true; do
     echo "Waiting for \"$instance\" to boot"

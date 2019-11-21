@@ -38,14 +38,14 @@ The ledger is stored in /home/solanad/ledger
 * ssh: `gcloud --project solana-mainnet compute ssh api-mainnet-solana-com`
 
 # Metrics
+The following metrics configuration is used in production:
 ```
 SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_writer,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
 ```
 
-Metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/testnet-monitor-edge?orgId=2&from=now-5m&to=now&refresh=5s&var-testnet=mainnet&var-hostid=All)
+Production metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/testnet-monitor-edge?orgId=2&from=now-5m&to=now&refresh=5s&var-testnet=mainnet&var-hostid=All)
 
 # Workflows
-
 ## Changing the deployed Solana software version
 There are two places to be modified to update the Solana software version to deploy:
 1. On your machine as genesis will be build on your local machine.  Run `solana-install init <desired version>`.
@@ -59,6 +59,7 @@ username.
 Procedure:
 1. Ensure the desired Solana release is installed on your machine
 1. Run `./genesis.sh` to produce the genesis configuration
+1. If metrics are desired set SOLANA_METRICS_CONFIG in your environment
 1. Run `./launch-mainnet.sh` to create the development mainnet instances
 
 When done run `./delete-mainnet.sh` to delete the instances.
@@ -66,6 +67,7 @@ When done run `./delete-mainnet.sh` to delete the instances.
 ## Launch *THE* mainnet
 Same as launching a development mainnet except:
 1. You need access to the `solana-mainnet` GCE project
+1. `SOLANA_METRICS_CONFIG` is automatically configured
 1. `export PRODUCTION=1` before running `./launch-mainnet.sh`
 
 The `./launch-mainnet.sh` script programmatically creates and configures the

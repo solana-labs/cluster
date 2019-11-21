@@ -27,13 +27,5 @@ args=(
 )
 solana-genesis "${args[@]}"
 
-GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"
-
 tar jcfS ledger/genesis.tar.bz2 -C ledger genesis.bin rocksdb
 du -ah ledger
-
-(
-  echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
-  echo SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
-) | tee service-env.sh
-
