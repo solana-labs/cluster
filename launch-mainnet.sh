@@ -12,6 +12,7 @@ cd "$(dirname "$0")"
 INSTANCE_PREFIX=
 PROJECT=solana-mainnet
 ZONE=us-west1-b
+SOLANA_VERSION=edge
 
 if [[ -z $PRODUCTION ]]; then
   INSTANCE_PREFIX="$(whoami)-test-"
@@ -123,7 +124,7 @@ if [[ -n $INSTANCE_PREFIX ]]; then
       --filter name="$API_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 fi
 echo "ENTRYPOINT=$ENTRYPOINT" >> service-env.sh
-RPC_URL="http://$RPC:8899/"
+RPC_URL="http://$RPC/"
 
 echo ==========================================================
 echo Waiting for instances to boot
@@ -181,8 +182,13 @@ for instance in $INSTANCES; do
   echo "Configuring $instance"
   echo ==========================================================
   (
+    if [[ $instance = "$API_INSTANCE" ]]; then
+      isApi=1
+    fi
+
     set -x
-    gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- bash remote-machine-setup.sh
+    gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- \
+      bash remote-machine-setup.sh "$SOLANA_VERSION" "$isApi"
   )
 done
 

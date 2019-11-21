@@ -2,10 +2,13 @@
 # Remote setup script run on a new instance by |launch-mainnet.sh|
 #
 
-SOLANA_VERSION=edge
-
 set -ex
 cd ~
+
+SOLANA_VERSION=$1
+IS_API=$2
+
+test -n "$SOLANA_VERSION"
 
 # Install minimal tools
 sudo apt-get update
@@ -50,5 +53,44 @@ EOF
 chmod +x solana-update.sh
 sudo cp solana-update.sh /
 rm solana-update.sh
+
+[[ -n $IS_API ]] || exit 0;
+
+echo TODO: Use a real certificate in production
+
+# Create a self-signed certificate for haproxy to use
+# https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.example.com" -out server.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:example.com,DNS:www.example.com") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+sudo bash -c "cat server.key server.crt >> /etc/ssl/private/haproxy.pem"
+rm -rf ./*
+
+sudo apt-get -y install haproxy
+cp /etc/haproxy/haproxy.cfg .
+cat >> haproxy.cfg <<EOF
+frontend jsonrpc_http
+    bind 0.0.0.0:80
+    default_backend jsonrpc
+frontend jsonrpc_https
+    bind 0.0.0.0:443 ssl crt /etc/ssl/private/haproxy.pem
+    default_backend jsonrpc
+frontend pubsub_wss
+    bind 0.0.0.0:8901 ssl crt /etc/ssl/private/haproxy.pem
+    default_backend pubsub
+backend jsonrpc
+    mode http
+    server rpc 127.0.0.1:8899
+backend pubsub
+    mode http
+    server rpc 127.0.0.1:8900
+EOF
+
+sudo cp haproxy.cfg /etc/haproxy
+rm haproxy.cfg
+sudo haproxy -c -f /etc/haproxy/haproxy.cfg
+sudo systemctl restart haproxy
+sudo systemctl status haproxy
 
 exit 0
