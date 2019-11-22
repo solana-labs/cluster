@@ -14,7 +14,7 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --dynamic-port-range 8001-8010 \
   --entrypoint ${ENTRYPOINT}:8001 \
   --gossip-port 8001 \
-  --identity /home/solanad/bootstrap-leader-identity.json \
+  --identity-keypair /home/solanad/bootstrap-leader-identity.json \
   --ledger /home/solanad/ledger \
   --limit-ledger-size \
   --log - \
