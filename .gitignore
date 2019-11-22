@@ -3,3 +3,5 @@
 /bootstrap-leader-vote-account.json
 /ledger/
 /service-env.sh
+/solana-release*
+/.idea
