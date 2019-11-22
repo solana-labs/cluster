@@ -10,6 +10,8 @@ set -e
 cd "$(dirname "$0")"
 source env.sh
 
+RELEASE_CHANNEL_OR_TAG=edge
+
 usage() {
   exitcode=0
   if [[ -n "$1" ]]; then
@@ -17,14 +19,27 @@ usage() {
     echo "Error: $*"
   fi
   cat <<EOF
-usage: $0 RELEASE_CHANNEL_OR_TAG
+usage: $0 [options]
+
+Launch a mainnet network
+   --release RELEASE_CHANNEL_OR_TAG          - Which release channel or tag to deploy (default: $RELEASE_CHANNEL_OR_TAG).
+
 EOF
   exit $exitcode
 }
 
-RELEASE_CHANNEL_OR_TAG=$1
-[[ -n $RELEASE_CHANNEL_OR_TAG ]] || usage
-shift
+while [[ -n $1 ]]; do
+  if [[ ${1:0:2} = -- ]]; then
+    if [[ $1 = --release ]]; then
+      RELEASE_CHANNEL_OR_TAG="$2"
+      shift 2
+    else
+      usage "Unknown long option: $1"
+    fi
+  else
+    usage "Unknown option: $1"
+  fi
+done
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint-mainnet-solana-com
 BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}bootstrap-leader-mainnet-solana-com

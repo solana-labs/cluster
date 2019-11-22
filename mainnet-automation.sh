@@ -45,4 +45,4 @@ PATH="${INSTALL_PATH}/active_release/bin:$PATH"
 
 ./genesis.sh
 
-./launch-mainnet.sh "$RELEASE_CHANNEL_OR_TAG"
+./launch-mainnet.sh --release "$RELEASE_CHANNEL_OR_TAG"
