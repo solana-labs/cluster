@@ -3,11 +3,11 @@
 set -e
 set -x
 
-if [[ -n "$1" ]] ; then
+if [[ -n "$1" ]]; then
   RELEASE_CHANNEL_OR_TAG="$1"
 fi
 
-if [[ -z $RELEASE_CHANNEL_OR_TAG ]] ; then
+if [[ -z $RELEASE_CHANNEL_OR_TAG ]]; then
   echo RELEASE_CHANNEL_OR_TAG not defined
   exit 1
 fi
@@ -19,10 +19,10 @@ if [[ -d ledger ]]; then
   rm -rf ledger
 fi
 
-if [[ "$(uname)" == "Linux" ]] ; then
+if [[ "$(uname)" == "Linux" ]]; then
   echo Linux OS Detected
   TARBALL_NAME=solana-release-x86_64-unknown-linux-gnu.tar.bz2
-elif [[ "$(uname)" == "Darwin" ]] ; then
+elif [[ "$(uname)" == "Darwin" ]]; then
   echo Mac OS Detected
   TARBALL_NAME=solana-release-x86_64-apple-darwin.tar.bz2
 else
