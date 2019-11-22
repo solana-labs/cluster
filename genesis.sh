@@ -27,5 +27,4 @@ args=(
 )
 solana-genesis "${args[@]}"
 
-tar jcfS ledger/genesis.tar.bz2 -C ledger genesis.bin rocksdb
 du -ah ledger

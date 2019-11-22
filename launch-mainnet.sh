@@ -19,6 +19,17 @@ API_INSTANCE=${INSTANCE_PREFIX}api-mainnet-solana-com
 INSTANCES="$ENTRYPOINT_INSTANCE $BOOTSTRAP_LEADER_INSTANCE $API_INSTANCE"
 
 if [[ $(basename "$0" .sh) = delete-mainnet ]]; then
+  if [[ -n $PRODUCTION ]]; then
+    echo "Attempting to recover TLS certificate before deleting instances"
+    (
+      set -x
+      gcloud --project $PROJECT compute scp --zone $ZONE $API_INSTANCE:/letsencrypt.tgz .
+    ) || true
+    if [[ -f letsencrypt.tgz ]]; then
+      echo "Warning: ensure you don't delete letsencrypt.tgz"
+    fi
+  fi
+
   (
     set -x
     # shellcheck disable=SC2086 # Don't want to double quote INSTANCES
@@ -169,19 +180,31 @@ echo ==========================================================
     api.service \
     "$API_INSTANCE":
 )
+if [[ -n $PRODUCTION && -f letsencrypt.tgz ]]; then
+  (
+    set -x
+    gcloud --project $PROJECT compute scp --zone $ZONE letsencrypt.tgz "$API_INSTANCE":~/letsencrypt.tgz
+    gcloud --project $PROJECT compute ssh --zone $ZONE "$API_INSTANCE" -- sudo mv letsencrypt.tgz /
+  )
+fi
+
 
 for instance in $INSTANCES; do
   echo ==========================================================
   echo "Configuring $instance"
   echo ==========================================================
   (
+    nodeType=
     if [[ $instance = "$API_INSTANCE" ]]; then
-      isApi=1
+        nodeType=api
+    fi
+    if [[ -n $PRODUCTION ]]; then
+      nodeType="${nodeType}production"
     fi
 
     set -x
     gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- \
-      bash remote-machine-setup.sh "$SOLANA_VERSION" "$isApi"
+      bash remote-machine-setup.sh "$SOLANA_VERSION" "$nodeType"
   )
 done
 
