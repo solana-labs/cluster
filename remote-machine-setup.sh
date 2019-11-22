@@ -38,7 +38,7 @@ sudo mv ./* /home/solanad
 # Start the solana service
 sudo systemctl start solanad
 sudo systemctl enable solanad
-sudo systemctl status solanad
+sudo systemctl --no-pager status solanad
 
 # Create easy to use software update script
 {
@@ -53,7 +53,7 @@ set -ex
 sudo systemctl stop solanad
 sudo --login -u solanad -- solana-install init "\$@"
 sudo systemctl start solanad
-sudo systemctl status solanad
+sudo systemctl --no-pager status solanad
 EOF
 } | sudo tee /solana-update.sh
 sudo chmod +x /solana-update.sh
@@ -118,7 +118,7 @@ EOF
 
 sudo haproxy -c -f /etc/haproxy/haproxy.cfg
 sudo systemctl restart haproxy
-sudo systemctl status haproxy
+sudo systemctl --no-pager status haproxy
 
 {
   cat <<'EOF'
@@ -159,7 +159,7 @@ if [[ -z $maybeDryRun ]]; then
 fi
 
 systemctl restart haproxy
-systemctl status haproxy
+systemctl --no-pager status haproxy
 EOF
 } | sudo tee /solana-renew-cert.sh
 sudo chmod +x /solana-renew-cert.sh

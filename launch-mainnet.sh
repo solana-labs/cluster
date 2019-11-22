@@ -10,7 +10,36 @@ set -e
 cd "$(dirname "$0")"
 source env.sh
 
-SOLANA_VERSION=edge
+RELEASE_CHANNEL_OR_TAG=edge
+
+usage() {
+  exitcode=0
+  if [[ -n "$1" ]]; then
+    exitcode=1
+    echo "Error: $*"
+  fi
+  cat <<EOF
+usage: $0 [options]
+
+Launch a mainnet network
+   --release RELEASE_CHANNEL_OR_TAG          - Which release channel or tag to deploy (default: $RELEASE_CHANNEL_OR_TAG).
+
+EOF
+  exit $exitcode
+}
+
+while [[ -n $1 ]]; do
+  if [[ ${1:0:2} = -- ]]; then
+    if [[ $1 = --release ]]; then
+      RELEASE_CHANNEL_OR_TAG="$2"
+      shift 2
+    else
+      usage "Unknown long option: $1"
+    fi
+  else
+    usage "Unknown option: $1"
+  fi
+done
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint-mainnet-solana-com
 BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}bootstrap-leader-mainnet-solana-com
@@ -33,7 +62,7 @@ if [[ $(basename "$0" .sh) = delete-mainnet ]]; then
   (
     set -x
     # shellcheck disable=SC2086 # Don't want to double quote INSTANCES
-    gcloud --project $PROJECT compute instances delete $INSTANCES --zone $ZONE
+    gcloud --project $PROJECT compute instances delete $INSTANCES --zone $ZONE --quiet
   )
   exit 0
 fi
@@ -204,7 +233,7 @@ for instance in $INSTANCES; do
 
     set -x
     gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- \
-      bash remote-machine-setup.sh "$SOLANA_VERSION" "$nodeType"
+      bash remote-machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType"
   )
 done
 
