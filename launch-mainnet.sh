@@ -62,7 +62,7 @@ if [[ $(basename "$0" .sh) = delete-mainnet ]]; then
   (
     set -x
     # shellcheck disable=SC2086 # Don't want to double quote INSTANCES
-    gcloud --project $PROJECT compute instances delete $INSTANCES --zone $ZONE
+    gcloud --project $PROJECT compute instances delete $INSTANCES --zone $ZONE --quiet
   )
   exit 0
 fi
