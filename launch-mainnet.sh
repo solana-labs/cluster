@@ -10,7 +10,21 @@ set -e
 cd "$(dirname "$0")"
 source env.sh
 
-SOLANA_VERSION=edge
+usage() {
+  exitcode=0
+  if [[ -n "$1" ]]; then
+    exitcode=1
+    echo "Error: $*"
+  fi
+  cat <<EOF
+usage: $0 RELEASE_CHANNEL_OR_TAG
+EOF
+  exit $exitcode
+}
+
+RELEASE_CHANNEL_OR_TAG=$1
+[[ -n $RELEASE_CHANNEL_OR_TAG ]] || usage
+shift
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint-mainnet-solana-com
 BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}bootstrap-leader-mainnet-solana-com
@@ -204,7 +218,7 @@ for instance in $INSTANCES; do
 
     set -x
     gcloud --project $PROJECT compute ssh --zone $ZONE "$instance" -- \
-      bash remote-machine-setup.sh "$SOLANA_VERSION" "$nodeType"
+      bash remote-machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType"
   )
 done
 
