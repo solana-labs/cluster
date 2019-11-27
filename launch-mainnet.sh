@@ -10,7 +10,7 @@ set -e
 cd "$(dirname "$0")"
 source env.sh
 
-RELEASE_CHANNEL_OR_TAG=edge
+RELEASE_CHANNEL_OR_TAG=0.21.0
 
 usage() {
   exitcode=0
