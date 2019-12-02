@@ -11,9 +11,9 @@ solana-genesis --version
 solana-keygen --version
 solana-ledger-tool --version
 
-solana-keygen new --silent --force --outfile bootstrap-leader-identity.json
-solana-keygen new --silent --force --outfile bootstrap-leader-vote-account.json
-solana-keygen new --silent --force --outfile bootstrap-leader-stake-account.json
+solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-identity.json
+solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-vote-account.json
+solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-stake-account.json
 
 args=(
   --bootstrap-leader-pubkey bootstrap-leader-identity.json
