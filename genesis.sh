@@ -21,7 +21,8 @@ args=(
   --bootstrap-stake-pubkey bootstrap-leader-stake-account.json
   --bootstrap-leader-lamports 1000000000   # 1 SOL for voting
   --bootstrap-leader-stake-lamports 1      # Smallest possible stake
-  --rent-exemption-threshold 0             # Disable rent
+  --rent-exemption-threshold 0             # All accounts are rent exempt
+  --rent-burn-percentage 255               # Burn it all!
   --target-lamports-per-signature 1        # Smallest non-zero signature fee
   --ledger ledger
 )
