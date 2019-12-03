@@ -11,3 +11,4 @@ if [[ -z $PRODUCTION ]]; then
   PROJECT=principal-lane-200702
 fi
 
+STORAGE_BUCKET=${INSTANCE_PREFIX}solana-ledger

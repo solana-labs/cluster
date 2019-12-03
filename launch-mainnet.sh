@@ -94,7 +94,6 @@ for instance in $INSTANCES; do
 done
 
 GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"
-STORAGE_BUCKET=${INSTANCE_PREFIX}solana-ledger
 
 if [[ -n $PRODUCTION ]]; then
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"

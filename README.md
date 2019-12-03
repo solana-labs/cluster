@@ -116,6 +116,25 @@ caught up to the cluster.
 Then use the `solana delegate-stake` command for each validator using a **TBD**
 stake account.
 
+## Fetching a ledger snapshot
+To view the available ledger snapshots, run:
+```bash
+$ ./fetch-ledger-snapshot.sh
+```
+
+Downloading a snapshot can be accomplished with:
+```bash
+$ ./fetch-ledger-snapshot.sh 2019-12-03T22:54:59Z  # <-- replace with the desired snapshot timestamp
+```
+
+Boot a validator from the downloaded snapshot with:
+```bash
+$ solana-validator \
+  --ledger ledger-snapshot \
+  --no-genesis-fetch \
+  --no-snapshot-fetch ...
+```
+
 # Validator Workflow
 The minimal steps required of a validator participating in the initial boot of the cluster are:
 
