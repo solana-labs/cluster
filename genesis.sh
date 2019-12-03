@@ -21,7 +21,7 @@ args=(
   --bootstrap-stake-pubkey bootstrap-leader-stake-account.json
   --bootstrap-leader-lamports             1000000000 # 1 SOL for voting
   --bootstrap-leader-stake-lamports 1000000000000000 # 1 million SOL
-  --rent-burn-percentage 255                         # Burn it all!
+  --rent-burn-percentage 100                         # Burn it all!
   --target-lamports-per-signature 0                  # No transaction fees
   --ledger ledger
 )
