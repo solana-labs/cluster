@@ -45,7 +45,7 @@ SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet
 
 Production metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/testnet-monitor-edge?orgId=2&from=now-5m&to=now&refresh=5s&var-testnet=mainnet&var-hostid=All)
 
-# Workflows
+# Internal Workflows
 ## Changing the deployed Solana software version
 There are two places to be modified to update the Solana software version to deploy:
 1. On your machine as genesis will be build on your local machine.  Run `solana-install init <desired version>`.
@@ -102,3 +102,32 @@ $ /solana-update.sh 0.21.0
 There's no mechanism to automatically update the software across all the nodes
 at once.
 
+# Validator Workflow
+The minimal steps required of a validator participating in the initial boot of the cluster are:
+
+## Installing the software
+```bash
+$ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.21.1/install/solana-install-init.sh | sh -s - 0.21.1
+```
+then configure the command-line tool's RPC endpoint URL:
+```bash
+$ solana set --url http://34.82.79.31/
+```
+
+## Starting your validator:
+Assuming that `~/validator-keypair.json` and `~/validator-vote-keypair.json`
+contain the validator identity and vote keypairs that were registered in the
+genesis configuration, run:
+
+```bash
+$ export SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet,u=mainnet_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+$ export EXPECTED_GENESIS_HASH=##### <--- To be communicated by Solana
+$ solana-validator \
+  --identity-keypair ~/validator-keypair.json \
+  --voting-keypair ~/validator-vote-keypair.json \
+  --ledger ~/validator-ledger \
+  --rpc-port 8899 \
+  --entrypoint 34.83.130.52:8001
+  --limit-ledger-size \
+  --expected-genesis-hash $EXPECTED_GENESIS_HASH
+```
