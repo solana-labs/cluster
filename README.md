@@ -102,6 +102,20 @@ $ /solana-update.sh 0.21.0
 There's no mechanism to automatically update the software across all the nodes
 at once.
 
+## Delegating Stake to a Validator
+As external validators boot they receive 1m SOL in equal stake.
+
+To locate the online validators run:
+```bash
+$ solana show-validators
+```
+
+The `solana catchup` command can be used to block until a given validator has
+caught up to the cluster.
+
+Then use the `solana delegate-stake` command for each validator using a **TBD**
+stake account.
+
 # Validator Workflow
 The minimal steps required of a validator participating in the initial boot of the cluster are:
 
