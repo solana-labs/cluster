@@ -49,7 +49,7 @@ Production metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/te
 ## Changing the deployed Solana software version
 There are two places to be modified to update the Solana software version to deploy:
 1. On your machine as genesis will be build on your local machine.  Run `solana-install init <desired version>`.
-1. Modify the `SOLANA_VERSION=` variable in `remote-machine-setup.sh`.
+1. Modify the `RELEASE_CHANNEL_OR_TAG=` variable in `launch-mainnet.sh`.
 
 ## Launch a development mainnet
 A development mainnet can be created at any time by anybody.   The instances
