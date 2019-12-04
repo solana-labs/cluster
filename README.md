@@ -139,9 +139,10 @@ $ solana-validator \
 The minimal steps required of a validator participating in the initial boot of the cluster are:
 
 ## Installing the software
-```bash
-$ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.21.1/install/solana-install-init.sh | sh -s - 0.21.1
-```
+`
+  $ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.21.1/install/solana-install-init.sh | sh -s - 0.21.1
+`
+
 then configure the command-line tool's RPC endpoint URL:
 ```bash
 $ solana set --url http://34.82.79.31/
