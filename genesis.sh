@@ -28,3 +28,5 @@ args=(
 solana-genesis "${args[@]}"
 
 du -ah ledger
+
+echo "Genesis hash: $(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"

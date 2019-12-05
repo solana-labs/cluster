@@ -2,6 +2,6 @@
 /bootstrap-leader-stake-account.json
 /bootstrap-leader-vote-account.json
 /ledger/
-/service-env.sh
+/scripts/service-env.sh
 /solana-release*
 /.idea

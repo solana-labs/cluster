@@ -121,7 +121,8 @@ fi
   fi
   echo STORAGE_BUCKET="$STORAGE_BUCKET"
   echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-) | tee service-env.sh
+  echo PRODUCTION="$PRODUCTION"
+) | tee scripts/service-env.sh
 
 
 echo ==========================================================
@@ -193,8 +194,8 @@ if [[ -n $INSTANCE_PREFIX ]]; then
       --filter name="$API_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 fi
 RPC_URL="http://$RPC/"
-echo "RPC_URL=$RPC_URL" >> service-env.sh
-echo "ENTRYPOINT=$ENTRYPOINT" >> service-env.sh
+echo "RPC_URL=$RPC_URL" >> scripts/service-env.sh
+echo "ENTRYPOINT=$ENTRYPOINT" >> scripts/service-env.sh
 
 echo ==========================================================
 echo Waiting for instances to boot
@@ -212,8 +213,7 @@ echo "Transferring files to $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    remote-machine-setup.sh \
-    service-env.sh \
+    scripts/* \
     entrypoint.service \
     "$ENTRYPOINT_INSTANCE":
 )
@@ -227,10 +227,9 @@ echo ==========================================================
     bootstrap-leader-identity.json \
     bootstrap-leader-stake-account.json \
     bootstrap-leader-vote-account.json \
-    remote-machine-setup.sh \
-    ledger \
-    service-env.sh \
     bootstrap-leader.service \
+    ledger \
+    scripts/* \
     "$BOOTSTRAP_LEADER_INSTANCE":
 )
 
@@ -240,11 +239,9 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    remote-machine-setup.sh \
     ledger \
-    service-env.sh \
+    scripts/* \
     warehouse.service \
-    warehouse-node.sh \
     "$WAREHOUSE_INSTANCE":
 )
 
@@ -254,10 +251,9 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    remote-machine-setup.sh \
-    ledger \
-    service-env.sh \
     api.service \
+    ledger \
+    scripts/* \
     "$API_INSTANCE":
 )
 if [[ -n $PRODUCTION && -f letsencrypt.tgz ]]; then

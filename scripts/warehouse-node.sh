@@ -5,6 +5,8 @@ here=$(dirname "$0")
 
 #shellcheck source=/dev/null
 source "$here"/service-env.sh
+#shellcheck source=./configure-metrics.sh
+source "$here"/configure-metrics.sh
 
 if [[ -z $ENTRYPOINT ]]; then
   echo ENTRYPOINT environment variable not defined
@@ -26,7 +28,7 @@ if [[ -z $RPC_URL ]]; then
   exit 1
 fi
 
-solana-keygen new --silent --force --outfile "$here"/identity.json
+solana-keygen new --silent --force --no-passphrase --outfile "$here"/identity.json
 
 ledger_dir="$here"/ledger
 
@@ -44,7 +46,11 @@ args=(
   --rpc-port 8899
 )
 
-archive_interval_minutes=1440 # 1 day
+if [[ -n $PRODUCTION ]]; then
+  archive_interval_minutes=10
+else
+  archive_interval_minutes=1440 # 1 day
+fi
 
 pid=
 kill_node() {
@@ -68,12 +74,14 @@ last_ledger_dir=
 while true; do
   solana-validator "${args[@]}" &
   pid=$!
+  $metricsWriteDatapoint "infra-warehouse-node event=\"validator-started\""
   echo "pid: $pid"
 
   minutes_to_next_ledger_archive=$archive_interval_minutes
   caught_up=false
   while true; do
     if [[ -z $pid ]] || ! kill -0 "$pid"; then
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"unexpected-validator-exit\""
       break  # validator exited unexpectedly, restart it
     fi
 
@@ -84,6 +92,7 @@ while true; do
         continue
       fi
       echo Node has caught up
+      $metricsWriteDatapoint "infra-warehouse-node event=\"validator-caught-up\""
       caught_up=true
     fi
 
@@ -96,17 +105,20 @@ while true; do
 
     if [[ ! -f "$ledger_dir"/snapshot.tar.bz2 ]]; then
       echo "Validator has not produced a snapshot yet"
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"validator-snapshot-missing\""
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
     if [[ -d "$last_ledger_dir" ]] && diff -q "$ledger_dir"/snapshot.tar.bz2 "$last_ledger_dir/snapshot.tar.bz2"; then
       echo "Validator has not produced a new snapshot yet"
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"validator-stale-snapshot\""
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
     echo Killing the node
+    $metricsWriteDatapoint "infra-warehouse-node event=\"validator-terminated\""
     kill_node
 
     echo Open the ledger to force a rocksdb log file cleanup
@@ -116,6 +128,7 @@ while true; do
       solana-ledger-tool --ledger "$ledger_dir" bounds
     )
     echo Ledger compaction took $SECONDS seconds
+    $metricsWriteDatapoint "infra-warehouse-node event=\"ledger-compacted\",duration_secs=$SECONDS"
 
     echo Archive the current ledger and snapshot
     if [[ -n "$last_ledger_dir" ]]; then
@@ -130,10 +143,11 @@ while true; do
     SECONDS=
     while ! gsutil -m rsync -r "$last_ledger_dir" gs://"$STORAGE_BUCKET"/"$timestamp"; do
       echo "gsutil rsync failed..."
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"gsutil-rsync-failure\""
       sleep 5
     done
     echo Ledger archiving took $SECONDS seconds
-
+    $metricsWriteDatapoint "infra-warehouse-node event=\"ledger-archived\",label=\"$timestamp\",duration_secs=$SECONDS"
     break
   done
 done
