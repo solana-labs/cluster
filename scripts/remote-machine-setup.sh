@@ -131,10 +131,6 @@ fi
 
 set -ex
 
-maybeDryRun=
-# Uncomment during testing to avoid hitting LetsEncrypt API limits while iterating
-#maybeDryRun=--dry-run
-
 if [[ -r /letsencrypt.tgz ]]; then
   tar -C / -zxf /letsencrypt.tgz
 fi
@@ -144,7 +140,6 @@ certbot certonly \
   --non-interactive \
   --agree-tos \
   --email maintainers@solana.com \
-  \$maybeDryRun \
   --http-01-port=4444
 
 tar zcf /letsencrypt.new.tgz /etc/letsencrypt
