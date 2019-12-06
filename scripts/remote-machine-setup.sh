@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Remote setup script run on a new instance by |launch-mainnet.sh|
+# Remote setup script run on a new instance by |launch-cluster.sh|
 #
 
 set -ex

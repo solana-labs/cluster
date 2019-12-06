@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Creates and configures the GCE machines used for mainnet.
+# Creates and configures the GCE machines used for a cluster.
 #
 # By default development machines will be created under your username.  To
 # deploy the real machines set the PRODUCTION environment variable.
@@ -21,7 +21,7 @@ usage() {
   cat <<EOF
 usage: $0 [options]
 
-Launch a mainnet network
+Launch a cluster
    --release RELEASE_CHANNEL_OR_TAG          - Which release channel or tag to deploy (default: $RELEASE_CHANNEL_OR_TAG).
 
 EOF
@@ -41,10 +41,10 @@ while [[ -n $1 ]]; do
   fi
 done
 
-ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint-mainnet-solana-com
-BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}bootstrap-leader-mainnet-solana-com
-API_INSTANCE=${INSTANCE_PREFIX}api-mainnet-solana-com
-WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}warehouse-mainnet-solana-com
+ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}cluster-entrypoint
+BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}cluster-bootstrap-leader
+API_INSTANCE=${INSTANCE_PREFIX}cluster-api
+WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}cluster-warehouse
 
 INSTANCES="
   $ENTRYPOINT_INSTANCE
@@ -53,7 +53,7 @@ INSTANCES="
   $WAREHOUSE_INSTANCE
 "
 
-if [[ $(basename "$0" .sh) = delete-mainnet ]]; then
+if [[ $(basename "$0" .sh) = delete-cluster ]]; then
   if [[ -n $PRODUCTION ]]; then
     echo "Attempting to recover TLS certificate before deleting instances"
     (
