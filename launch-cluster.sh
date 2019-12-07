@@ -185,8 +185,10 @@ echo ==========================================================
     --scopes=storage-rw
 )
 
-ENTRYPOINT=mainnet.solana.com
-RPC=api.mainnet.solana.com
+#ENTRYPOINT=mainnet.solana.com
+#RPC=api.mainnet.solana.com
+ENTRYPOINT=34.83.130.52
+RPC=34.82.79.31
 
 if [[ -n $INSTANCE_PREFIX ]]; then
   ENTRYPOINT=$(gcloud --project "$PROJECT" compute instances list \
