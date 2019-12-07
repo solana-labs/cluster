@@ -46,7 +46,7 @@ args=(
   --rpc-port 8899
 )
 
-if [[ -n $PRODUCTION ]]; then
+if [[ -z $PRODUCTION ]]; then
   archive_interval_minutes=10
 else
   archive_interval_minutes=1440 # 1 day

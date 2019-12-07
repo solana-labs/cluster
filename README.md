@@ -37,13 +37,23 @@ The ledger is stored in /home/solanad/ledger
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh cluster-api`
 
+## Warehouse Node
+* DNS: none
+* Static IP: none
+* GCE Instance Name: cluster-warehouse
+* OS Image: Ubuntu 18.04 LTS Minimal
+* Boot disk: Standard disk, 2TB
+* Machine type: n1-standard-8
+* Region: us-west-1
+* ssh: `gcloud --project solana-mainnet compute ssh cluster-warehouse`
+
 # Metrics
 The following metrics configuration is used in production:
 ```
 SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
 ```
 
-Production metrics [dashboard](https://metrics.solana.com:3000/d/testnet-edge/testnet-monitor-edge?orgId=2&from=now-5m&to=now&refresh=60s&var-testnet=cluster&var-hostid=All)
+Production metrics [dashboard](http://bit.ly/solana-cluster)
 
 # Internal Workflows
 ## Changing the deployed Solana software version
