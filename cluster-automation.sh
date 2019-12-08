@@ -24,4 +24,4 @@ PATH="${INSTALL_PATH}/active_release/bin:$PATH"
 
 ./genesis.sh
 
-./launch-mainnet.sh --release "$RELEASE_CHANNEL_OR_TAG"
+./launch-cluster.sh --release "$RELEASE_CHANNEL_OR_TAG"
