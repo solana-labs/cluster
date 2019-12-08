@@ -99,6 +99,9 @@ while true; do
     sleep 60
 
     if ((--minutes_to_next_ledger_archive > 0)); then
+      if ((minutes_to_next_ledger_archive % 60 == 0)); then
+        $metricsWriteDatapoint "infra-warehouse-node event=\"validator-waiting-to-archive\",minutes_remaining=$minutes_to_next_ledger_archive"
+      fi
       echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
       continue
     fi
