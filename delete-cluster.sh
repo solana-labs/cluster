@@ -1,1 +1,1 @@
-launch-mainnet.sh
+launch-cluster.sh
