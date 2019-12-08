@@ -19,6 +19,7 @@ args=(
   --bootstrap-leader-pubkey bootstrap-leader-identity.json
   --bootstrap-vote-pubkey bootstrap-leader-vote-account.json
   --bootstrap-stake-pubkey bootstrap-leader-stake-account.json
+  --bootstrap-stake-authorized-pubkey GRZwoJGisLTszcxtWpeREJ98EGg8pZewhbtcrikoU7b3 # Foundation key
   --bootstrap-leader-lamports             1000000000 # 1 SOL for voting
   --bootstrap-leader-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                         # Burn it all!
