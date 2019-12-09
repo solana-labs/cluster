@@ -106,7 +106,7 @@ $ sudo systemctl restart solanad
 ## Updating the solana software
 From a shell on the instance run:
 ```
-$ /solana-update.sh 0.21.0
+$ /solana-update.sh 0.22.0
 ```
 
 There's no mechanism to automatically update the software across all the nodes
@@ -150,7 +150,7 @@ The minimal steps required of a validator participating in the initial boot of t
 
 ## Installing the software
 `
-  $ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.21.1/install/solana-install-init.sh | sh -s - 0.21.1
+  $ curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.21.1/install/solana-install-init.sh | sh -s - 0.21.2
 `
 
 then configure the command-line tool's RPC endpoint URL:
