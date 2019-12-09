@@ -102,9 +102,10 @@ if [[ -n $PRODUCTION ]]; then
   # Create the production bucket if it doesn't already exist but do not remove old
   # data, if any, to avoid accidental data loss.
   gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://$"STORAGE_BUCKET" || true
-elif [[ -z $SOLANA_METRICS_CONFIG ]]; then
-  echo Note: SOLANA_METRICS_CONFIG is not configured
-
+else
+  if [[ -z $SOLANA_METRICS_CONFIG ]]; then
+    echo Note: SOLANA_METRICS_CONFIG is not configured
+  fi
   # Re-create the dev bucket on each launch
   gsutil rm -r gs://"$STORAGE_BUCKET" || true
   gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET"
