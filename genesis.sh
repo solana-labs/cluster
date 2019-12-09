@@ -8,12 +8,9 @@ if [[ -d ledger ]]; then
 fi
 
 solana-genesis --version
-solana-keygen --version
 solana-ledger-tool --version
 
-solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-identity.json
-solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-vote-account.json
-solana-keygen new --silent --force --no-passphrase --outfile bootstrap-leader-stake-account.json
+./keygen.sh
 
 args=(
   --bootstrap-leader-pubkey bootstrap-leader-identity.json
