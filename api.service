@@ -10,6 +10,7 @@ Restart=always
 RestartSec=1
 User=solanad
 LimitNOFILE=65536
+LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-validator \
   --dynamic-port-range 8001-8010 \
   --entrypoint ${ENTRYPOINT}:8001 \

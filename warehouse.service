@@ -10,6 +10,7 @@ Restart=always
 RestartSec=1
 User=solanad
 LimitNOFILE=65536
+LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/warehouse-node.sh
 
 [Install]
