@@ -47,6 +47,16 @@ The ledger is stored in /home/solanad/ledger
 * Region: us-west-1
 * ssh: `gcloud --project solana-mainnet compute ssh cluster-warehouse`
 
+## Watchtower Node
+* DNS: none
+* Static IP: none
+* GCE Instance Name: cluster-watchtower
+* OS Image: Ubuntu 18.04 LTS Minimal
+* Boot disk: Standard disk, 200GB
+* Machine type: n1-standard-1
+* Region: us-west-1
+* ssh: `gcloud --project solana-mainnet compute ssh cluster-watchtower`
+
 # Metrics
 The following metrics configuration is used in production:
 ```

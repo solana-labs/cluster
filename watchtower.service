@@ -1,0 +1,17 @@
+[Unit]
+Description=Solana Watchtower
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+EnvironmentFile=/home/solanad/service-env.sh
+Type=simple
+Restart=always
+RestartSec=1
+User=solanad
+LogRateLimitIntervalSec=0
+ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-watchtower \
+  --url ${RPC_URL} \
+
+[Install]
+WantedBy=multi-user.target

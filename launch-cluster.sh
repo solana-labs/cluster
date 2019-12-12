@@ -46,12 +46,14 @@ ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}cluster-entrypoint
 BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}cluster-bootstrap-leader
 API_INSTANCE=${INSTANCE_PREFIX}cluster-api
 WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}cluster-warehouse
+WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}cluster-watchtower
 
 INSTANCES="
   $ENTRYPOINT_INSTANCE
   $BOOTSTRAP_LEADER_INSTANCE
   $API_INSTANCE
   $WAREHOUSE_INSTANCE
+  $WATCHTOWER_INSTANCE
 "
 
 if [[ $(basename "$0" .sh) = delete-cluster ]]; then
@@ -126,7 +128,6 @@ fi
   echo PRODUCTION="$PRODUCTION"
 ) | tee scripts/service-env.sh
 
-
 echo ==========================================================
 echo "Creating $ENTRYPOINT_INSTANCE"
 echo ==========================================================
@@ -184,6 +185,20 @@ echo ==========================================================
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
     --scopes=storage-rw
+)
+
+echo ==========================================================
+echo "Creating $WATCHTOWER_INSTANCE"
+echo ==========================================================
+(
+  set -x
+  gcloud --project "$PROJECT" compute instances create \
+    "$WATCHTOWER_INSTANCE " \
+    --zone "$ZONE" \
+    --machine-type n1-standard-1 \
+    --boot-disk-size=200GB \
+    --tags solana-validator-minimal \
+    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
 )
 
 #ENTRYPOINT=mainnet.solana.com
@@ -250,6 +265,16 @@ echo ==========================================================
 )
 
 echo ==========================================================
+echo "Transferring files to $WATCHTOWER_INSTANCE"
+echo ==========================================================
+(
+  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+    scripts/* \
+    watchtower.service \
+    "$WATCHTOWER_INSTANCE":
+)
+
+echo ==========================================================
 echo "Transferring files to $API_INSTANCE"
 echo ==========================================================
 (
@@ -281,6 +306,9 @@ for instance in $INSTANCES; do
       ;;
     $WAREHOUSE_INSTANCE)
       nodeType=warehouse
+      ;;
+    $WATCHTOWER_INSTANCE)
+      nodeType=watchtower
       ;;
     $ENTRYPOINT_INSTANCE)
       nodeType=entrypoint
