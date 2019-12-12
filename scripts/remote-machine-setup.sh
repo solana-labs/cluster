@@ -50,9 +50,8 @@ if [[ -z \$1 ]]; then
   exit 1
 fi
 set -ex
-sudo systemctl stop solanad
 sudo --login -u solanad -- solana-install init "\$@"
-sudo systemctl start solanad
+sudo systemctl restart solanad
 sudo systemctl --no-pager status solanad
 EOF
 } | sudo tee /solana-update.sh
