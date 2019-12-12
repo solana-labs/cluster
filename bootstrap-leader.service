@@ -20,6 +20,7 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --limit-ledger-size \
   --log - \
   --no-genesis-fetch \
+  --rpc-port 8899 \
   --voting-keypair /home/solanad/bootstrap-leader-vote-account.json \
   --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
 
