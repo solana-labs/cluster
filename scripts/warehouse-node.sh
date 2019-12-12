@@ -100,7 +100,7 @@ while true; do
 
     if ((--minutes_to_next_ledger_archive > 0)); then
       if ((minutes_to_next_ledger_archive % 60 == 0)); then
-        $metricsWriteDatapoint "infra-warehouse-node event=\"validator-waiting-to-archive\",minutes_remaining=$minutes_to_next_ledger_archive"
+        $metricsWriteDatapoint "infra-warehouse-node event=\"waiting-to-archive\",minutes_remaining=$minutes_to_next_ledger_archive"
       fi
       echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
       continue
@@ -108,14 +108,14 @@ while true; do
 
     if [[ ! -f "$ledger_dir"/snapshot.tar.bz2 ]]; then
       echo "Validator has not produced a snapshot yet"
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"validator-snapshot-missing\""
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"snapshot-missing\""
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
     if [[ -d "$last_ledger_dir" ]] && diff -q "$ledger_dir"/snapshot.tar.bz2 "$last_ledger_dir/snapshot.tar.bz2"; then
       echo "Validator has not produced a new snapshot yet"
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"validator-stale-snapshot\""
+      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"stale-snapshot\""
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
