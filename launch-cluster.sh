@@ -128,6 +128,13 @@ fi
   echo PRODUCTION="$PRODUCTION"
 ) | tee scripts/service-env.sh
 
+if [[ -n $PRODUCTION ]]; then
+  # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a
+  # sanity failure
+  echo "DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec" >> scripts/service-env.sh
+fi
+
+
 echo ==========================================================
 echo "Creating $ENTRYPOINT_INSTANCE"
 echo ==========================================================
