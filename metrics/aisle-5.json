@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1576126670442,
+    "iteration": 1576550368546,
     "links": [],
     "panels": [
         {
@@ -42,7 +42,7 @@
                 "#d44a3a"
             ],
             "datasource": "$datasource",
-            "format": "dateTimeAsUS",
+            "format": "dateTimeFromNow",
             "gauge": {
                 "maxValue": 100,
                 "minValue": 0,
@@ -160,7 +160,7 @@
                 "#d44a3a"
             ],
             "datasource": "$datasource",
-            "format": "dateTimeAsUS",
+            "format": "dateTimeFromNow",
             "gauge": {
                 "maxValue": 100,
                 "minValue": 0,
@@ -1115,5 +1115,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 19
+    "version": 21
 }

@@ -2,6 +2,7 @@
 set -e
 
 cd "$(dirname "$0")"
+. ../env.sh
 . setup-grafcli.sh
 
 set -x
