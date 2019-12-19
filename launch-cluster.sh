@@ -200,7 +200,7 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute instances create \
-    "$WATCHTOWER_INSTANCE " \
+    "$WATCHTOWER_INSTANCE" \
     --zone "$ZONE" \
     --machine-type n1-standard-1 \
     --boot-disk-size=200GB \
