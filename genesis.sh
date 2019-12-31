@@ -12,6 +12,23 @@ solana-ledger-tool --version
 
 ./keygen.sh
 
+default_arg() {
+  declare name=$1
+  declare value=$2
+
+  for arg in "${args[@]}"; do
+    if [[ $arg = "$name" ]]; then
+      return
+    fi
+  done
+
+  if [[ -n $value ]]; then
+    args+=("$name" "$value")
+  else
+    args+=("$name")
+  fi
+}
+
 args=(
   --bootstrap-leader-pubkey bootstrap-leader-identity.json
   --bootstrap-vote-pubkey bootstrap-leader-vote-account.json
@@ -23,8 +40,11 @@ args=(
   --target-lamports-per-signature 0                  # No transaction fees
   --ledger ledger
 )
-solana-genesis "${args[@]}"
-
+default_arg --creation-time "$(date --rfc-3339=seconds)"
+(
+  set -x
+  solana-genesis "${args[@]}"
+)
 du -ah ledger
 
 echo "Genesis hash: $(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"

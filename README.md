@@ -78,7 +78,9 @@ username.
 
 Procedure:
 1. Ensure the desired Solana release is installed on your machine
-1. Run `./genesis.sh` to produce the genesis configuration
+1. Run `./genesis.sh` to produce the genesis configuration.  To override the
+   default cluster creation time of _now_, include the `--creation-time` argument
+   (eg `./genesis.sh --creation-time '2020-01-01T12:00:00-08:00'`)
 1. If metrics are desired set SOLANA_METRICS_CONFIG in your environment
 1. Run `./launch-cluster.sh` to create the development cluster instances
 
