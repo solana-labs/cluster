@@ -185,5 +185,6 @@ $ solana-validator \
   --rpc-port 8899 \
   --entrypoint 34.83.130.52:8001
   --limit-ledger-size \
-  --expected-genesis-hash $EXPECTED_GENESIS_HASH
+  --expected-genesis-hash $EXPECTED_GENESIS_HASH \
+  --wait-for-supermajority
 ```

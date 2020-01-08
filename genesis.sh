@@ -40,7 +40,7 @@ args=(
   --target-lamports-per-signature 0                  # No transaction fees
   --ledger ledger
 )
-default_arg --creation-time "$(date --rfc-3339=seconds)"
+default_arg --creation-time "$(date --iso-8601=seconds)"
 (
   set -x
   solana-genesis "${args[@]}"

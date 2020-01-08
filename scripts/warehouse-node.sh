@@ -44,6 +44,7 @@ args=(
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
+  --wait-for-supermajority
 )
 
 if [[ -z $PRODUCTION ]]; then
