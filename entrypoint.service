@@ -1,7 +1,6 @@
 [Unit]
 Description=Solana Entrypoint
 After=network.target
-StartLimitIntervalSec=0
 
 [Service]
 EnvironmentFile=/home/solanad/service-env.sh
@@ -9,6 +8,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=solanad
+StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-gossip \
   spy --gossip-port 8001 --gossip-host ${ENTRYPOINT}

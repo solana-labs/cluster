@@ -1,7 +1,6 @@
 [Unit]
 Description=Solana RPC Node
 After=network.target
-StartLimitIntervalSec=0
 
 [Service]
 EnvironmentFile=/home/solanad/service-env.sh
@@ -10,6 +9,7 @@ Restart=always
 RestartSec=1
 User=solanad
 LimitNOFILE=65536
+StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-validator \
   --dynamic-port-range 8001-8010 \

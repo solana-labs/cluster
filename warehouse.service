@@ -1,7 +1,6 @@
 [Unit]
 Description=Solana Warehouse Node
 After=network.target
-StartLimitIntervalSec=0
 
 [Service]
 EnvironmentFile=/home/solanad/service-env.sh
@@ -11,6 +10,7 @@ RestartSec=1
 User=solanad
 LimitNOFILE=65536
 LogRateLimitIntervalSec=0
+StartLimitIntervalSec=0
 ExecStart=/home/solanad/warehouse-node.sh
 
 [Install]
