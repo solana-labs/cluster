@@ -40,6 +40,24 @@ args=(
   --target-lamports-per-signature 0                  # No transaction fees
   --ledger ledger
 )
+
+while [[ -n $1 ]]; do
+  if [[ ${1:0:1} = - ]]; then
+    if [[ $1 = --creation-time ]]; then
+      args+=("$1" "$2")
+      shift 2
+    else
+      echo "Unknown argument: $1"
+      $program --help
+      exit 1
+    fi
+  else
+    echo "Unknown argument: $1"
+    $program --help
+    exit 1
+  fi
+done
+
 default_arg --creation-time "$(date --iso-8601=seconds)"
 (
   set -x
