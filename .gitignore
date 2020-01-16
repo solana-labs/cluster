@@ -5,3 +5,4 @@
 /scripts/service-env.sh
 /solana-release*
 /.idea
+/accounts_owned_by*

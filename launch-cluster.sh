@@ -355,19 +355,26 @@ echo ==========================================================
 
 echo ==========================================================
 
-echo === Foundation Stake Accounts ===
-./get_accounts_from_seed.sh "$RPC_URL" GRZwoJGisLTszcxtWpeREJ98EGg8pZewhbtcrikoU7b3 --display_summary
-./get_accounts_from_seed.sh "$RPC_URL" J51tinoLdmEdUR27LUVymrb2LB3xQo1aSHSgmbSGdj58 --display_summary
+(
+  echo === Foundation Stake Accounts ===
+  ./get_accounts_from_seed.sh "$RPC_URL" GRZwoJGisLTszcxtWpeREJ98EGg8pZewhbtcrikoU7b3 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" J51tinoLdmEdUR27LUVymrb2LB3xQo1aSHSgmbSGdj58 --display_summary
 
-echo === Grant Stake Accounts ===
-./get_accounts_from_seed.sh "$RPC_URL" DNaKiBwwbbqk1wVoC5AQxWQbuDhvaDVbAtXzsVos9mrc --display_summary
-./get_accounts_from_seed.sh "$RPC_URL" HvXQPXAijjG1vnQs6HXVtUUtFVzi5HNgXV9LGnHvYF85 --display_summary
+  echo === Grant Stake Accounts ===
+  ./get_accounts_from_seed.sh "$RPC_URL" DNaKiBwwbbqk1wVoC5AQxWQbuDhvaDVbAtXzsVos9mrc --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" HvXQPXAijjG1vnQs6HXVtUUtFVzi5HNgXV9LGnHvYF85 --display_summary
 
-echo === Community Stake Accounts ===
-./get_accounts_from_seed.sh "$RPC_URL" BzuqQFnu7oNUeok9ZoJezpqu2vZJU7XR1PxVLkk6wwUD --display_summary
-./get_accounts_from_seed.sh "$RPC_URL" FwMbkDZUb78aiMWhZY4BEroAcqmnrXZV77nwrg71C57d --display_summary
-./get_accounts_from_seed.sh "$RPC_URL" 4h1rt2ic4AXwG7p3Qqhw57EMDD4c3tLYb5J3QstGA2p5 --display_summary
-./get_accounts_from_seed.sh "$RPC_URL" 3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB --display_summary
+  echo === Community Stake Accounts ===
+  ./get_accounts_from_seed.sh "$RPC_URL" BzuqQFnu7oNUeok9ZoJezpqu2vZJU7XR1PxVLkk6wwUD --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" FwMbkDZUb78aiMWhZY4BEroAcqmnrXZV77nwrg71C57d --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 4h1rt2ic4AXwG7p3Qqhw57EMDD4c3tLYb5J3QstGA2p5 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB --display_summary
+) | tee accounts_owned_by.txt
+
+(
+  set -x
+  gsutil -m cp accounts_owned_by* gs://"$STORAGE_BUCKET"
+)
 
 echo ==========================================================
 echo Success
