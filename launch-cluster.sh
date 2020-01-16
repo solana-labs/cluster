@@ -10,8 +10,8 @@ set -e
 cd "$(dirname "$0")"
 source env.sh
 
-RELEASE_CHANNEL_OR_TAG=beta
-#RELEASE_CHANNEL_OR_TAG=0.22.3
+#RELEASE_CHANNEL_OR_TAG=beta
+RELEASE_CHANNEL_OR_TAG=0.22.3
 
 usage() {
   exitcode=0
