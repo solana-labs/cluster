@@ -147,7 +147,7 @@ echo ==========================================================
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    ${PRODUCTION:+ --address mainnet-solana-com}
+    ${PRODUCTION:+ --address cluster-solana-com}
 )
 
 echo ==========================================================
@@ -162,7 +162,7 @@ echo ==========================================================
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    ${PRODUCTION:+ --address api-mainnet-solana-com}
+    ${PRODUCTION:+ --address api-cluster-solana-com}
 )
 
 echo ==========================================================
@@ -208,10 +208,8 @@ echo ==========================================================
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
 )
 
-#ENTRYPOINT=mainnet.solana.com
-#RPC=api.mainnet.solana.com
-ENTRYPOINT=34.83.130.52
-RPC=34.82.79.31
+ENTRYPOINT=cluster.solana.com
+RPC=api.cluster.solana.com
 
 if [[ -n $INSTANCE_PREFIX ]]; then
   ENTRYPOINT=$(gcloud --project "$PROJECT" compute instances list \

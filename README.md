@@ -8,14 +8,14 @@ is the same across all nodes, `solanad`.
 The ledger is stored in /home/solanad/ledger
 
 ## Cluster Entrypoint Node
-* ~~DNS: mainnet.solana.com~~
-* Static IP: 34.83.130.52
+* DNS: cluster.solana.com
+* Static IP: 35.227.139.150
 * GCE Instance Name: cluster-entrypoint
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
 * Machine type: n1-standard-1
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh cluster-entrypoint`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-entrypoint`
 
 ## Bootstrap Leader Node
 * DNS: none
@@ -25,17 +25,17 @@ The ledger is stored in /home/solanad/ledger
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh cluster-bootstrap-leader`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-bootstrap-leader`
 
 ## RPC Node
-* ~~DNS: api.mainnet.solana.com~~
-* Static IP: 34.82.79.31
+* DNS: api.cluster.solana.com
+* Static IP: 35.197.59.229
 * GCE Resource Name: cluster-api
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh cluster-api`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-api`
 
 ## Warehouse Node
 * DNS: none
@@ -45,7 +45,7 @@ The ledger is stored in /home/solanad/ledger
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh cluster-warehouse`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-warehouse`
 
 ## Watchtower Node
 * DNS: none
@@ -55,7 +55,7 @@ The ledger is stored in /home/solanad/ledger
 * Boot disk: Standard disk, 200GB
 * Machine type: n1-standard-1
 * Region: us-west-1
-* ssh: `gcloud --project solana-mainnet compute ssh cluster-watchtower`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-watchtower`
 
 # Metrics
 The following metrics configuration is used in production:
@@ -88,7 +88,7 @@ When done run `./delete-cluster.sh` to delete the instances.
 
 ## Launch *THE* cluster
 Same as launching a development cluster except:
-1. You need access to the `solana-mainnet` GCE project
+1. You need access to the `solana-cluster` GCE project
 1. `SOLANA_METRICS_CONFIG` is automatically configured
 1. `export PRODUCTION=1` before running `./launch-cluster.sh`
 

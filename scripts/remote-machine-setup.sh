@@ -135,7 +135,7 @@ if [[ -r /letsencrypt.tgz ]]; then
 fi
 
 certbot certonly \
-  --standalone -d "api.mainnet.solana.com" \
+  --standalone -d "api.cluster.solana.com" \
   --non-interactive \
   --agree-tos \
   --email maintainers@solana.com \
@@ -147,8 +147,8 @@ ls -l /letsencrypt.tgz
 
 if [[ -z $maybeDryRun ]]; then
   cat \
-    /etc/letsencrypt/live/api.mainnet.solana.com/fullchain.pem \
-    /etc/letsencrypt/live/api.mainnet.solana.com/privkey.pem \
+    /etc/letsencrypt/live/api.cluster.solana.com/fullchain.pem \
+    /etc/letsencrypt/live/api.cluster.solana.com/privkey.pem \
     | tee /etc/ssl/private/haproxy.pem
 fi
 
