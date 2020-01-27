@@ -17,15 +17,15 @@ The ledger is stored in /home/solanad/ledger
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-entrypoint`
 
-## Bootstrap Leader Node
+## Bootstrap Validator Node
 * DNS: none
 * Static IP: none
-* GCE Instance Name: cluster-bootstrap-leader
+* GCE Instance Name: cluster-bootstrap-validator
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
-* ssh: `gcloud --project solana-cluster compute ssh cluster-bootstrap-leader`
+* ssh: `gcloud --project solana-cluster compute ssh cluster-bootstrap-validator`
 
 ## RPC Node
 * DNS: api.cluster.solana.com
