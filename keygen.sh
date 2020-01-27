@@ -7,12 +7,12 @@ keygen() {
 
   solana-keygen --version
 
-  test -f bootstrap-leader-identity.json ||
-    (set -x; solana-keygen $cmd --outfile bootstrap-leader-identity.json)
-  test -f bootstrap-leader-vote-account.json ||
-    (set -x; solana-keygen $cmd --outfile bootstrap-leader-vote-account.json)
-  test -f bootstrap-leader-stake-account.json ||
-    (set -x; solana-keygen $cmd --outfile bootstrap-leader-stake-account.json)
+  test -f bootstrap-validator-identity.json ||
+    (set -x; solana-keygen $cmd --outfile bootstrap-validator-identity.json)
+  test -f bootstrap-validator-vote-account.json ||
+    (set -x; solana-keygen $cmd --outfile bootstrap-validator-vote-account.json)
+  test -f bootstrap-validator-stake-account.json ||
+    (set -x; solana-keygen $cmd --outfile bootstrap-validator-stake-account.json)
 }
 
 case "$1" in

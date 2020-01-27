@@ -43,14 +43,14 @@ while [[ -n $1 ]]; do
 done
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}cluster-entrypoint
-BOOTSTRAP_LEADER_INSTANCE=${INSTANCE_PREFIX}cluster-bootstrap-leader
+BOOTSTRAP_VALIDATOR_INSTANCE=${INSTANCE_PREFIX}cluster-bootstrap-validator
 API_INSTANCE=${INSTANCE_PREFIX}cluster-api
 WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}cluster-warehouse
 WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}cluster-watchtower
 
 INSTANCES="
   $ENTRYPOINT_INSTANCE
-  $BOOTSTRAP_LEADER_INSTANCE
+  $BOOTSTRAP_VALIDATOR_INSTANCE
   $API_INSTANCE
   $WAREHOUSE_INSTANCE
   $WATCHTOWER_INSTANCE
@@ -166,12 +166,12 @@ echo ==========================================================
 )
 
 echo ==========================================================
-echo "Creating $BOOTSTRAP_LEADER_INSTANCE"
+echo "Creating $BOOTSTRAP_VALIDATOR_INSTANCE"
 echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute instances create \
-    "$BOOTSTRAP_LEADER_INSTANCE" \
+    "$BOOTSTRAP_VALIDATOR_INSTANCE" \
     --zone "$ZONE" \
     --machine-type n1-standard-8 \
     --boot-disk-size=2TB \
@@ -243,18 +243,18 @@ echo ==========================================================
 )
 
 echo ==========================================================
-echo "Transferring files to $BOOTSTRAP_LEADER_INSTANCE"
+echo "Transferring files to $BOOTSTRAP_VALIDATOR_INSTANCE"
 echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    bootstrap-leader-identity.json \
-    bootstrap-leader-stake-account.json \
-    bootstrap-leader-vote-account.json \
-    bootstrap-leader.service \
+    bootstrap-validator-identity.json \
+    bootstrap-validator-stake-account.json \
+    bootstrap-validator-vote-account.json \
+    bootstrap-validator.service \
     ledger \
     scripts/* \
-    "$BOOTSTRAP_LEADER_INSTANCE":
+    "$BOOTSTRAP_VALIDATOR_INSTANCE":
 )
 
 echo ==========================================================
@@ -318,7 +318,7 @@ for instance in $INSTANCES; do
     $ENTRYPOINT_INSTANCE)
       nodeType=entrypoint
       ;;
-    $BOOTSTRAP_LEADER_INSTANCE)
+    $BOOTSTRAP_VALIDATOR_INSTANCE)
       nodeType=bootstrap
       ;;
     *)
