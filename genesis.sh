@@ -30,12 +30,12 @@ default_arg() {
 }
 
 args=(
-  --bootstrap-leader-pubkey bootstrap-leader-identity.json
-  --bootstrap-vote-pubkey bootstrap-leader-vote-account.json
-  --bootstrap-stake-pubkey bootstrap-leader-stake-account.json
+  --bootstrap-validator-pubkey bootstrap-validator-identity.json
+  --bootstrap-vote-pubkey bootstrap-validator-vote-account.json
+  --bootstrap-stake-pubkey bootstrap-validator-stake-account.json
   --bootstrap-stake-authorized-pubkey 3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
-  --bootstrap-leader-lamports             1000000000 # 1 SOL for voting
-  --bootstrap-leader-stake-lamports  500000000000000 # 500,000 thousand SOL
+  --bootstrap-validator-lamports             1000000000 # 1 SOL for voting
+  --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                         # Burn it all!
   --target-lamports-per-signature 0                  # No transaction fees
   --ledger ledger
