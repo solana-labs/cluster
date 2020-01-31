@@ -90,7 +90,7 @@ When done run `./delete-cluster.sh` to delete the instances.
 Same as launching a development cluster except:
 1. You need access to the `solana-cluster` GCE project
 1. `SOLANA_METRICS_CONFIG` is automatically configured
-1. `export PRODUCTION=1` before running `./launch-cluster.sh`
+1. `export CLUSTER=cluster` before running `./launch-cluster.sh`
 
 The `./launch-cluster.sh` script programmatically creates and configures the
 cluster instances.

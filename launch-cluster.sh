@@ -2,16 +2,10 @@
 #
 # Creates and configures the GCE machines used for a cluster.
 #
-# By default development machines will be created under your username.  To
-# deploy the real machines set the PRODUCTION environment variable.
-#
 set -e
 
 cd "$(dirname "$0")"
 source env.sh
-
-#RELEASE_CHANNEL_OR_TAG=beta
-RELEASE_CHANNEL_OR_TAG=0.22.3
 
 usage() {
   exitcode=0
@@ -23,7 +17,7 @@ usage() {
 usage: $0 [options]
 
 Launch a cluster
-   --release RELEASE_CHANNEL_OR_TAG          - Which release channel or tag to deploy (default: $RELEASE_CHANNEL_OR_TAG).
+   --release RELEASE_CHANNEL_OR_TAG    - Which release channel or tag to deploy (default: $RELEASE_CHANNEL_OR_TAG).
 
 EOF
   exit $exitcode
@@ -42,11 +36,11 @@ while [[ -n $1 ]]; do
   fi
 done
 
-ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}cluster-entrypoint
-BOOTSTRAP_VALIDATOR_INSTANCE=${INSTANCE_PREFIX}cluster-bootstrap-validator
-API_INSTANCE=${INSTANCE_PREFIX}cluster-api
-WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}cluster-warehouse
-WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}cluster-watchtower
+ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint
+BOOTSTRAP_VALIDATOR_INSTANCE=${INSTANCE_PREFIX}bootstrap-validator
+API_INSTANCE=${INSTANCE_PREFIX}api
+WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}warehouse
+WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}watchtower
 
 INSTANCES="
   $ENTRYPOINT_INSTANCE
@@ -56,15 +50,20 @@ INSTANCES="
   $WATCHTOWER_INSTANCE
 "
 
+LETSENCRYPT_TGZ=
+if [[ -n $API_DNS_NAME ]]; then
+  LETSENCRYPT_TGZ="letsencrypt-$API_DNS_NAME.tgz"
+fi
+
 if [[ $(basename "$0" .sh) = delete-cluster ]]; then
-  if [[ -n $PRODUCTION ]]; then
+  if [[ -n $API_DNS_NAME ]]; then
     echo "Attempting to recover TLS certificate before deleting instances"
     (
       set -x
-      gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$API_INSTANCE":/letsencrypt.tgz .
+      gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$API_INSTANCE":/letsencrypt.tgz "$LETSENCRYPT_TGZ"
     ) || true
-    if [[ -f letsencrypt.tgz ]]; then
-      echo "Warning: ensure you don't delete letsencrypt.tgz"
+    if [[ -f "$LETSENCRYPT_TGZ" ]]; then
+      echo "Warning: ensure you don't delete $LETSENCRYPT_TGZ"
     fi
   fi
 
@@ -82,8 +81,8 @@ fi
   solana --version
 )
 
-if [[ ! -d ledger ]]; then
-  echo "Error: ledger/ directory does not exist"
+if [[ ! -d "$CLUSTER"/ledger ]]; then
+  echo "Error: "$CLUSTER"/ledger/ directory does not exist"
   exit 1
 fi
 
@@ -96,26 +95,25 @@ for instance in $INSTANCES; do
   fi
 done
 
-GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger ledger)"
+GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger "$CLUSTER"/ledger)"
 
-if [[ -n $PRODUCTION ]]; then
-  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+if [[ -z $SOLANA_METRICS_CONFIG ]]; then
+  echo Note: SOLANA_METRICS_CONFIG is not configured
+fi
 
-  # Create the production bucket if it doesn't already exist but do not remove old
-  # data, if any, to avoid accidental data loss.
-  gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://$"STORAGE_BUCKET" || true
-else
-  if [[ -z $SOLANA_METRICS_CONFIG ]]; then
-    echo Note: SOLANA_METRICS_CONFIG is not configured
-  fi
+if [[ -n $RECREATE_STORAGE_BUCKET ]]; then
   # Re-create the dev bucket on each launch
   gsutil rm -r gs://"$STORAGE_BUCKET" || true
   gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET"
+else
+  # Create the production bucket if it doesn't already exist but do not remove old
+  # data, if any, to avoid accidental data loss.
+  gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET" || true
 fi
 
 (
   set -x
-  gsutil -m cp -r ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
+  gsutil -m cp -r "$CLUSTER"/ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
 )
 
 (
@@ -125,20 +123,19 @@ fi
   fi
   echo STORAGE_BUCKET="$STORAGE_BUCKET"
   echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-  echo PRODUCTION="$PRODUCTION"
-) | tee scripts/service-env.sh
-
-if [[ -n $PRODUCTION ]]; then
-  # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a
-  # sanity failure
-  echo "DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec" >> scripts/service-env.sh
-fi
-
+  echo ARCHIVE_INTERVAL_MINUTES="$ARCHIVE_INTERVAL_MINUTES"
+  echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
+) | tee "$CLUSTER"/service-env.sh
 
 echo ==========================================================
 echo "Creating $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
+  maybe_address=
+  if [[ -n $ENTRYPOINT_DNS_NAME ]]; then
+    maybe_address="--address $(echo $ENTRYPOINT_DNS_NAME | tr . -)"
+  fi
+
   set -x
   gcloud --project "$PROJECT" compute instances create \
     "$ENTRYPOINT_INSTANCE" \
@@ -147,13 +144,18 @@ echo ==========================================================
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    ${PRODUCTION:+ --address cluster-solana-com}
+    ${maybe_address}
 )
 
 echo ==========================================================
 echo "Creating $API_INSTANCE"
 echo ==========================================================
 (
+  maybe_address=
+  if [[ -n $API_DNS_NAME ]]; then
+    maybe_address="--address $(echo $API_DNS_NAME | tr . -)"
+  fi
+
   set -x
   gcloud --project "$PROJECT" compute instances create \
     "$API_INSTANCE" \
@@ -162,7 +164,7 @@ echo ==========================================================
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    ${PRODUCTION:+ --address api-cluster-solana-com}
+    ${maybe_address}
 )
 
 echo ==========================================================
@@ -208,18 +210,19 @@ echo ==========================================================
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
 )
 
-ENTRYPOINT=cluster.solana.com
-RPC=api.cluster.solana.com
-
-if [[ -n $INSTANCE_PREFIX ]]; then
+ENTRYPOINT=$ENTRYPOINT_DNS_NAME
+RPC=$API_DNS_NAME
+if [[ -z $ENTRYPOINT ]]; then
   ENTRYPOINT=$(gcloud --project "$PROJECT" compute instances list \
       --filter name="$ENTRYPOINT_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+fi
+if [[ -z $RPC ]]; then
   RPC=$(gcloud --project "$PROJECT" compute instances list \
       --filter name="$API_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 fi
 RPC_URL="http://$RPC/"
-echo "RPC_URL=$RPC_URL" >> scripts/service-env.sh
-echo "ENTRYPOINT=$ENTRYPOINT" >> scripts/service-env.sh
+echo "RPC_URL=$RPC_URL" >> "$CLUSTER"/service-env.sh
+echo "ENTRYPOINT=$ENTRYPOINT" >> "$CLUSTER"/service-env.sh
 
 echo ==========================================================
 echo Waiting for instances to boot
@@ -237,6 +240,7 @@ echo "Transferring files to $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+    "$CLUSTER"/service-env.sh \
     scripts/* \
     entrypoint.service \
     "$ENTRYPOINT_INSTANCE":
@@ -248,12 +252,13 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    bootstrap-validator-identity.json \
-    bootstrap-validator-stake-account.json \
-    bootstrap-validator-vote-account.json \
-    bootstrap-validator.service \
-    ledger \
+    "$CLUSTER"/bootstrap-validator-identity.json \
+    "$CLUSTER"/bootstrap-validator-stake-account.json \
+    "$CLUSTER"/bootstrap-validator-vote-account.json \
+    "$CLUSTER"/service-env.sh \
+    "$CLUSTER"/ledger \
     scripts/* \
+    bootstrap-validator.service \
     "$BOOTSTRAP_VALIDATOR_INSTANCE":
 )
 
@@ -263,7 +268,8 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    ledger \
+    "$CLUSTER"/ledger \
+    "$CLUSTER"/service-env.sh \
     scripts/* \
     warehouse.service \
     "$WAREHOUSE_INSTANCE":
@@ -274,6 +280,7 @@ echo "Transferring files to $WATCHTOWER_INSTANCE"
 echo ==========================================================
 (
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+    "$CLUSTER"/service-env.sh \
     scripts/* \
     watchtower.service \
     "$WATCHTOWER_INSTANCE":
@@ -286,14 +293,16 @@ echo ==========================================================
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
     api.service \
-    ledger \
+    "$CLUSTER"/ledger \
+    "$CLUSTER"/service-env.sh \
     scripts/* \
     "$API_INSTANCE":
 )
-if [[ -n $PRODUCTION && -f letsencrypt.tgz ]]; then
+
+if [[ -n $LETSENCRYPT_TGZ ]] && [[ -f $LETSENCRYPT_TGZ ]]; then
   (
     set -x
-    gcloud --project "$PROJECT" compute scp --zone "$ZONE" letsencrypt.tgz "$API_INSTANCE":~/letsencrypt.tgz
+    gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$LETSENCRYPT_TGZ" "$API_INSTANCE":~/letsencrypt.tgz
     gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$API_INSTANCE" -- sudo mv letsencrypt.tgz /
   )
 fi
@@ -305,9 +314,11 @@ for instance in $INSTANCES; do
   echo ==========================================================
   (
     nodeType=
+    dnsName=
     case $instance in
     $API_INSTANCE)
       nodeType=api
+      dnsName="$API_DNS_NAME"
       ;;
     $WAREHOUSE_INSTANCE)
       nodeType=warehouse
@@ -327,13 +338,9 @@ for instance in $INSTANCES; do
       ;;
     esac
 
-    if [[ -n $PRODUCTION ]]; then
-      nodeType="${nodeType}production"
-    fi
-
     set -x
     gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$instance" -- \
-      bash remote-machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType"
+      bash remote-machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType" "$dnsName"
   )
 done
 

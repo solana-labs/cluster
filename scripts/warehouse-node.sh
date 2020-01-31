@@ -18,6 +18,11 @@ if [[ -z $EXPECTED_GENESIS_HASH ]]; then
   exit 1
 fi
 
+if [[ -z $ARCHIVE_INTERVAL_MINUTES ]]; then
+  echo ARCHIVE_INTERVAL_MINUTES environment variable not defined
+  exit 1
+fi
+
 if [[ -z $STORAGE_BUCKET ]]; then
   echo STORAGE_BUCKET environment variable not defined
   exit 1
@@ -47,12 +52,6 @@ args=(
   --wait-for-supermajority
 )
 
-if [[ -z $PRODUCTION ]]; then
-  archive_interval_minutes=10
-else
-  archive_interval_minutes=1440 # 1 day
-fi
-
 pid=
 kill_node() {
   # Note: do not echo anything from this function to ensure $pid is actually
@@ -78,7 +77,7 @@ while true; do
   $metricsWriteDatapoint "infra-warehouse-node event=\"validator-started\""
   echo "pid: $pid"
 
-  minutes_to_next_ledger_archive=$archive_interval_minutes
+  minutes_to_next_ledger_archive=$ARCHIVE_INTERVAL_MINUTES
   caught_up=false
   while true; do
     if [[ -z $pid ]] || ! kill -0 "$pid"; then

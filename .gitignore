@@ -1,8 +1,7 @@
-/bootstrap-leader-identity.json
-/bootstrap-leader-stake-account.json
-/bootstrap-leader-vote-account.json
-/ledger/
+/cluster/
+/tour-de-sol/
 /scripts/service-env.sh
 /solana-release*
 /.idea
 /accounts_owned_by*
+/testnet-keypairs

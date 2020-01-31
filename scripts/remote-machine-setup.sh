@@ -8,15 +8,17 @@ cd ~
 
 SOLANA_VERSION=$1
 NODE_TYPE=$2
+DNS_NAME=$3
 
 test -n "$SOLANA_VERSION"
+test -n "$NODE_TYPE"
 
 # Setup timezone
 sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
 # Install minimal tools
 sudo apt-get update
-sudo apt-get --assume-yes install vim software-properties-common
+sudo apt-get --assume-yes install vim software-properties-common psmisc
 
 # Create solanad user
 sudo adduser solanad --gecos "" --disabled-password --quiet
@@ -57,9 +59,19 @@ EOF
 } | sudo tee /solana-update.sh
 sudo chmod +x /solana-update.sh
 
-if [[ $NODE_TYPE != api && $NODE_TYPE != apiproduction ]]; then
-  exit 0
-fi
+[[ $NODE_TYPE = api ]] || exit 0
+
+# Install blockexplorer dependencies
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs screen
+sudo /home/solanad/install-redis.sh
+
+sudo --login -u solanad -- bash -c "
+  set -ex;
+  echo '@reboot /home/solanad/run-blockexplorer.sh' | crontab -;
+  crontab -l;
+"
+screen -dmS blockexplorer sudo --login -u solanad /home/solanad/run-blockexplorer.sh
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
@@ -88,6 +100,7 @@ frontend http
 
 frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
+    bind *:8443 ssl crt /etc/ssl/private/haproxy.pem
     default_backend jsonrpc
     stats enable
     stats hide-version
@@ -99,6 +112,7 @@ frontend https
 
 frontend wss
     bind *:8901 ssl crt /etc/ssl/private/haproxy.pem
+    bind *:8444 ssl crt /etc/ssl/private/haproxy.pem
     default_backend pubsub
 
 backend jsonrpc
@@ -112,6 +126,16 @@ backend pubsub
 backend letsencrypt
     mode http
     server letsencrypt 127.0.0.1:4444
+
+
+frontend blockexplorer_api_wss
+    bind *:3443 ssl crt /etc/ssl/private/haproxy.pem
+    default_backend blockexplorer_api
+
+backend blockexplorer_api
+    mode http
+    server blockexplorer 127.0.0.1:3001
+
 EOF
 } | sudo tee -a /etc/haproxy/haproxy.cfg
 
@@ -119,11 +143,15 @@ sudo haproxy -c -f /etc/haproxy/haproxy.cfg
 sudo systemctl restart haproxy
 sudo systemctl --no-pager status haproxy
 
+
+# Skip letsencrypt TLS setup if no DNS name
+[[ -n $DNS_NAME ]] || exit 0
+
 {
-  cat <<'EOF'
+  cat <<EOF
 #!/usr/bin/env bash
 
-if [[ $(id -u) != 0 ]]; then
+if [[ \$(id -u) != 0 ]]; then
   echo Not root
   exit 1
 fi
@@ -135,7 +163,7 @@ if [[ -r /letsencrypt.tgz ]]; then
 fi
 
 certbot certonly \
-  --standalone -d "api.cluster.solana.com" \
+  --standalone -d $DNS_NAME \
   --non-interactive \
   --agree-tos \
   --email maintainers@solana.com \
@@ -145,10 +173,10 @@ tar zcf /letsencrypt.new.tgz /etc/letsencrypt
 mv -f /letsencrypt.new.tgz /letsencrypt.tgz
 ls -l /letsencrypt.tgz
 
-if [[ -z $maybeDryRun ]]; then
+if [[ -z \$maybeDryRun ]]; then
   cat \
-    /etc/letsencrypt/live/api.cluster.solana.com/fullchain.pem \
-    /etc/letsencrypt/live/api.cluster.solana.com/privkey.pem \
+    /etc/letsencrypt/live/$DNS_NAME/fullchain.pem \
+    /etc/letsencrypt/live/$DNS_NAME/privkey.pem \
     | tee /etc/ssl/private/haproxy.pem
 fi
 
@@ -159,17 +187,14 @@ EOF
 sudo chmod +x /solana-renew-cert.sh
 
 
-if [[ $NODE_TYPE = apiproduction ]]; then
-  sudo /solana-renew-cert.sh
-  # TODO: By default, LetsEncrypt creates a CRON entry at /etc/cron.d/certbot.
-  # The entry runs twice a day (by default, LetsEncrypt will only renew the
-  # certificate if its expiring within 30 days).
-  #
-  # What I like to do is to run a bash script that's run monthly, and to force a renewal of the certificate every time.
-  #
-  # We can start by editing the CRON file to run a script monthly:
-  # "0 0 1 * * root bash /opt/update-certs.sh"
-fi
-
+sudo /solana-renew-cert.sh
+# TODO: By default, LetsEncrypt creates a CRON entry at /etc/cron.d/certbot.
+# The entry runs twice a day (by default, LetsEncrypt will only renew the
+# certificate if its expiring within 30 days).
+#
+# What I like to do is to run a bash script that's run monthly, and to force a renewal of the certificate every time.
+#
+# We can start by editing the CRON file to run a script monthly:
+# "0 0 1 * * root bash /opt/update-certs.sh"
 
 exit 0
