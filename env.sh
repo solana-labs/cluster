@@ -1,6 +1,7 @@
 # source this file
 
-RELEASE_CHANNEL_OR_TAG=beta
+#RELEASE_CHANNEL_OR_TAG=beta
+RELEASE_CHANNEL_OR_TAG=0.23.2
 
 REGION=us-west1
 ZONE=${REGION}-b
