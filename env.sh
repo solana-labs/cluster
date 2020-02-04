@@ -29,7 +29,6 @@ tour-de-sol)
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET=1
-  TESTNET_KEYPAIRS=1
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)
@@ -43,6 +42,8 @@ if [[ -z $PRODUCTION ]]; then
   INSTANCE_PREFIX="`whoami`-${PROJECT}-"
   STORAGE_BUCKET="`whoami`-$STORAGE_BUCKET"
   PROJECT=principal-lane-200702 # Jump to common development project
+
+  TESTNET_KEYPAIRS=1            # Never use testnet keypairs in production
 
   API_DNS_NAME=                 # Ditch static IPs
   ENTRYPOINT_DNS_NAME=
