@@ -293,6 +293,7 @@ echo ==========================================================
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
     api.service \
+    "$CLUSTER"/api-identity.json \
     "$CLUSTER"/ledger \
     "$CLUSTER"/service-env.sh \
     scripts/* \

@@ -33,6 +33,9 @@ keygen() {
     test -f "$CLUSTER"/faucet.json ||
       (set -x; solana-keygen $cmd --outfile "$CLUSTER"/faucet.json)
   fi
+
+  test -f "$CLUSTER"/api-identity.json ||
+    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/api-identity.json)
 }
 
 case "$1" in
