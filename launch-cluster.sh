@@ -146,6 +146,7 @@ echo ==========================================================
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --min-cpu-platform "Intel Skylake" \
     ${maybe_address}
 )
 
@@ -166,6 +167,7 @@ echo ==========================================================
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --min-cpu-platform "Intel Skylake" \
     ${maybe_address}
 )
 
@@ -180,7 +182,9 @@ echo ==========================================================
     --machine-type n1-standard-8 \
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud
+    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --min-cpu-platform "Intel Skylake" \
+
 )
 
 echo ==========================================================
@@ -195,7 +199,9 @@ echo ==========================================================
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    --scopes=storage-rw
+    --min-cpu-platform "Intel Skylake" \
+    --scopes=storage-rw \
+
 )
 
 echo ==========================================================
@@ -210,6 +216,8 @@ echo ==========================================================
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --min-cpu-platform "Intel Skylake" \
+
 )
 
 ENTRYPOINT_HOST=$ENTRYPOINT_DNS_NAME
