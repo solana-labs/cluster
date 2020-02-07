@@ -212,10 +212,11 @@ echo ==========================================================
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
 )
 
-ENTRYPOINT=$ENTRYPOINT_DNS_NAME
+ENTRYPOINT_HOST=$ENTRYPOINT_DNS_NAME
+ENTRYPOINT_PORT=8001
 RPC=$API_DNS_NAME
-if [[ -z $ENTRYPOINT ]]; then
-  ENTRYPOINT=$(gcloud --project "$PROJECT" compute instances list \
+if [[ -z $ENTRYPOINT_HOST ]]; then
+  ENTRYPOINT_HOST=$(gcloud --project "$PROJECT" compute instances list \
       --filter name="$ENTRYPOINT_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 fi
 if [[ -z $RPC ]]; then
@@ -223,8 +224,14 @@ if [[ -z $RPC ]]; then
       --filter name="$API_INSTANCE" --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 fi
 RPC_URL="http://$RPC/"
-echo "RPC_URL=$RPC_URL" >> "$CLUSTER"/service-env.sh
-echo "ENTRYPOINT=$ENTRYPOINT" >> "$CLUSTER"/service-env.sh
+ENTRYPOINT="${ENTRYPOINT_HOST}:${ENTRYPOINT_PORT}"
+
+cat >> "$CLUSTER"/service-env.sh <<EOF
+RPC_URL=$RPC_URL
+ENTRYPOINT_HOST=$ENTRYPOINT_HOST
+ENTRYPOINT_PORT=$ENTRYPOINT_PORT
+ENTRYPOINT=$ENTRYPOINT
+EOF
 
 echo ==========================================================
 echo Waiting for instances to boot
@@ -350,7 +357,7 @@ done
 echo ==========================================================
 (
   set -x
-  solana-gossip spy --entrypoint "$ENTRYPOINT":8001 --timeout 10
+  solana-gossip spy --entrypoint "$ENTRYPOINT" --timeout 10
 )
 echo ==========================================================
 (

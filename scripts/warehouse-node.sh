@@ -44,7 +44,7 @@ ledger_dir="$here"/ledger
 
 args=(
   --dynamic-port-range 8001-8010
-  --entrypoint "$ENTRYPOINT":8001
+  --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --gossip-port 8001

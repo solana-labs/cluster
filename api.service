@@ -13,7 +13,7 @@ StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-validator \
   --dynamic-port-range 8001-8010 \
-  --entrypoint ${ENTRYPOINT}:8001 \
+  --entrypoint ${ENTRYPOINT} \
   --gossip-port 8001 \
   --ledger /home/solanad/ledger \
   --identity-keypair /home/solanad/api-identity.json \

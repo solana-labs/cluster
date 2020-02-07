@@ -11,7 +11,7 @@ User=solanad
 StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
 ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-gossip \
-  spy --gossip-port 8001 --gossip-host ${ENTRYPOINT}
+  spy --gossip-port ${ENTRYPOINT_PORT} --gossip-host ${ENTRYPOINT_HOST}
 
 [Install]
 WantedBy=multi-user.target
