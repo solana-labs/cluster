@@ -81,6 +81,3 @@ default_arg --creation-time "$(date --iso-8601=seconds)"
   set -x
   solana-genesis "${args[@]}"
 )
-du -ah "$CLUSTER"/ledger
-
-echo "Genesis hash: $(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger "$CLUSTER"/ledger)"

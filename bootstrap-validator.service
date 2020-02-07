@@ -17,13 +17,13 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --gossip-port 8001 \
   --identity-keypair /home/solanad/bootstrap-validator-identity.json \
   --ledger /home/solanad/ledger \
-  --limit-ledger-size \
+  --limit-ledger-size 500000 \
   --log - \
   --no-genesis-fetch \
   --rpc-port 8899 \
   --voting-keypair /home/solanad/bootstrap-validator-vote-account.json \
   --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
-  --wait-for-supermajority \
+  --expected-shred-version ${EXPECTED_SHRED_VERSION} \
 
 [Install]
 WantedBy=multi-user.target

@@ -17,13 +17,13 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --gossip-port 8001 \
   --ledger /home/solanad/ledger \
   --identity-keypair /home/solanad/api-identity.json \
-  --limit-ledger-size \
+  --limit-ledger-size 500000 \
   --log - \
   --no-genesis-fetch \
   --no-voting \
   --rpc-port 8899 \
   --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
-  --wait-for-supermajority \
+  --expected-shred-version ${EXPECTED_SHRED_VERSION} \
   --blockstream /tmp/solana-blockstream.sock \
 
 [Install]

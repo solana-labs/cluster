@@ -18,6 +18,11 @@ if [[ -z $EXPECTED_GENESIS_HASH ]]; then
   exit 1
 fi
 
+if [[ -z $EXPECTED_SHRED_VERSION ]]; then
+  echo EXPECTED_SHRED_VERSION environment variable not defined
+  exit 1
+fi
+
 if [[ -z $ARCHIVE_INTERVAL_MINUTES ]]; then
   echo ARCHIVE_INTERVAL_MINUTES environment variable not defined
   exit 1
@@ -41,15 +46,14 @@ args=(
   --dynamic-port-range 8001-8010
   --entrypoint "$ENTRYPOINT":8001
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
+  --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --gossip-port 8001
   --identity-keypair "$here"/identity.json
   --ledger "$ledger_dir"
-  --limit-ledger-size
   --log -
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
-  --wait-for-supermajority
 )
 
 pid=

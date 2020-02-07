@@ -186,5 +186,5 @@ $ solana-validator \
   --entrypoint 34.83.130.52:8001
   --limit-ledger-size \
   --expected-genesis-hash $EXPECTED_GENESIS_HASH \
-  --wait-for-supermajority
+  --expected-shred-version ${EXPECTED_SHRED_VERSION} \
 ```

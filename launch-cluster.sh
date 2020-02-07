@@ -95,7 +95,8 @@ for instance in $INSTANCES; do
   fi
 done
 
-GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool print-genesis-hash --ledger "$CLUSTER"/ledger)"
+GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool genesis-hash --ledger "$CLUSTER"/ledger)"
+SHRED_VERSION="$(RUST_LOG=none solana-ledger-tool shred-version --ledger "$CLUSTER"/ledger)"
 
 if [[ -z $SOLANA_METRICS_CONFIG ]]; then
   echo Note: SOLANA_METRICS_CONFIG is not configured
@@ -118,6 +119,7 @@ fi
 
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
+  echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
     echo SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
   fi
