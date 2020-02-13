@@ -24,6 +24,7 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --rpc-port 8899 \
   --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
   --expected-shred-version ${EXPECTED_SHRED_VERSION} \
+  --enable-rpc-get-confirmed-block \
   --blockstream /tmp/solana-blockstream.sock \
 
 [Install]
