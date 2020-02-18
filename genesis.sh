@@ -39,8 +39,7 @@ args=(
   --bootstrap-validator-lamports             1000000000 # 1 SOL for voting
   --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                         # Burn it all!
-  --target-lamports-per-signature 0                  # No transaction fees
-  --target-signatures-per-slot 0                     # No transaction fees
+  --fee-burn-percentage 100                          # Burn it all!
   --ledger "$CLUSTER"/ledger
 )
 
