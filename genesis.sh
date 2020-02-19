@@ -56,7 +56,9 @@ if [[ -n $EXTERNAL_ACCOUNTS_FILE_URL ]]; then
     set -x
     wget "$EXTERNAL_ACCOUNTS_FILE_URL" -O "$CLUSTER"/external-accounts.yml
   )
-  args+=(--primordial-accounts-file "$CLUSTER"/external-accounts.yml)
+fi
+if [[ -n $EXTERNAL_ACCOUNTS_FILE ]]; then
+  args+=(--primordial-accounts-file "$EXTERNAL_ACCOUNTS_FILE")
 fi
 
 while [[ -n $1 ]]; do
