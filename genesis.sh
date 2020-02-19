@@ -41,6 +41,7 @@ args=(
   --rent-burn-percentage 100                         # Burn it all!
   --fee-burn-percentage 100                          # Burn it all!
   --ledger "$CLUSTER"/ledger
+  --operating-mode "${OPERATING_MODE:?}"
 )
 
 if [[ -n $BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY ]]; then
