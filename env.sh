@@ -6,10 +6,6 @@ RELEASE_CHANNEL_OR_TAG=0.23.2
 REGION=us-west1
 ZONE=${REGION}-b
 
-if [[ -z $GRAFANA_API_TOKEN ]]; then
-  GRAFANA_API_TOKEN=eyJrIjoiTHJ4elY0b0VIeENMV3NUMEMwSXk5SHdQYnI3SjZCcTIiLCJuIjoiZ3JhZmNsaSIsImlkIjoyfQ==
-fi
-
 case $CLUSTER in
 cluster)
   echo "### Global Cluster ###"
