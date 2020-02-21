@@ -126,7 +126,9 @@ fi
   echo STORAGE_BUCKET="$STORAGE_BUCKET"
   echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
   echo ARCHIVE_INTERVAL_MINUTES="$ARCHIVE_INTERVAL_MINUTES"
-  echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
+  if [[ -n $DISCORD_WEBHOOK ]]; then
+    echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
+  fi
 ) | tee "$CLUSTER"/service-env.sh
 
 echo ==========================================================
