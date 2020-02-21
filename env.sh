@@ -10,8 +10,10 @@ case $CLUSTER in
 mainnet-beta)
   echo "### Mainnet Beta Cluster ###"
   PROJECT="solana-mainnet"
-  API_DNS_NAME=api-mainnet-solana-com
-  ENTRYPOINT_DNS_NAME=mainnet-solana-com
+  API_DNS_NAME=api.mainnet-beta.solana.com
+  API_ADDRESS_NAME=api-mainnet-solana-com
+  ENTRYPOINT_DNS_NAME=mainet-beta.solana.com
+  ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
   OPERATING_MODE=stable
@@ -19,20 +21,10 @@ mainnet-beta)
 slp)
   echo "### SLP Cluster ###"
   PROJECT="solana-mainnet"
-  API_DNS_NAME=api-mainnet-solana-com
-  ENTRYPOINT_DNS_NAME=mainnet-solana-com
-  BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
-  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
-  EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
-  OPERATING_MODE=stable
-  # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
-  # DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec
-  ;;
-cluster)
-  echo "### Global Cluster ###"
-  PROJECT="solana-cluster"
-  API_DNS_NAME=api.cluster.solana.com
-  ENTRYPOINT_DNS_NAME=cluster.solana.com
+  API_DNS_NAME=api.mainnet-beta.solana.com
+  API_ADDRESS_NAME=api-mainnet-solana-com
+  ENTRYPOINT_DNS_NAME=mainet-beta.solana.com
+  ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
   EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
@@ -43,7 +35,7 @@ cluster)
 tour-de-sol)
   echo "### TdS ###"
   PROJECT="tour-de-sol"
-  API_DNS_NAME=tds.solana.com
+  API_DNS_NAME=tds-solana-com|tds.solana.com
   ENTRYPOINT_DNS_NAME=
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml

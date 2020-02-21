@@ -134,8 +134,8 @@ echo "Creating $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
   maybe_address=
-  if [[ -n $ENTRYPOINT_DNS_NAME ]]; then
-    maybe_address="--address $(echo $ENTRYPOINT_DNS_NAME | tr . -)"
+  if [[ -n $ENTRYPOINT_ADDRESS_NAME ]]; then
+    maybe_address="--address $ENTRYPOINT_ADDRESS_NAME"
   fi
 
   set -x
@@ -155,8 +155,8 @@ echo "Creating $API_INSTANCE"
 echo ==========================================================
 (
   maybe_address=
-  if [[ -n $API_DNS_NAME ]]; then
-    maybe_address="--address $(echo $API_DNS_NAME | tr . -)"
+  if [[ -n $API_ADDRESS_NAME ]]; then
+    maybe_address="--address $(echo $API_ADDRESS_NAME | tr . -)"
   fi
 
   set -x
