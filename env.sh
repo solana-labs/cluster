@@ -1,12 +1,33 @@
 # source this file
 
-#RELEASE_CHANNEL_OR_TAG=beta
-RELEASE_CHANNEL_OR_TAG=0.23.4
+RELEASE_CHANNEL_OR_TAG=beta
+#RELEASE_CHANNEL_OR_TAG=0.23.6
 
 REGION=us-west1
 ZONE=${REGION}-b
 
 case $CLUSTER in
+mainnet-beta)
+  echo "### Mainnet Beta Cluster ###"
+  PROJECT="solana-mainnet"
+  API_DNS_NAME=api-mainnet-solana-com
+  ENTRYPOINT_DNS_NAME=mainnet-solana-com
+  BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
+  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+  OPERATING_MODE=stable
+  ;;
+slp)
+  echo "### SLP Cluster ###"
+  PROJECT="solana-mainnet"
+  API_DNS_NAME=api-mainnet-solana-com
+  ENTRYPOINT_DNS_NAME=mainnet-solana-com
+  BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
+  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
+  EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
+  OPERATING_MODE=stable
+  # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
+  # DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec
+  ;;
 cluster)
   echo "### Global Cluster ###"
   PROJECT="solana-cluster"
@@ -37,6 +58,8 @@ esac
 
 STORAGE_BUCKET="${PROJECT}-ledger"
 INSTANCE_PREFIX=
+ARCHIVE_INTERVAL_MINUTES=2880   # Two days
+
 if [[ -z $PRODUCTION ]]; then
   INSTANCE_PREFIX="`whoami`-${PROJECT}-"
   STORAGE_BUCKET="`whoami`-$STORAGE_BUCKET"
