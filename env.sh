@@ -57,10 +57,10 @@ if [[ -z $PRODUCTION ]]; then
   STORAGE_BUCKET="`whoami`-$STORAGE_BUCKET"
   PROJECT=principal-lane-200702 # Jump to common development project
 
-  TESTNET_KEYPAIRS=1            # Never use testnet keypairs in production
-
   API_DNS_NAME=                 # Ditch static IPs
+  API_ADDRESS_NAME=
   ENTRYPOINT_DNS_NAME=
+  ENTRYPOINT_ADDRESS_NAME=
 
   RECREATE_STORAGE_BUCKET=1     # Flush the ledger on restarts
   ARCHIVE_INTERVAL_MINUTES=10   # Archive faster for easier testing

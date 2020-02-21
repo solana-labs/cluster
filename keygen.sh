@@ -6,17 +6,6 @@ source env.sh
 
 mkdir -p "$CLUSTER"
 
-if [[ -n $TESTNET_KEYPAIRS ]]; then
-  if [[ ! -d testnet-keypairs ]]; then
-    (
-      set -x
-      git clone git@github.com:solana-labs/testnet-keypairs.git
-    )
-  fi
-  ln -sfT ../testnet-keypairs/faucet.json "$CLUSTER"/faucet.json
-  ln -sfT ../testnet-keypairs/bootstrap-validator-identity.json "$CLUSTER"/bootstrap-validator-identity.json
-fi
-
 keygen() {
   declare cmd=$@
 
