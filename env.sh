@@ -12,7 +12,7 @@ mainnet-beta)
   PROJECT="solana-mainnet"
   API_DNS_NAME=api.mainnet-beta.solana.com
   API_ADDRESS_NAME=api-mainnet-solana-com
-  ENTRYPOINT_DNS_NAME=mainet-beta.solana.com
+  ENTRYPOINT_DNS_NAME=mainnet-beta.solana.com
   ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
@@ -23,7 +23,7 @@ slp)
   PROJECT="solana-mainnet"
   API_DNS_NAME=api.mainnet-beta.solana.com
   API_ADDRESS_NAME=api-mainnet-solana-com
-  ENTRYPOINT_DNS_NAME=mainet-beta.solana.com
+  ENTRYPOINT_DNS_NAME=mainnet-beta.solana.com
   ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
