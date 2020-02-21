@@ -115,6 +115,7 @@ fi
 (
   set -x
   gsutil -m cp -r "$CLUSTER"/ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
+  gsutil -m cp -r "$CLUSTER"/*.json gs://"$STORAGE_BUCKET"
 )
 
 (
