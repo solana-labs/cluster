@@ -398,7 +398,7 @@ echo ==========================================================
   ./get_accounts_from_seed.sh "$RPC_URL" HbENu65qjWLEB5TrMouSSWLq9mbtGx2bvfhPjk2FpYek --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" C9CfFpmLDsQsz6wt7MrrZquNB5oS4QkpJkmDAiboVEZZ --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" 6ne6Rbag4FAnop1KNgVdM1SEHnJEysHSWyqvRpFrzaig --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 42yapY7Vrs5jqht9TCKZsPoyb4vDFYcPfRkqAP85NSAQ --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 4AcoZa1P8fF5XK21RJsiuMRZPEScbbWNc75oakRFHiBz --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" GTyawCMwt3kMb51AgDtfdp97mDot7jNwc8ifuS9qqANg --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" Fqxs9MhqjKuMq6YwjBG4ktEapuZQ3kj19mpuHLZKtkg9 --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" 9MYDzj7QuAX9QAK7da1GhzPB4gA3qbPNWsW3MMSZobru --display_summary
