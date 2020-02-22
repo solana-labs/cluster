@@ -36,7 +36,7 @@ args=(
   --bootstrap-validator-pubkey "$CLUSTER"/bootstrap-validator-identity.json
   --bootstrap-vote-pubkey "$CLUSTER"/bootstrap-validator-vote-account.json
   --bootstrap-stake-pubkey "$CLUSTER"/bootstrap-validator-stake-account.json
-  --bootstrap-validator-lamports             1000000000 # 1 SOL for voting
+  --bootstrap-validator-lamports           500000000000 # 500 SOL for voting
   --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                         # Burn it all!
   --fee-burn-percentage 100                          # Burn it all!
