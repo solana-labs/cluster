@@ -1,4 +1,5 @@
-/cluster/
+/slp/
+/mainnet-beta/
 /tour-de-sol/
 /scripts/service-env.sh
 /solana-release*
