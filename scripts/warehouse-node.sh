@@ -110,14 +110,16 @@ while true; do
       continue
     fi
 
-    if [[ ! -f "$ledger_dir"/snapshot.tar.bz2 ]]; then
+    latest_snapshot="$(ls "$ledger_dir"/snapshot-*.tar.bz2 | sort | tail -n1)"
+
+    if [[ ! -f "$latest_snapshot" ]]; then
       echo "Validator has not produced a snapshot yet"
       $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"snapshot-missing\""
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
-    if [[ -d "$last_ledger_dir" ]] && diff -q "$ledger_dir"/snapshot.tar.bz2 "$last_ledger_dir/snapshot.tar.bz2"; then
+    if [[ -d "$last_ledger_dir" ]] && diff -q "$latest_snapshot" "$last_ledger_dir/snapshot.tar.bz2"; then
       echo "Validator has not produced a new snapshot yet"
       $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"stale-snapshot\""
       minutes_to_next_ledger_archive=1 # try again later
@@ -145,7 +147,8 @@ while true; do
     last_ledger_dir="$ledger_dir$timestamp"
     mkdir "$last_ledger_dir"
     mv "$ledger_dir"/rocksdb "$last_ledger_dir"
-    ln "$ledger_dir"/snapshot.tar.bz2 "$last_ledger_dir"/snapshot.tar.bz2
+    ln -sf "$latest_snapshot "$last_ledger_dir"/snapshot.tar.bz2
+    ln "$latest_snapshot "$last_ledger_dir"/
 
     SECONDS=
     while ! gsutil -m rsync -r "$last_ledger_dir" gs://"$STORAGE_BUCKET"/"$timestamp"; do
