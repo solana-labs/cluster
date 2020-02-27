@@ -166,7 +166,7 @@ echo ==========================================================
   gcloud --project "$PROJECT" compute instances create \
     "$API_INSTANCE" \
     --zone "$ZONE" \
-    --machine-type n1-standard-8 \
+    --machine-type n1-standard-16 \
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
