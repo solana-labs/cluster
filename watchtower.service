@@ -4,6 +4,7 @@ After=network.target
 StartLimitIntervalSec=0
 
 [Service]
+WorkingDirectory=/home/solanad
 EnvironmentFile=/home/solanad/service-env.sh
 Type=simple
 Restart=always
