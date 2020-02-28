@@ -27,6 +27,8 @@ ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-va
   --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
   --expected-shred-version ${EXPECTED_SHRED_VERSION} \
   --blockstream /tmp/solana-blockstream.sock \
+  --skip-poh-verify  \
+  --dev-no-sigverify \
 
 [Install]
 WantedBy=multi-user.target
