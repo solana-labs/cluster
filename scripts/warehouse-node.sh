@@ -50,10 +50,12 @@ args=(
   --gossip-port 8001
   --identity-keypair "$here"/identity.json
   --ledger "$ledger_dir"
-  --log -
+  --log "$here"/validator.log
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
+  --skip-poh-verify
+  --dev-no-sigverify
 )
 
 pid=
@@ -90,7 +92,7 @@ while true; do
     fi
 
     if ! $caught_up; then
-      if ! solana catchup --url "$RPC_URL" "$here"/identity.json; then
+      if ! timeout 10m solana catchup --url "$RPC_URL" "$here"/identity.json; then
         echo "catchup failed..."
         sleep 5
         continue
@@ -111,7 +113,7 @@ while true; do
     fi
 
     latest_snapshot="$(ls "$ledger_dir"/snapshot-*.tar.bz2 | sort | tail -n1)"
-
+    echo "Latest snapshot: $latest_snapshot"
     if [[ ! -f "$latest_snapshot" ]]; then
       echo "Validator has not produced a snapshot yet"
       $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"snapshot-missing\""
