@@ -15,7 +15,7 @@ mainnet-beta)
   ENTRYPOINT_DNS_NAME=mainnet-beta.solana.com
   ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
-  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=mainnet-beta"
+  [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=mainnet-beta"
   OPERATING_MODE=stable
   ;;
 slp)
@@ -26,7 +26,7 @@ slp)
   ENTRYPOINT_DNS_NAME=mainnet-beta.solana.com
   ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
-  SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
+  [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
   EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
   OPERATING_MODE=stable
   # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
