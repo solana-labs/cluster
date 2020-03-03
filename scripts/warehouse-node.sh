@@ -149,8 +149,8 @@ while true; do
     last_ledger_dir="$ledger_dir$timestamp"
     mkdir "$last_ledger_dir"
     mv "$ledger_dir"/rocksdb "$last_ledger_dir"
-    ln -sf "$latest_snapshot "$last_ledger_dir"/snapshot.tar.bz2
-    ln "$latest_snapshot "$last_ledger_dir"/
+    ln -sf "$latest_snapshot" "$last_ledger_dir"/snapshot.tar.bz2
+    ln "$latest_snapshot" "$last_ledger_dir"/
 
     SECONDS=
     while ! gsutil -m rsync -r "$last_ledger_dir" gs://"$STORAGE_BUCKET"/"$timestamp"; do
