@@ -53,6 +53,7 @@ if [[ -z \$1 ]]; then
 fi
 set -ex
 sudo --login -u solanad -- solana-install init "\$@"
+sudo systemctl daemon-reload
 sudo systemctl restart solanad
 sudo systemctl --no-pager status solanad
 EOF
