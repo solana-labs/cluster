@@ -40,6 +40,14 @@ fi
 
 ledger_dir="$here"/ledger
 
+identity_keypair="$here"/warehouse-identity.json
+identity_pubkey=$(solana-keygen pubkey $identity_keypair)
+
+trusted_validators=()
+for tv in ${TRUSTED_VALIDATORS[@]}; do
+  [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
+done
+
 args=(
   --dynamic-port-range 8001-8010
   --entrypoint "$ENTRYPOINT"
@@ -47,14 +55,14 @@ args=(
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
-  --identity-keypair "$here"/warehouse-identity.json
+  --identity-keypair "$identity_keypair"
   --ledger "$ledger_dir"
   --log "$here"/validator.log
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
-  --skip-poh-verify
-  --dev-no-sigverify
+  "${trusted_validators[@]}"
+  --no-untrusted-rpc
 )
 
 pid=

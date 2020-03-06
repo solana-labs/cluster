@@ -5,6 +5,8 @@
 set -e
 
 cd "$(dirname "$0")"
+
+#shellcheck source=/dev/null
 source env.sh
 
 usage() {
@@ -82,9 +84,14 @@ fi
 )
 
 if [[ ! -d "$CLUSTER"/ledger ]]; then
-  echo "Error: "$CLUSTER"/ledger/ directory does not exist"
+  echo "Error: $CLUSTER/ledger/ directory does not exist"
   exit 1
 fi
+
+TRUSTED_VALIDATORS=()
+for id in "$CLUSTER"/*-identity.json; do
+  TRUSTED_VALIDATORS+=($(solana-keygen pubkey "$id"))
+done
 
 for instance in $INSTANCES; do
   echo "Checking that \"$instance\" does not exist"
@@ -121,6 +128,7 @@ fi
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
   echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
+  echo TRUSTED_VALIDATORS="(${TRUSTED_VALIDATORS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
     echo SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
