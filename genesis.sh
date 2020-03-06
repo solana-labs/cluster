@@ -2,10 +2,12 @@
 set -e
 
 cd "$(dirname "$0")"
+
+#shellcheck source=/dev/null
 source env.sh
 
 if [[ -d "$CLUSTER"/ledger ]]; then
-  echo "Error: "$CLUSTER"/ledger/ directory already exists"
+  echo "Error: $CLUSTER/ledger/ directory already exists"
   exit 1
 fi
 
@@ -39,14 +41,14 @@ args=(
     "$CLUSTER"/bootstrap-validator-stake-account.json
   --bootstrap-validator-lamports           500000000000 # 500 SOL for voting
   --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
-  --rent-burn-percentage 100                         # Burn it all!
-  --fee-burn-percentage 100                          # Burn it all!
+  --rent-burn-percentage 100                            # Burn it all!
+  --fee-burn-percentage 100                             # Burn it all!
   --ledger "$CLUSTER"/ledger
   --operating-mode "${OPERATING_MODE:?}"
 )
 
 if [[ -n $BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY ]]; then
-  args+=(--bootstrap-stake-authorized-pubkey $BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY)
+  args+=(--bootstrap-stake-authorized-pubkey "$BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY")
 fi
 
 if [[ -n $FAUCET ]]; then
@@ -70,12 +72,10 @@ while [[ -n $1 ]]; do
       shift 2
     else
       echo "Unknown argument: $1"
-      $program --help
       exit 1
     fi
   else
     echo "Unknown argument: $1"
-    $program --help
     exit 1
   fi
 done
