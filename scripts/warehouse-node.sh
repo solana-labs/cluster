@@ -38,8 +38,6 @@ if [[ -z $RPC_URL ]]; then
   exit 1
 fi
 
-solana-keygen new --silent --force --no-passphrase --outfile "$here"/identity.json
-
 ledger_dir="$here"/ledger
 
 args=(
@@ -49,7 +47,7 @@ args=(
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
-  --identity-keypair "$here"/identity.json
+  --identity-keypair "$here"/warehouse-identity.json
   --ledger "$ledger_dir"
   --log "$here"/validator.log
   --no-genesis-fetch
