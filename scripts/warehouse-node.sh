@@ -47,6 +47,7 @@ args=(
   --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
   --identity-keypair "$here"/identity.json
   --ledger "$ledger_dir"

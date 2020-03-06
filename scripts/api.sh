@@ -21,4 +21,4 @@ exec solana-validator \
   --blockstream /tmp/solana-blockstream.sock \
   --skip-poh-verify  \
   --dev-no-sigverify \
-  --wait-for-supermajority 0 \
+  --wait-for-supermajority "${WAIT_FOR_SUPERMAJORITY}" \

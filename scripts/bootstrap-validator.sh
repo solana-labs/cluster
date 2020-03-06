@@ -17,5 +17,4 @@ exec solana-validator \
   --voting-keypair ./bootstrap-validator-vote-account.json \
   --expected-genesis-hash "${EXPECTED_GENESIS_HASH}" \
   --expected-shred-version "${EXPECTED_SHRED_VERSION}" \
-  --wait-for-supermajority 0 \
-
+  --wait-for-supermajority "${WAIT_FOR_SUPERMAJORITY}" \
