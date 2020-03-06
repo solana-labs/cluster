@@ -4,7 +4,6 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/solanad
-EnvironmentFile=/home/solanad/service-env.sh
 Type=simple
 Restart=always
 RestartSec=1
@@ -12,19 +11,7 @@ User=solanad
 LimitNOFILE=65536
 StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
-ExecStart=/home/solanad/.local/share/solana/install/active_release/bin/solana-validator \
-  --dynamic-port-range 8001-8010 \
-  --entrypoint ${ENTRYPOINT} \
-  --gossip-port 8001 \
-  --identity-keypair /home/solanad/bootstrap-validator-identity.json \
-  --ledger /home/solanad/ledger \
-  --limit-ledger-size 500000 \
-  --log - \
-  --no-genesis-fetch \
-  --rpc-port 8899 \
-  --voting-keypair /home/solanad/bootstrap-validator-vote-account.json \
-  --expected-genesis-hash ${EXPECTED_GENESIS_HASH} \
-  --expected-shred-version ${EXPECTED_SHRED_VERSION} \
+ExecStart=/home/solanad/bootstrap-validator.sh
 
 [Install]
 WantedBy=multi-user.target
