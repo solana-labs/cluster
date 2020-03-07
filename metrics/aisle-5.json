@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1576550368546,
+    "iteration": 1583540494343,
     "links": [],
     "panels": [
         {
@@ -844,6 +844,22 @@
                     "unit": "short"
                 },
                 {
+                    "alias": "host_id",
+                    "colorMode": null,
+                    "colors": [
+                        "rgba(245, 54, 54, 0.9)",
+                        "rgba(237, 129, 40, 0.89)",
+                        "rgba(50, 172, 45, 0.97)"
+                    ],
+                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
+                    "decimals": 2,
+                    "mappingType": 1,
+                    "pattern": "infra-warehouse-node.host_id",
+                    "thresholds": [],
+                    "type": "number",
+                    "unit": "short"
+                },
+                {
                     "alias": "",
                     "colorMode": null,
                     "colors": [
@@ -877,7 +893,7 @@
                     "measurement": "/^$testnet$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"event\", \"duration_secs\", \"minutes_remaining\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
+                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\", \"minutes_remaining\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -1012,7 +1028,7 @@
                     "measurement": "/^$testnet$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"label\", \"duration_secs\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
+                    "query": "SELECT \"label\", \"duration_secs\", \"bounds\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "table",
@@ -1115,5 +1131,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 21
+    "version": 23
 }
