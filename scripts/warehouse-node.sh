@@ -8,6 +8,7 @@ source "$here"/service-env.sh
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
 
+
 if [[ -z $ENTRYPOINT ]]; then
   echo ENTRYPOINT environment variable not defined
   exit 1
@@ -42,6 +43,31 @@ ledger_dir="$here"/ledger
 
 identity_keypair="$here"/warehouse-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
+
+datapoint_error() {
+  declare event=$1
+  declare args=$2
+
+  declare comma=
+  if [[ -n $args ]]; then
+    comma=,
+  fi
+
+  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey,error=1 event=\"$event\"$comma$args"
+}
+
+datapoint() {
+  declare event=$1
+  declare args=$2
+
+  declare comma=
+  if [[ -n $args ]]; then
+    comma=,
+  fi
+
+  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey event=\"$event\"$comma$args"
+}
+
 
 trusted_validators=()
 for tv in ${TRUSTED_VALIDATORS[@]}; do
@@ -87,25 +113,26 @@ last_ledger_dir=
 while true; do
   solana-validator "${args[@]}" &
   pid=$!
-  $metricsWriteDatapoint "infra-warehouse-node event=\"validator-started\""
+  datapoint validator-started
+
   echo "pid: $pid"
 
   minutes_to_next_ledger_archive=$ARCHIVE_INTERVAL_MINUTES
   caught_up=false
   while true; do
     if [[ -z $pid ]] || ! kill -0 "$pid"; then
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"unexpected-validator-exit\""
+      datapoint_error unexpected-validator-exit
       break  # validator exited unexpectedly, restart it
     fi
 
     if ! $caught_up; then
-      if ! timeout 10m solana catchup --url "$RPC_URL" "$here"/identity.json; then
+      if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey"; then
         echo "catchup failed..."
         sleep 5
         continue
       fi
       echo Node has caught up
-      $metricsWriteDatapoint "infra-warehouse-node event=\"validator-caught-up\""
+      datapoint validator-caught-up
       caught_up=true
     fi
 
@@ -113,7 +140,7 @@ while true; do
 
     if ((--minutes_to_next_ledger_archive > 0)); then
       if ((minutes_to_next_ledger_archive % 60 == 0)); then
-        $metricsWriteDatapoint "infra-warehouse-node event=\"waiting-to-archive\",minutes_remaining=$minutes_to_next_ledger_archive"
+        datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
       fi
       echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
       continue
@@ -123,30 +150,31 @@ while true; do
     echo "Latest snapshot: $latest_snapshot"
     if [[ ! -f "$latest_snapshot" ]]; then
       echo "Validator has not produced a snapshot yet"
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"snapshot-missing\""
+      datapoint_error snapshot-missing
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
     if [[ -d "$last_ledger_dir" ]] && diff -q "$latest_snapshot" "$last_ledger_dir/snapshot.tar.bz2"; then
       echo "Validator has not produced a new snapshot yet"
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"stale-snapshot\""
+      datapoint_error stale-snapshot
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
 
     echo Killing the node
-    $metricsWriteDatapoint "infra-warehouse-node event=\"validator-terminated\""
+    datapoint validator-terminated
     kill_node
 
     echo Open the ledger to force a rocksdb log file cleanup
     SECONDS=
     (
       set -x
-      solana-ledger-tool --ledger "$ledger_dir" bounds
+      solana-ledger-tool --ledger "$ledger_dir" bounds | tee bounds.txt
     )
+    ledger_bounds="$(cat bounds.txt)"
     echo Ledger compaction took $SECONDS seconds
-    $metricsWriteDatapoint "infra-warehouse-node event=\"ledger-compacted\",duration_secs=$SECONDS"
+    datapoint ledger-compacted "duration_secs=$SECONDS"
 
     echo Archive the current ledger and snapshot
     if [[ -n "$last_ledger_dir" ]]; then
@@ -162,11 +190,11 @@ while true; do
     SECONDS=
     while ! gsutil -m rsync -r "$last_ledger_dir" gs://"$STORAGE_BUCKET"/"$timestamp"; do
       echo "gsutil rsync failed..."
-      $metricsWriteDatapoint "infra-warehouse-node,error=1 event=\"gsutil-rsync-failure\""
+      datapoint_error gsutil-rsync-failure
       sleep 5
     done
     echo Ledger archiving took $SECONDS seconds
-    $metricsWriteDatapoint "infra-warehouse-node event=\"ledger-archived\",label=\"$timestamp\",duration_secs=$SECONDS"
+    datapoint ledger-archived "label=\"$timestamp\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
     break
   done
 done
