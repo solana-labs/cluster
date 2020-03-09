@@ -89,7 +89,7 @@ if [[ ! -d "$CLUSTER"/ledger ]]; then
 fi
 
 TRUSTED_VALIDATORS=()
-for id in "$CLUSTER"/*-identity.json; do
+for id in "$CLUSTER"/{bootstrap-validator,api}-identity.json; do
   TRUSTED_VALIDATORS+=($(solana-keygen pubkey "$id"))
 done
 
