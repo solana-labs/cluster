@@ -42,7 +42,7 @@ fi
 ledger_dir="$here"/ledger
 
 identity_keypair="$here"/warehouse-identity.json
-identity_pubkey=$(solana-keygen pubkey $identity_keypair)
+identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
 datapoint_error() {
   declare event=$1
@@ -70,7 +70,7 @@ datapoint() {
 
 
 trusted_validators=()
-for tv in ${TRUSTED_VALIDATORS[@]}; do
+for tv in "${TRUSTED_VALIDATORS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
@@ -155,7 +155,7 @@ while true; do
       continue
     fi
 
-    if [[ -d "$last_ledger_dir" ]] && diff -q "$latest_snapshot" "$last_ledger_dir/snapshot.tar.bz2"; then
+    if [[ -d "$last_ledger_dir" ]] && [[ -f "$last_ledger_dir/$(basename "$latest_snapshot")" ]] ; then
       echo "Validator has not produced a new snapshot yet"
       datapoint_error stale-snapshot
       minutes_to_next_ledger_archive=1 # try again later
@@ -184,7 +184,6 @@ while true; do
     last_ledger_dir="$ledger_dir$timestamp"
     mkdir "$last_ledger_dir"
     mv "$ledger_dir"/rocksdb "$last_ledger_dir"
-    ln -sf "$latest_snapshot" "$last_ledger_dir"/snapshot.tar.bz2
     ln "$latest_snapshot" "$last_ledger_dir"/
 
     SECONDS=
