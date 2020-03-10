@@ -93,6 +93,11 @@ for id in "$CLUSTER"/{bootstrap-validator,api}-identity.json; do
   TRUSTED_VALIDATORS+=($(solana-keygen pubkey "$id"))
 done
 
+WATCHTOWER_VALIDATORS=()
+for id in "$CLUSTER"/bootstrap-validator-identity.json; do
+  WATCHTOWER_VALIDATORS+=($(solana-keygen pubkey "$id"))
+done
+
 for instance in $INSTANCES; do
   echo "Checking that \"$instance\" does not exist"
   status=$(gcloud --project "$PROJECT" compute instances list --filter name="$instance" --format 'value(status)')
@@ -128,6 +133,7 @@ fi
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
   echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
+  echo WATCHTOWER_VALIDATORS="(${WATCHTOWER_VALIDATORS[*]})"
   echo TRUSTED_VALIDATORS="(${TRUSTED_VALIDATORS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then

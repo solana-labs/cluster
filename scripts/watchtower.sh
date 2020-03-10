@@ -4,11 +4,9 @@ set -ex
 #shellcheck source=/dev/null
 . service-env.sh
 
-trusted_validators=()
-for tv in ${TRUSTED_VALIDATORS[@]}; do
-  trusted_validators+=(--validator-identity "$tv")
+validators=()
+for tv in ${WATCHTOWER_VALIDATORS[@]}; do
+  validators+=(--validator-identity "$tv")
 done
 
-exec solana-watchtower \
-  --url "$RPC_URL" \
-  "${trusted_validators[@]}" \
+exec solana-watchtower --url "$RPC_URL" "${validators[@]}"
