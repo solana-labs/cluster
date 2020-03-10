@@ -51,7 +51,7 @@ if [[ -n $BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY ]]; then
   args+=(--bootstrap-stake-authorized-pubkey "$BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY")
 fi
 
-if [[ -n $FAUCET ]]; then
+if [[ -n $FAUCET_KEYPAIR ]]; then
   args+=(--faucet-pubkey "$CLUSTER"/faucet.json --faucet-lamports 500000000000000000)
 fi
 
@@ -80,7 +80,11 @@ while [[ -n $1 ]]; do
   fi
 done
 
-default_arg --creation-time "$(date --iso-8601=seconds)"
+if [[ -z $CREATION_TIME ]]; then
+  CREATION_TIME=$(date --iso-8601=seconds)
+fi
+
+default_arg --creation-time "$CREATION_TIME"
 (
   set -x
   solana-genesis "${args[@]}"

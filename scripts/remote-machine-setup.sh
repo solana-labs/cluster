@@ -69,7 +69,12 @@ sudo /home/solanad/install-redis.sh
 
 sudo --login -u solanad -- bash -c "
   set -ex;
-  echo '@reboot /home/solanad/run-blockexplorer.sh' | crontab -;
+  echo '@reboot /home/solanad/run-blockexplorer.sh' > crontab.txt;
+  if [[ -f faucet.json ]]; then
+    echo '@reboot /home/solanad/run-faucet.sh' >> crontab.txt;
+  fi;
+  cat crontab.txt | crontab -;
+  rm crontab.txt;
   crontab -l;
 "
 screen -dmS blockexplorer sudo --login -u solanad /home/solanad/run-blockexplorer.sh

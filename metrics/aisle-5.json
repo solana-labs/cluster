@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1583540494343,
+    "iteration": 1583883736968,
     "links": [],
     "panels": [
         {
@@ -1092,9 +1092,24 @@
                         "selected": true,
                         "text": "cluster",
                         "value": "cluster"
+                    },
+                    {
+                        "selected": false,
+                        "text": "tds",
+                        "value": "tds"
+                    },
+                    {
+                        "selected": false,
+                        "text": "mainnet-beta",
+                        "value": "mainnet-beta"
+                    },
+                    {
+                        "selected": false,
+                        "text": "devnet",
+                        "value": "devnet"
                     }
                 ],
-                "query": "cluster",
+                "query": "cluster,tds,mainnet-beta,devnet",
                 "type": "custom"
             }
         ]
@@ -1131,5 +1146,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 23
+    "version": 24
 }

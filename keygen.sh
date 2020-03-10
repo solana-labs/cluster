@@ -18,7 +18,7 @@ keygen() {
   test -f "$CLUSTER"/bootstrap-validator-stake-account.json ||
     (set -x; solana-keygen $cmd --outfile "$CLUSTER"/bootstrap-validator-stake-account.json)
 
-  if [[ -n $FAUCET ]]; then
+  if [[ -n $FAUCET_KEYPAIR ]]; then
     test -f "$CLUSTER"/faucet.json ||
       (set -x; solana-keygen $cmd --outfile "$CLUSTER"/faucet.json)
   fi

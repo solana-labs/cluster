@@ -52,7 +52,7 @@ INSTANCES="
 "
 
 if [[ -n $WAREHOUSE_NODE ]]; then
-  INSTANCES="$INSTANCES $WAREHOUSE_NODE"
+  INSTANCES="$INSTANCES $WAREHOUSE_INSTANCE"
 fi
 
 
@@ -141,7 +141,7 @@ fi
   echo TRUSTED_VALIDATORS="(${TRUSTED_VALIDATORS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
-    echo SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
+    echo export SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
   fi
   echo STORAGE_BUCKET="$STORAGE_BUCKET"
   echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
@@ -342,7 +342,14 @@ echo ==========================================================
     "$CLUSTER"/service-env.sh \
     scripts/* \
     "$API_INSTANCE":
+
 )
+if [[ -n $FAUCET_RPC ]]; then
+  (
+    set -x
+    gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$CLUSTER"/faucet.json "$API_INSTANCE":
+  )
+fi
 
 if [[ -n $LETSENCRYPT_TGZ ]] && [[ -f $LETSENCRYPT_TGZ ]]; then
   (
