@@ -5,8 +5,12 @@ set -ex
 . service-env.sh
 
 validators=()
-for tv in ${WATCHTOWER_VALIDATORS[@]}; do
+for tv in "${WATCHTOWER_VALIDATORS[@]}"; do
   validators+=(--validator-identity "$tv")
 done
 
-exec solana-watchtower --url "$RPC_URL" "${validators[@]}"
+exec solana-watchtower \
+  --url "$RPC_URL" \
+  --monitor-active-stake \
+  --no-duplicate-notifications \
+  "${validators[@]}" \
