@@ -16,6 +16,7 @@ mainnet-beta)
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=mainnet-beta"
   OPERATING_MODE=stable
+  WAREHOUSE_NODE=1
   ;;
 slp)
   echo "### SLP Cluster ###"
@@ -28,6 +29,7 @@ slp)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
   EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
   OPERATING_MODE=stable
+  WAREHOUSE_NODE=1
   # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
   # DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec
   ;;
@@ -39,6 +41,7 @@ tour-de-sol)
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET=1
+  WAREHOUSE_NODE=
   OPERATING_MODE=preview
   SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;

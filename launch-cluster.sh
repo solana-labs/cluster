@@ -48,9 +48,13 @@ INSTANCES="
   $ENTRYPOINT_INSTANCE
   $BOOTSTRAP_VALIDATOR_INSTANCE
   $API_INSTANCE
-  $WAREHOUSE_INSTANCE
   $WATCHTOWER_INSTANCE
 "
+
+if [[ -n $WAREHOUSE_NODE ]]; then
+  INSTANCES="$INSTANCES $WAREHOUSE_NODE"
+fi
+
 
 LETSENCRYPT_TGZ=
 if [[ -n $API_DNS_NAME ]]; then
@@ -205,22 +209,24 @@ echo ==========================================================
 
 )
 
-echo ==========================================================
-echo "Creating $WAREHOUSE_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute instances create \
-    "$WAREHOUSE_INSTANCE" \
-    --zone "$ZONE" \
-    --machine-type n1-standard-8 \
-    --boot-disk-size=2TB \
-    --tags solana-validator-minimal,solana-validator-rpc \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    --min-cpu-platform "Intel Skylake" \
-    --scopes=storage-rw \
+if [[ -n $WAREHOUSE_NODE ]]; then
+  echo ==========================================================
+  echo "Creating $WAREHOUSE_INSTANCE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute instances create \
+      "$WAREHOUSE_INSTANCE" \
+      --zone "$ZONE" \
+      --machine-type n1-standard-8 \
+      --boot-disk-size=2TB \
+      --tags solana-validator-minimal,solana-validator-rpc \
+      --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+      --min-cpu-platform "Intel Skylake" \
+      --scopes=storage-rw \
 
-)
+  )
+fi
 
 echo ==========================================================
 echo "Creating $WATCHTOWER_INSTANCE"
@@ -297,19 +303,21 @@ echo ==========================================================
     "$BOOTSTRAP_VALIDATOR_INSTANCE":
 )
 
-echo ==========================================================
-echo "Transferring files to $WAREHOUSE_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    "$CLUSTER"/warehouse-identity.json \
-    "$CLUSTER"/ledger \
-    "$CLUSTER"/service-env.sh \
-    scripts/* \
-    warehouse.service \
-    "$WAREHOUSE_INSTANCE":
-)
+if [[ -n $WAREHOUSE_NODE ]]; then
+  echo ==========================================================
+  echo "Transferring files to $WAREHOUSE_INSTANCE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+      "$CLUSTER"/warehouse-identity.json \
+      "$CLUSTER"/ledger \
+      "$CLUSTER"/service-env.sh \
+      scripts/* \
+      warehouse.service \
+      "$WAREHOUSE_INSTANCE":
+  )
+fi
 
 echo ==========================================================
 echo "Transferring files to $WATCHTOWER_INSTANCE"
