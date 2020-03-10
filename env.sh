@@ -36,7 +36,7 @@ slp)
 tour-de-sol)
   echo "### TdS ###"
   PROJECT="tour-de-sol"
-  API_DNS_NAME=tds-solana-com|tds.solana.com
+  API_DNS_NAME=tds.solana.com
   ENTRYPOINT_DNS_NAME=
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
