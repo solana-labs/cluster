@@ -78,6 +78,7 @@ sudo --login -u solanad -- bash -c "
   crontab -l;
 "
 screen -dmS blockexplorer sudo --login -u solanad /home/solanad/run-blockexplorer.sh
+screen -dmS faucet sudo --login -u solanad /home/solanad/run-blockexplorer.sh
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line

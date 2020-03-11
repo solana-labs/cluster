@@ -37,6 +37,7 @@ slp)
   echo "### SLP Cluster ###"
   PROJECT="solana-mainnet"
   API_ADDRESS_NAME=api-mainnet-solana-com
+  API_DNS_NAME=softlaunch.solana.com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
   ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
   EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
