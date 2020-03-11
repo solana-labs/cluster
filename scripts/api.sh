@@ -12,6 +12,10 @@ for tv in ${TRUSTED_VALIDATORS[@]}; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
+if [[ -f faucet.json ]]; then
+  maybe_rpc_faucet_address="--rpc-faucet-address 127.0.0.1:9900"
+fi
+
 exec solana-validator \
   --dynamic-port-range 8001-8010 \
   --entrypoint "${ENTRYPOINT}" \
@@ -24,6 +28,7 @@ exec solana-validator \
   --no-voting \
   --rpc-port 8899 \
   --enable-rpc-get-confirmed-block \
+  ${maybe_rpc_faucet_address} \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --blockstream /tmp/solana-blockstream.sock \
