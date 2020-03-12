@@ -36,9 +36,9 @@ default_arg() {
 
 args=(
   --bootstrap-validator
-    "$CLUSTER"/bootstrap-validator-identity.json
-    "$CLUSTER"/bootstrap-validator-vote-account.json
-    "$CLUSTER"/bootstrap-validator-stake-account.json
+    "$CLUSTER"/validator-identity.json
+    "$CLUSTER"/validator-vote-account.json
+    "$CLUSTER"/validator-stake-account.json
   --bootstrap-validator-lamports           500000000000 # 500 SOL for voting
   --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                            # Burn it all!

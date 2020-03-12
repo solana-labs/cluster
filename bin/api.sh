@@ -2,9 +2,9 @@
 set -ex
 
 #shellcheck source=/dev/null
-. service-env.sh
+. ~/service-env.sh
 
-identity_keypair=./api-identity.json
+identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 
 trusted_validators=()
@@ -20,7 +20,7 @@ exec solana-validator \
   --dynamic-port-range 8001-8010 \
   --entrypoint "${ENTRYPOINT}" \
   --gossip-port 8001 \
-  --ledger ./ledger \
+  --ledger ~/ledger \
   --identity-keypair "$identity_keypair" \
   --limit-ledger-size 1000000 \
   --log - \

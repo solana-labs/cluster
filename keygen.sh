@@ -11,12 +11,12 @@ keygen() {
 
   solana-keygen --version
 
-  test -f "$CLUSTER"/bootstrap-validator-identity.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/bootstrap-validator-identity.json)
-  test -f "$CLUSTER"/bootstrap-validator-vote-account.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/bootstrap-validator-vote-account.json)
-  test -f "$CLUSTER"/bootstrap-validator-stake-account.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/bootstrap-validator-stake-account.json)
+  test -f "$CLUSTER"/validator-identity.json ||
+    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-identity.json)
+  test -f "$CLUSTER"/validator-vote-account.json ||
+    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-vote-account.json)
+  test -f "$CLUSTER"/validator-stake-account.json ||
+    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-stake-account.json)
 
   if [[ -n $FAUCET_KEYPAIR ]]; then
     test -f "$CLUSTER"/faucet.json ||

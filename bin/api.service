@@ -1,16 +1,16 @@
 [Unit]
-Description=Solana Watchtower
+Description=Solana API Node
 After=network.target
-StartLimitIntervalSec=0
 
 [Service]
-WorkingDirectory=/home/solanad
 Type=simple
 Restart=always
 RestartSec=1
 User=solanad
+LimitNOFILE=65536
+StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
-ExecStart=/home/solanad/watchtower.sh
+ExecStart=/home/solanad/bin/api.sh
 
 [Install]
 WantedBy=multi-user.target

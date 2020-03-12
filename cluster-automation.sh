@@ -18,7 +18,7 @@ if [[ -d ledger ]]; then
   rm -rf ledger
 fi
 
-curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.19.1/install/solana-install-init.sh | sh -s - "$RELEASE_CHANNEL_OR_TAG" --data-dir "$INSTALL_PATH"
+curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v1.0.0/install/solana-install-init.sh | sh -s - "$RELEASE_CHANNEL_OR_TAG" --data-dir "$INSTALL_PATH"
 
 PATH="${INSTALL_PATH}/active_release/bin:$PATH"
 

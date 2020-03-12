@@ -4,7 +4,7 @@ set -e
 here=$(dirname "$0")
 
 #shellcheck source=/dev/null
-source "$here"/service-env.sh
+source ~/service-env.sh
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
 
@@ -39,9 +39,9 @@ if [[ -z $RPC_URL ]]; then
   exit 1
 fi
 
-ledger_dir="$here"/ledger
+ledger_dir=~/ledger
 
-identity_keypair="$here"/warehouse-identity.json
+identity_keypair=~/warehouse-identity.json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
 datapoint_error() {
@@ -83,13 +83,13 @@ args=(
   --gossip-port 8001
   --identity-keypair "$identity_keypair"
   --ledger "$ledger_dir"
-  --log "$here"/validator.log
+  --log ~/validator.log
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
   "${trusted_validators[@]}"
   --no-untrusted-rpc
-  --init-complete-file "$here"/.init-complete
+  --init-complete-file ~/.init-complete
 )
 
 pid=
@@ -112,7 +112,7 @@ trap 'kill_node_and_exit' INT TERM ERR
 
 last_ledger_dir=
 while true; do
-  rm -f "$here"/.init-complete
+  rm -f ~/.init-complete
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
@@ -130,7 +130,7 @@ while true; do
     fi
 
     if ! $initialized; then
-      if [[ ! -f "$here"/.init-complete ]]; then
+      if [[ ! -f ~/.init-complete ]]; then
         echo "waiting for node to initialize..."
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-initialized

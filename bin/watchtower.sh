@@ -2,7 +2,7 @@
 set -ex
 
 #shellcheck source=/dev/null
-. service-env.sh
+. ~/service-env.sh
 
 validators=()
 for tv in "${WATCHTOWER_VALIDATORS[@]}"; do

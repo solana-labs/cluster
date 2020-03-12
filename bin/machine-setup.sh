@@ -18,34 +18,79 @@ sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
 # Install minimal tools
 sudo apt-get update
-sudo apt-get --assume-yes install vim software-properties-common psmisc silversearcher-ag
+sudo apt-get --assume-yes install \
+  iputils-ping \
+  psmisc \
+  silversearcher-ag \
+  software-properties-common \
+  vim \
 
 # Create solanad user
 sudo adduser solanad --gecos "" --disabled-password --quiet
 
 # Install solana release as the solanad user
 sudo --login -u solanad -- bash -c "
-  curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v0.20.3/install/solana-install-init.sh | sh -s $SOLANA_VERSION
+  curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v1.0.0/install/solana-install-init.sh | sh -s $SOLANA_VERSION
 "
-
-# Move the systemd service file into /etc
-sudo cp ./*.service /etc/systemd/system/solanad.service
-rm ./*.service
-sudo systemctl daemon-reload
 
 # Move the remainder of the files in the home directory over to the solanad user
 sudo chown -R solanad:solanad ./*
 sudo mv ./* /home/solanad
+# Move the systemd service file into /etc
+sudo cp /home/solanad/bin/"$NODE_TYPE".service /etc/systemd/system/solanad.service
+sudo systemctl daemon-reload
 
 # Start the solana service
 sudo systemctl start solanad
 sudo systemctl enable solanad
 sudo systemctl --no-pager status solanad
 
-# Create easy to use software update script
-{
-  cat <<EOF
+# Setup helpful links and shortcuts
+ln -s /home/solanad/service-env.sh .
+ln -s /home/solanad/ledger .
+ln -s /home/solanad/bin .
+ln -s /etc/systemd/system/solanad.service .
+
+cat > stop <<EOF
 #!/usr/bin/env bash
+# Stop the $NODE_TYPE software
+
+set -ex
+sudo systemctl stop solanad
+EOF
+chmod +x stop
+
+cat > restart <<EOF
+#!/usr/bin/env bash
+# Restart the $NODE_TYPE software
+
+set -ex
+sudo systemctl daemon-reload
+sudo systemctl restart solanad
+EOF
+chmod +x restart
+
+cat > journalctl <<EOF
+#!/usr/bin/env bash
+# Stop the $NODE_TYPE software
+
+set -ex
+sudo journalctl -f "\$@"
+EOF
+chmod +x journalctl
+
+cat > solanad <<EOF
+#!/usr/bin/env bash
+# Switch to the solanad user
+
+set -ex
+sudo --login -u solanad -- "\$@"
+EOF
+chmod +x solanad
+
+cat > update <<EOF
+#!/usr/bin/env bash
+# Software update
 
 if [[ -z \$1 ]]; then
   echo "Usage: \$0 [version]"
@@ -57,28 +102,30 @@ sudo systemctl daemon-reload
 sudo systemctl restart solanad
 sudo systemctl --no-pager status solanad
 EOF
-} | sudo tee /solana-update.sh
-sudo chmod +x /solana-update.sh
+chmod +x update
+
+
+echo "~/solanad ./bin/print-keys.sh" >> ~/.profile
 
 [[ $NODE_TYPE = api ]] || exit 0
 
 # Install blockexplorer dependencies
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs screen
-sudo /home/solanad/install-redis.sh
+sudo /home/solanad/bin/install-redis.sh
 
 sudo --login -u solanad -- bash -c "
   set -ex;
-  echo '@reboot /home/solanad/run-blockexplorer.sh' > crontab.txt;
+  echo '@reboot /home/solanad/bin/run-blockexplorer.sh' > crontab.txt;
   if [[ -f faucet.json ]]; then
-    echo '@reboot /home/solanad/run-faucet.sh' >> crontab.txt;
+    echo '@reboot /home/solanad/bin/run-faucet.sh' >> crontab.txt;
   fi;
   cat crontab.txt | crontab -;
   rm crontab.txt;
   crontab -l;
 "
-screen -dmS blockexplorer sudo --login -u solanad /home/solanad/run-blockexplorer.sh
-screen -dmS faucet sudo --login -u solanad /home/solanad/run-blockexplorer.sh
+screen -dmS blockexplorer sudo --login -u solanad /home/solanad/bin/run-blockexplorer.sh
+screen -dmS faucet sudo --login -u solanad /home/solanad/bin/run-blockexplorer.sh
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
@@ -87,7 +134,6 @@ openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc
 openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.example.com" -out server.csr
 openssl x509 -req -extfile <(printf "subjectAltName=DNS:example.com,DNS:www.example.com") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
 sudo bash -c "cat server.key server.crt >> /etc/ssl/private/haproxy.pem"
-rm -rf ./*
 
 sudo add-apt-repository --yes ppa:certbot/certbot
 sudo apt-get --assume-yes install haproxy certbot

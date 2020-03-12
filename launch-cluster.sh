@@ -39,14 +39,14 @@ while [[ -n $1 ]]; do
 done
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint
-BOOTSTRAP_VALIDATOR_INSTANCE=${INSTANCE_PREFIX}bootstrap-validator
+VALIDATOR_INSTANCE=${INSTANCE_PREFIX}validator
 API_INSTANCE=${INSTANCE_PREFIX}api
 WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}warehouse
 WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}watchtower
 
 INSTANCES="
   $ENTRYPOINT_INSTANCE
-  $BOOTSTRAP_VALIDATOR_INSTANCE
+  $VALIDATOR_INSTANCE
   $API_INSTANCE
   $WATCHTOWER_INSTANCE
 "
@@ -93,12 +93,12 @@ if [[ ! -d "$CLUSTER"/ledger ]]; then
 fi
 
 TRUSTED_VALIDATORS=()
-for id in "$CLUSTER"/{bootstrap-validator,api}-identity.json; do
+for id in "$CLUSTER"/{validator,api}-identity.json; do
   TRUSTED_VALIDATORS+=($(solana-keygen pubkey "$id"))
 done
 
 WATCHTOWER_VALIDATORS=()
-for id in "$CLUSTER"/bootstrap-validator-identity.json; do
+for id in "$CLUSTER"/validator-identity.json; do
   WATCHTOWER_VALIDATORS+=($(solana-keygen pubkey "$id"))
 done
 
@@ -194,12 +194,12 @@ echo ==========================================================
 )
 
 echo ==========================================================
-echo "Creating $BOOTSTRAP_VALIDATOR_INSTANCE"
+echo "Creating $VALIDATOR_INSTANCE"
 echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute instances create \
-    "$BOOTSTRAP_VALIDATOR_INSTANCE" \
+    "$VALIDATOR_INSTANCE" \
     --zone "$ZONE" \
     --machine-type n1-standard-8 \
     --boot-disk-size=2TB \
@@ -282,25 +282,23 @@ echo ==========================================================
 (
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
     "$CLUSTER"/service-env.sh \
-    scripts/* \
-    entrypoint.service \
+    bin/ \
     "$ENTRYPOINT_INSTANCE":
 )
 
 echo ==========================================================
-echo "Transferring files to $BOOTSTRAP_VALIDATOR_INSTANCE"
+echo "Transferring files to $VALIDATOR_INSTANCE"
 echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    "$CLUSTER"/bootstrap-validator-identity.json \
-    "$CLUSTER"/bootstrap-validator-stake-account.json \
-    "$CLUSTER"/bootstrap-validator-vote-account.json \
+    "$CLUSTER"/validator-identity.json \
+    "$CLUSTER"/validator-stake-account.json \
+    "$CLUSTER"/validator-vote-account.json \
     "$CLUSTER"/service-env.sh \
     "$CLUSTER"/ledger \
-    scripts/* \
-    bootstrap-validator.service \
-    "$BOOTSTRAP_VALIDATOR_INSTANCE":
+    bin/ \
+    "$VALIDATOR_INSTANCE":
 )
 
 if [[ -n $WAREHOUSE_NODE ]]; then
@@ -313,8 +311,7 @@ if [[ -n $WAREHOUSE_NODE ]]; then
       "$CLUSTER"/warehouse-identity.json \
       "$CLUSTER"/ledger \
       "$CLUSTER"/service-env.sh \
-      scripts/* \
-      warehouse.service \
+      bin/ \
       "$WAREHOUSE_INSTANCE":
   )
 fi
@@ -325,8 +322,7 @@ echo ==========================================================
 (
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
     "$CLUSTER"/service-env.sh \
-    scripts/* \
-    watchtower.service \
+    bin/ \
     "$WATCHTOWER_INSTANCE":
 )
 
@@ -336,11 +332,10 @@ echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    api.service \
     "$CLUSTER"/api-identity.json \
     "$CLUSTER"/ledger \
     "$CLUSTER"/service-env.sh \
-    scripts/* \
+    bin/ \
     "$API_INSTANCE":
 
 )
@@ -381,8 +376,8 @@ for instance in $INSTANCES; do
     $ENTRYPOINT_INSTANCE)
       nodeType=entrypoint
       ;;
-    $BOOTSTRAP_VALIDATOR_INSTANCE)
-      nodeType=bootstrap
+    $VALIDATOR_INSTANCE)
+      nodeType=validator
       ;;
     *)
       echo "Error: Unknown instance type: $instance"
@@ -392,7 +387,7 @@ for instance in $INSTANCES; do
 
     set -x
     gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$instance" -- \
-      bash remote-machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType" "$dnsName"
+      bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType" "$dnsName"
   )
 done
 

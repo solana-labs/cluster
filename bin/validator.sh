@@ -2,9 +2,9 @@
 set -ex
 
 #shellcheck source=/dev/null
-. service-env.sh
+. ~/service-env.sh
 
-identity_keypair=./bootstrap-validator-identity.json
+identity_keypair=~/validator-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 
 trusted_validators=()
@@ -17,12 +17,12 @@ exec solana-validator \
   --entrypoint "$ENTRYPOINT" \
   --gossip-port 8001 \
   --identity-keypair "$identity_keypair" \
-  --ledger ./ledger \
+  --ledger ~/ledger \
   --limit-ledger-size 1000000 \
   --log - \
   --no-genesis-fetch \
   --rpc-port 8899 \
-  --voting-keypair ./bootstrap-validator-vote-account.json \
+  --voting-keypair ~/validator-vote-account.json \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \

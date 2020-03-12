@@ -64,8 +64,8 @@ tour-de-sol)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)
-  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'slp' or 'tour-de-sol'"
-  exit 1
+  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'mainnet-beta', 'slp' or 'tour-de-sol'"
+  ;;
 esac
 
 STORAGE_BUCKET="${PROJECT}-ledger"
