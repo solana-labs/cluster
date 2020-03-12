@@ -2,13 +2,16 @@
 set -ex
 
 #shellcheck source=/dev/null
-. ~/service-env.sh
+source ~/service-env.sh
 
-identity_keypair=~/validator-identity.json
+#shellcheck source=/dev/null
+source ~/service-env-validator-*.sh
+
+identity_keypair=~/validator-identity-$ZONE.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 
 trusted_validators=()
-for tv in ${TRUSTED_VALIDATORS[@]}; do
+for tv in ${TRUSTED_VALIDATOR_PUBKEYS[@]}; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
@@ -22,7 +25,7 @@ exec solana-validator \
   --log - \
   --no-genesis-fetch \
   --rpc-port 8899 \
-  --voting-keypair ~/validator-vote-account.json \
+  --voting-keypair ~/validator-vote-account-$ZONE.json \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \

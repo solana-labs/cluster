@@ -5,7 +5,7 @@ set -ex
 . ~/service-env.sh
 
 validators=()
-for tv in "${WATCHTOWER_VALIDATORS[@]}"; do
+for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   validators+=(--validator-identity "$tv")
 done
 

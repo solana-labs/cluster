@@ -4,7 +4,11 @@ set -e
 here=$(dirname "$0")
 
 #shellcheck source=/dev/null
-source ~/service-env.sh
+source ~/service-env.sh ~/service-env-*.sh
+
+#shellcheck source=/dev/null
+source ~/service-env-warehouse-*.sh
+
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
 
@@ -24,8 +28,8 @@ if [[ -z $EXPECTED_SHRED_VERSION ]]; then
   exit 1
 fi
 
-if [[ -z $ARCHIVE_INTERVAL_MINUTES ]]; then
-  echo ARCHIVE_INTERVAL_MINUTES environment variable not defined
+if [[ -z $LEDGER_ARCHIVE_INTERVAL_MINUTES ]]; then
+  echo LEDGER_ARCHIVE_INTERVAL_MINUTES environment variable not defined
   exit 1
 fi
 
@@ -41,7 +45,7 @@ fi
 
 ledger_dir=~/ledger
 
-identity_keypair=~/warehouse-identity.json
+identity_keypair=~/warehouse-identity-$ZONE.json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
 datapoint_error() {
@@ -70,7 +74,7 @@ datapoint() {
 
 
 trusted_validators=()
-for tv in "${TRUSTED_VALIDATORS[@]}"; do
+for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
@@ -119,7 +123,7 @@ while true; do
 
   echo "pid: $pid"
 
-  minutes_to_next_ledger_archive=$ARCHIVE_INTERVAL_MINUTES
+  minutes_to_next_ledger_archive=$LEDGER_ARCHIVE_INTERVAL_MINUTES
   caught_up=false
   initialized=false
   SECONDS=

@@ -38,23 +38,28 @@ while [[ -n $1 ]]; do
   fi
 done
 
+
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint
-VALIDATOR_INSTANCE=${INSTANCE_PREFIX}validator
 API_INSTANCE=${INSTANCE_PREFIX}api
-WAREHOUSE_INSTANCE=${INSTANCE_PREFIX}warehouse
 WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}watchtower
 
-INSTANCES="
-  $ENTRYPOINT_INSTANCE
-  $VALIDATOR_INSTANCE
-  $API_INSTANCE
-  $WATCHTOWER_INSTANCE
-"
+INSTANCES=(
+  "$ENTRYPOINT_INSTANCE:$DEFAULT_ZONE"
+  "$API_INSTANCE:$DEFAULT_ZONE"
+  "$WATCHTOWER_INSTANCE:$DEFAULT_ZONE"
+)
 
-if [[ -n $WAREHOUSE_NODE ]]; then
-  INSTANCES="$INSTANCES $WAREHOUSE_INSTANCE"
-fi
+VALIDATOR_INSTANCES=()
+for ZONE in "${VALIDATOR_ZONES[@]}"; do
+  VALIDATOR_INSTANCES+=("${INSTANCE_PREFIX}validator-$ZONE:$ZONE")
+  INSTANCES+=(         "${INSTANCE_PREFIX}validator-$ZONE:$ZONE")
+done
 
+WAREHOUSE_INSTANCES=()
+for ZONE in "${WAREHOUSE_ZONES[@]}"; do
+  WAREHOUSE_INSTANCES+=("${INSTANCE_PREFIX}warehouse-$ZONE:$ZONE")
+  INSTANCES+=(          "${INSTANCE_PREFIX}warehouse-$ZONE:$ZONE")
+done
 
 LETSENCRYPT_TGZ=
 if [[ -n $API_DNS_NAME ]]; then
@@ -66,20 +71,26 @@ if [[ $(basename "$0" .sh) = delete-cluster ]]; then
     echo "Attempting to recover TLS certificate before deleting instances"
     (
       set -x
-      gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$API_INSTANCE":/letsencrypt.tgz "$LETSENCRYPT_TGZ"
+      gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" "$API_INSTANCE":/letsencrypt.tgz "$LETSENCRYPT_TGZ"
     ) || true
     if [[ -f "$LETSENCRYPT_TGZ" ]]; then
       echo "Warning: ensure you don't delete $LETSENCRYPT_TGZ"
     fi
   fi
 
-  (
-    set -x
-    # shellcheck disable=SC2086 # Don't want to double quote INSTANCES
-    gcloud --project "$PROJECT" compute instances delete $INSTANCES --zone "$ZONE" --quiet
-  )
+  for INSTANCE_ZONE in "${INSTANCES[@]}"; do
+    declare INSTANCE=${INSTANCE_ZONE%:*}
+    declare ZONE=${INSTANCE_ZONE#*:}
+    (
+      set -x
+      gcloud --project "$PROJECT" compute instances delete "$INSTANCE" --zone "$ZONE" --quiet
+    ) &
+    sleep 1
+  done
+  wait
   exit 0
 fi
+
 
 (
   set -x
@@ -92,24 +103,23 @@ if [[ ! -d "$CLUSTER"/ledger ]]; then
   exit 1
 fi
 
-TRUSTED_VALIDATORS=()
-for id in "$CLUSTER"/{validator,api}-identity.json; do
-  TRUSTED_VALIDATORS+=($(solana-keygen pubkey "$id"))
+TRUSTED_VALIDATOR_PUBKEYS=()
+for ZONE in "${VALIDATOR_ZONES[@]}"; do
+  declare KEYPAIR="$CLUSTER"/validator-identity-"$ZONE".json
+  TRUSTED_VALIDATOR_PUBKEYS+=("$(solana-keygen pubkey $KEYPAIR)")
 done
 
-WATCHTOWER_VALIDATORS=()
-for id in "$CLUSTER"/validator-identity.json; do
-  WATCHTOWER_VALIDATORS+=($(solana-keygen pubkey "$id"))
-done
-
-for instance in $INSTANCES; do
-  echo "Checking that \"$instance\" does not exist"
-  status=$(gcloud --project "$PROJECT" compute instances list --filter name="$instance" --format 'value(status)')
+for INSTANCE_ZONE in "${INSTANCES[@]}"; do
+  declare INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
+  echo "Checking that $INSTANCE ($ZONE) does not exist"
+  status=$(gcloud --project "$PROJECT" compute instances list --filter name="$INSTANCE" --format 'value(status)')
   if [[ -n $status ]]; then
-    echo "Error: $instance already exists (status=$status)"
+    echo "Error: $INSTANCE already exists (status=$status)"
     exit 1
   fi
 done
+
 
 GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool genesis-hash --ledger "$CLUSTER"/ledger)"
 SHRED_VERSION="$(RUST_LOG=none solana-ledger-tool shred-version --ledger "$CLUSTER"/ledger)"
@@ -118,34 +128,50 @@ if [[ -z $SOLANA_METRICS_CONFIG ]]; then
   echo Note: SOLANA_METRICS_CONFIG is not configured
 fi
 
-if [[ -n $RECREATE_STORAGE_BUCKET ]]; then
-  # Re-create the dev bucket on each launch
-  gsutil rm -r gs://"$STORAGE_BUCKET" || true
-  gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET"
-else
-  # Create the production bucket if it doesn't already exist but do not remove old
-  # data, if any, to avoid accidental data loss.
-  gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET" || true
-fi
 
-(
-  set -x
-  gsutil -m cp -r "$CLUSTER"/ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
-  gsutil -m cp -r "$CLUSTER"/*.json gs://"$STORAGE_BUCKET"
-)
+for ZONE in "${WAREHOUSE_ZONES[@]}"; do
+  declare REGION=${ZONE%-*}
+  declare STORAGE_BUCKET="${STORAGE_BUCKET_PREFIX}-${REGION}"
+
+  if [[ -n $RECREATE_STORAGE_BUCKET ]]; then
+    # Re-create the dev bucket on each launch
+    gsutil rm -r gs://"$STORAGE_BUCKET" || true
+    gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET"
+  else
+    # Create the production bucket if it doesn't already exist but do not remove old
+    # data, if any, to avoid accidental data loss.
+    gsutil mb -p "$PROJECT" -l "$REGION" -b on gs://"$STORAGE_BUCKET" || true
+  fi
+
+  (
+    set -x
+    gsutil -m cp -r "$CLUSTER"/ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
+    gsutil -m cp -r "$CLUSTER"/*.json gs://"$STORAGE_BUCKET"
+  )
+
+  (
+    echo ZONE="$ZONE"
+    echo STORAGE_BUCKET="$STORAGE_BUCKET"
+  ) | tee "$CLUSTER"/service-env-warehouse-"$ZONE".sh
+done
+
+
+for ZONE in "${VALIDATOR_ZONES[@]}"; do
+  (
+    echo ZONE="$ZONE"
+  ) | tee "$CLUSTER"/service-env-validator-"$ZONE".sh
+done
 
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
   echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
-  echo WATCHTOWER_VALIDATORS="(${WATCHTOWER_VALIDATORS[*]})"
-  echo TRUSTED_VALIDATORS="(${TRUSTED_VALIDATORS[*]})"
+  echo TRUSTED_VALIDATOR_PUBKEYS="(${TRUSTED_VALIDATOR_PUBKEYS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
     echo export SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
   fi
-  echo STORAGE_BUCKET="$STORAGE_BUCKET"
   echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-  echo ARCHIVE_INTERVAL_MINUTES="$ARCHIVE_INTERVAL_MINUTES"
+  echo LEDGER_ARCHIVE_INTERVAL_MINUTES="$LEDGER_ARCHIVE_INTERVAL_MINUTES"
   if [[ -n $DISCORD_WEBHOOK ]]; then
     echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
   fi
@@ -163,7 +189,7 @@ echo ==========================================================
   set -x
   gcloud --project "$PROJECT" compute instances create \
     "$ENTRYPOINT_INSTANCE" \
-    --zone "$ZONE" \
+    --zone "$DEFAULT_ZONE" \
     --machine-type n1-standard-1 \
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
@@ -184,7 +210,7 @@ echo ==========================================================
   set -x
   gcloud --project "$PROJECT" compute instances create \
     "$API_INSTANCE" \
-    --zone "$ZONE" \
+    --zone "$DEFAULT_ZONE" \
     --machine-type n1-standard-16 \
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
@@ -194,24 +220,48 @@ echo ==========================================================
 )
 
 echo ==========================================================
-echo "Creating $VALIDATOR_INSTANCE"
+echo "Creating $WATCHTOWER_INSTANCE"
 echo ==========================================================
 (
   set -x
   gcloud --project "$PROJECT" compute instances create \
-    "$VALIDATOR_INSTANCE" \
-    --zone "$ZONE" \
-    --machine-type n1-standard-8 \
-    --boot-disk-size=2TB \
-    --tags solana-validator-minimal,solana-validator-rpc \
+    "$WATCHTOWER_INSTANCE" \
+    --zone "$DEFAULT_ZONE" \
+    --machine-type n1-standard-1 \
+    --boot-disk-size=200GB \
+    --tags solana-validator-minimal \
     --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
     --min-cpu-platform "Intel Skylake" \
 
 )
 
-if [[ -n $WAREHOUSE_NODE ]]; then
+for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
+  declare VALIDATOR_INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
+
   echo ==========================================================
-  echo "Creating $WAREHOUSE_INSTANCE"
+  echo "Creating $VALIDATOR_INSTANCE in $ZONE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute instances create \
+      "$VALIDATOR_INSTANCE" \
+      --zone "$ZONE" \
+      --machine-type n1-standard-8 \
+      --boot-disk-size=2TB \
+      --tags solana-validator-minimal,solana-validator-rpc \
+      --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+      --min-cpu-platform "Intel Skylake" \
+
+  )
+done
+
+for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
+  declare WAREHOUSE_INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
+
+  echo ==========================================================
+  echo "Creating $WAREHOUSE_INSTANCE in $ZONE"
   echo ==========================================================
   (
     set -x
@@ -226,23 +276,7 @@ if [[ -n $WAREHOUSE_NODE ]]; then
       --scopes=storage-rw \
 
   )
-fi
-
-echo ==========================================================
-echo "Creating $WATCHTOWER_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute instances create \
-    "$WATCHTOWER_INSTANCE" \
-    --zone "$ZONE" \
-    --machine-type n1-standard-1 \
-    --boot-disk-size=200GB \
-    --tags solana-validator-minimal \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
-    --min-cpu-platform "Intel Skylake" \
-
-)
+done
 
 ENTRYPOINT_HOST=$ENTRYPOINT_DNS_NAME
 ENTRYPOINT_PORT=8001
@@ -265,13 +299,16 @@ ENTRYPOINT_PORT=$ENTRYPOINT_PORT
 ENTRYPOINT=$ENTRYPOINT
 EOF
 
+
 echo ==========================================================
 echo Waiting for instances to boot
 echo ==========================================================
 # shellcheck disable=SC2068 # Don't want to double quote INSTANCES
-for instance in ${INSTANCES[@]}; do
-  while ! gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$instance" -- true; do
-    echo "Waiting for \"$instance\" to boot"
+for INSTANCE_ZONE in "${INSTANCES[@]}"; do
+  declare INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
+  while ! gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$INSTANCE" -- true; do
+    echo "Waiting for \"$INSTANCE\" to boot"
     sleep 5s
   done
 done
@@ -280,50 +317,73 @@ echo ==========================================================
 echo "Transferring files to $ENTRYPOINT_INSTANCE"
 echo ==========================================================
 (
-  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+  set -x
+  gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" --recurse \
     "$CLUSTER"/service-env.sh \
     bin/ \
     "$ENTRYPOINT_INSTANCE":
+
+  gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$ENTRYPOINT_INSTANCE" -- \
+    bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" entrypoint ""
 )
 
-echo ==========================================================
-echo "Transferring files to $VALIDATOR_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-    "$CLUSTER"/validator-identity.json \
-    "$CLUSTER"/validator-stake-account.json \
-    "$CLUSTER"/validator-vote-account.json \
-    "$CLUSTER"/service-env.sh \
-    "$CLUSTER"/ledger \
-    bin/ \
-    "$VALIDATOR_INSTANCE":
-)
+for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
+  declare VALIDATOR_INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
 
-if [[ -n $WAREHOUSE_NODE ]]; then
+  echo ==========================================================
+  echo "Transferring files to $VALIDATOR_INSTANCE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+      "$CLUSTER"/validator-identity-"$ZONE".json \
+      "$CLUSTER"/validator-stake-account-"$ZONE".json \
+      "$CLUSTER"/validator-vote-account-"$ZONE".json \
+      "$CLUSTER"/service-env.sh \
+      "$CLUSTER"/service-env-validator-"$ZONE".sh \
+      "$CLUSTER"/ledger \
+      bin/ \
+      "$VALIDATOR_INSTANCE":
+
+    gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$VALIDATOR_INSTANCE" -- \
+      bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" validator ""
+  )
+done
+
+for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
+  declare WAREHOUSE_INSTANCE=${INSTANCE_ZONE%:*}
+  declare ZONE=${INSTANCE_ZONE#*:}
+
   echo ==========================================================
   echo "Transferring files to $WAREHOUSE_INSTANCE"
   echo ==========================================================
   (
     set -x
     gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
-      "$CLUSTER"/warehouse-identity.json \
+      "$CLUSTER"/warehouse-identity-"$ZONE".json \
       "$CLUSTER"/ledger \
       "$CLUSTER"/service-env.sh \
+      "$CLUSTER"/service-env-warehouse-"$ZONE".sh \
       bin/ \
       "$WAREHOUSE_INSTANCE":
+
+    gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$WAREHOUSE_INSTANCE" -- \
+      bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" warehouse ""
   )
-fi
+done
 
 echo ==========================================================
 echo "Transferring files to $WATCHTOWER_INSTANCE"
 echo ==========================================================
 (
-  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+  set -x
+  gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" --recurse \
     "$CLUSTER"/service-env.sh \
     bin/ \
     "$WATCHTOWER_INSTANCE":
+  gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$WATCHTOWER_INSTANCE" -- \
+    bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" watchtower ""
 )
 
 echo ==========================================================
@@ -331,7 +391,7 @@ echo "Transferring files to $API_INSTANCE"
 echo ==========================================================
 (
   set -x
-  gcloud --project "$PROJECT" compute scp --zone "$ZONE" --recurse \
+  gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" --recurse \
     "$CLUSTER"/api-identity.json \
     "$CLUSTER"/ledger \
     "$CLUSTER"/service-env.sh \
@@ -342,54 +402,24 @@ echo ==========================================================
 if [[ -n $FAUCET_RPC ]]; then
   (
     set -x
-    gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$CLUSTER"/faucet.json "$API_INSTANCE":
+    gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" "$CLUSTER"/faucet.json "$API_INSTANCE":
   )
 fi
 
 if [[ -n $LETSENCRYPT_TGZ ]] && [[ -f $LETSENCRYPT_TGZ ]]; then
   (
     set -x
-    gcloud --project "$PROJECT" compute scp --zone "$ZONE" "$LETSENCRYPT_TGZ" "$API_INSTANCE":~/letsencrypt.tgz
-    gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$API_INSTANCE" -- sudo mv letsencrypt.tgz /
+    gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" "$LETSENCRYPT_TGZ" "$API_INSTANCE":~/letsencrypt.tgz
+    gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$API_INSTANCE" -- sudo mv letsencrypt.tgz /
   )
 fi
 
+(
+  set -x
+  gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$API_INSTANCE" -- \
+    bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" api "$API_DNS_NAME"
+)
 
-for instance in $INSTANCES; do
-  echo ==========================================================
-  echo "Configuring $instance"
-  echo ==========================================================
-  (
-    nodeType=
-    dnsName=
-    case $instance in
-    $API_INSTANCE)
-      nodeType=api
-      dnsName="$API_DNS_NAME"
-      ;;
-    $WAREHOUSE_INSTANCE)
-      nodeType=warehouse
-      ;;
-    $WATCHTOWER_INSTANCE)
-      nodeType=watchtower
-      ;;
-    $ENTRYPOINT_INSTANCE)
-      nodeType=entrypoint
-      ;;
-    $VALIDATOR_INSTANCE)
-      nodeType=validator
-      ;;
-    *)
-      echo "Error: Unknown instance type: $instance"
-      exit 1
-      ;;
-    esac
-
-    set -x
-    gcloud --project "$PROJECT" compute ssh --zone "$ZONE" "$instance" -- \
-      bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" "$nodeType" "$dnsName"
-  )
-done
 
 echo ==========================================================
 (

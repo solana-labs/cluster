@@ -4,7 +4,7 @@
 RELEASE_CHANNEL_OR_TAG=beta
 
 REGION=us-west1
-ZONE=${REGION}-b
+DEFAULT_ZONE=us-west1-b
 
 case $CLUSTER in
 devnet)
@@ -15,7 +15,8 @@ devnet)
   FAUCET_KEYPAIR=1
   FAUCET_RPC=1
   OPERATING_MODE=development
-  WAREHOUSE_NODE=1
+  VALIDATOR_ZONES=($DEFAULT_ZONE)
+  WAREHOUSE_ZONES=($DEFAULT_ZONE)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=devnet,u=scratch_writer,p=topsecret"
   ;;
 mainnet-beta)
@@ -31,6 +32,8 @@ mainnet-beta)
   OPERATING_MODE=stable
   WAREHOUSE_NODE=1
   CREATION_TIME="2020-03-16T07:29:00-07:00"
+  VALIDATOR_ZONES=($DEFAULT_ZONE us-east1-b europe-west4-c asia-northeast3-a)
+  WAREHOUSE_ZONES=($DEFAULT_ZONE europe-west4-c)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet-beta,u=mainnet-beta_write,p=password"
   ;;
 slp)
@@ -44,7 +47,8 @@ slp)
   FAUCET_KEYPAIR=
   FAUCET_RPC=
   OPERATING_MODE=stable
-  WAREHOUSE_NODE=1
+  VALIDATOR_ZONES=($DEFAULT_ZONE)
+  WAREHOUSE_ZONES=($DEFAULT_ZONE)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
   # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
   # DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec
@@ -60,22 +64,25 @@ tour-de-sol)
   FAUCET_KEYPAIR=1
   FAUCET_RPC=
   OPERATING_MODE=preview
-  WAREHOUSE_NODE=
+  VALIDATOR_ZONES=($DEFAULT_ZONE)
+  WAREHOUSE_ZONES=($DEFAULT_ZONE)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)
   echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'mainnet-beta', 'slp' or 'tour-de-sol'"
+  exit 1
   ;;
 esac
 
-STORAGE_BUCKET="${PROJECT}-ledger"
-INSTANCE_PREFIX=
-ARCHIVE_INTERVAL_MINUTES=720 # 12 hours
+LEDGER_ARCHIVE_INTERVAL_MINUTES=720 # 12 hours
 
+STORAGE_BUCKET_PREFIX="${PROJECT}-ledger"
+INSTANCE_PREFIX=
 if [[ -z $PRODUCTION ]]; then
-  INSTANCE_PREFIX="`whoami`-${PROJECT}-"
-  STORAGE_BUCKET="`whoami`-$STORAGE_BUCKET"
-  PROJECT=principal-lane-200702 # Jump to common development project
+  INSTANCE_PREFIX="$(whoami)-${PROJECT}2-"
+  STORAGE_BUCKET_PREFIX="$(whoami)-$STORAGE_BUCKET_PREFIX"
+
+  PROJECT=principal-lane-200702 # Jump to common development project,
 
   API_DNS_NAME=                 # Ditch static IPs
   API_ADDRESS_NAME=
@@ -83,10 +90,9 @@ if [[ -z $PRODUCTION ]]; then
   ENTRYPOINT_ADDRESS_NAME=
 
   RECREATE_STORAGE_BUCKET=1     # Flush the ledger on restarts
-  ARCHIVE_INTERVAL_MINUTES=10   # Archive faster for easier testing
-fi
-
-if [[ -n $PRODUCTION ]]; then
+  LEDGER_ARCHIVE_INTERVAL_MINUTES=10   # Archive faster for easier testing
+else
   echo "!!!!!!!!!!!!!! PRODUCTION !!!!!!!!!!!!!!"
   sleep 2
 fi
+

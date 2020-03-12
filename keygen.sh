@@ -7,16 +7,17 @@ source env.sh
 mkdir -p "$CLUSTER"
 
 keygen() {
-  declare cmd=$@
+  declare cmd=$*
 
   solana-keygen --version
-
-  test -f "$CLUSTER"/validator-identity.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-identity.json)
-  test -f "$CLUSTER"/validator-vote-account.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-vote-account.json)
-  test -f "$CLUSTER"/validator-stake-account.json ||
-    (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-stake-account.json)
+  for zone in "${VALIDATOR_ZONES[@]}"; do
+    test -f "$CLUSTER"/validator-"$zone"-identity.json ||
+      (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-identity-"$zone".json)
+    test -f "$CLUSTER"/validator-"$zone"-vote-account.json ||
+      (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-vote-account-"$zone".json)
+    test -f "$CLUSTER"/validator-"$zone"-stake-account.json ||
+      (set -x; solana-keygen $cmd --outfile "$CLUSTER"/validator-stake-account-"$zone".json)
+  done
 
   if [[ -n $FAUCET_KEYPAIR ]]; then
     test -f "$CLUSTER"/faucet.json ||
@@ -26,10 +27,10 @@ keygen() {
   test -f "$CLUSTER"/api-identity.json ||
     (set -x; solana-keygen $cmd --outfile "$CLUSTER"/api-identity.json)
 
-  if [[ -n $WAREHOUSE_NODE ]]; then
-    test -f "$CLUSTER"/warehouse-identity.json ||
-      (set -x; solana-keygen $cmd --outfile "$CLUSTER"/warehouse-identity.json)
-  fi
+  for zone in "${WAREHOUSE_ZONES[@]}"; do
+    test -f "$CLUSTER"/warehouse-"$zone"-identity.json ||
+      (set -x; solana-keygen $cmd --outfile "$CLUSTER"/warehouse-identity-"$zone".json)
+  done
 }
 
 case "$1" in

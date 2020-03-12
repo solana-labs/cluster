@@ -135,6 +135,8 @@ openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=GD/L=SZ/O
 openssl x509 -req -extfile <(printf "subjectAltName=DNS:example.com,DNS:www.example.com") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
 sudo bash -c "cat server.key server.crt >> /etc/ssl/private/haproxy.pem"
 
+rm ca.key ca.crt ca.srl server.crt server.csr server.key
+
 sudo add-apt-repository --yes ppa:certbot/certbot
 sudo apt-get --assume-yes install haproxy certbot
 

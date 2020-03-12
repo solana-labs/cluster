@@ -8,7 +8,7 @@ identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 
 trusted_validators=()
-for tv in ${TRUSTED_VALIDATORS[@]}; do
+for tv in ${TRUSTED_VALIDATOR_PUBKEYS[@]}; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 

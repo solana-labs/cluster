@@ -35,10 +35,6 @@ default_arg() {
 }
 
 args=(
-  --bootstrap-validator
-    "$CLUSTER"/validator-identity.json
-    "$CLUSTER"/validator-vote-account.json
-    "$CLUSTER"/validator-stake-account.json
   --bootstrap-validator-lamports           500000000000 # 500 SOL for voting
   --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
   --rent-burn-percentage 100                            # Burn it all!
@@ -46,6 +42,15 @@ args=(
   --ledger "$CLUSTER"/ledger
   --operating-mode "${OPERATING_MODE:?}"
 )
+
+for zone in "${VALIDATOR_ZONES[@]}"; do
+  args+=(
+    --bootstrap-validator
+      "$CLUSTER"/validator-identity-"$zone".json
+      "$CLUSTER"/validator-vote-account-"$zone".json
+      "$CLUSTER"/validator-stake-account-"$zone".json
+  )
+done
 
 if [[ -n $BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY ]]; then
   args+=(--bootstrap-stake-authorized-pubkey "$BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY")
