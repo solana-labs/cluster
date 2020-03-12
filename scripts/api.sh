@@ -22,7 +22,7 @@ exec solana-validator \
   --gossip-port 8001 \
   --ledger ./ledger \
   --identity-keypair "$identity_keypair" \
-  --limit-ledger-size 500000 \
+  --limit-ledger-size 1000000 \
   --log - \
   --no-genesis-fetch \
   --no-voting \

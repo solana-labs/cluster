@@ -18,7 +18,7 @@ exec solana-validator \
   --gossip-port 8001 \
   --identity-keypair "$identity_keypair" \
   --ledger ./ledger \
-  --limit-ledger-size 500000 \
+  --limit-ledger-size 1000000 \
   --log - \
   --no-genesis-fetch \
   --rpc-port 8899 \
