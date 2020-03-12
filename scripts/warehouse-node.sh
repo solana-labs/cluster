@@ -89,6 +89,7 @@ args=(
   --rpc-port 8899
   "${trusted_validators[@]}"
   --no-untrusted-rpc
+  --init-complete-file "$here"/.init-complete
 )
 
 pid=
@@ -111,6 +112,7 @@ trap 'kill_node_and_exit' INT TERM ERR
 
 last_ledger_dir=
 while true; do
+  rm -f "$here"/.init-complete
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
@@ -119,19 +121,38 @@ while true; do
 
   minutes_to_next_ledger_archive=$ARCHIVE_INTERVAL_MINUTES
   caught_up=false
+  initialized=false
+  SECONDS=
   while true; do
     if [[ -z $pid ]] || ! kill -0 "$pid"; then
       datapoint_error unexpected-validator-exit
       break  # validator exited unexpectedly, restart it
     fi
 
+    if ! $initialized; then
+      if [[ ! -f "$here"/.init-complete ]]; then
+        echo "waiting for node to initialize..."
+        if [[ $SECONDS -gt 600 ]]; then
+          datapoint_error validator-not-initialized
+        fi
+        sleep 60
+        continue
+      fi
+      echo Validator has initialized
+      datapoint validator-initialized
+      initialized=true
+    fi
+
     if ! $caught_up; then
       if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey"; then
         echo "catchup failed..."
-        sleep 5
+        if [[ $SECONDS -gt 600 ]]; then
+          datapoint_error validator-not-caught-up
+        fi
+        sleep 60
         continue
       fi
-      echo Node has caught up
+      echo Validator has caught up
       datapoint validator-caught-up
       caught_up=true
     fi
