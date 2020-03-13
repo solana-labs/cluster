@@ -25,38 +25,37 @@ sudo apt-get --assume-yes install \
   software-properties-common \
   vim \
 
-# Create solanad user
-sudo adduser solanad --gecos "" --disabled-password --quiet
+# Create sol user
+sudo adduser sol --gecos "" --disabled-password --quiet
+sudo adduser sol sudo
+sudo adduser sol adm
+sudo -- bash -c 'echo "sol ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers'
 
-# Install solana release as the solanad user
-sudo --login -u solanad -- bash -c "
+# Install solana release as the sol user
+sudo --login -u sol -- bash -c "
   curl -sSf https://raw.githubusercontent.com/solana-labs/solana/v1.0.0/install/solana-install-init.sh | sh -s $SOLANA_VERSION
 "
 
-# Move the remainder of the files in the home directory over to the solanad user
-sudo chown -R solanad:solanad ./*
-sudo mv ./* /home/solanad
-# Move the systemd service file into /etc
-sudo cp /home/solanad/bin/"$NODE_TYPE".service /etc/systemd/system/solanad.service
-sudo systemctl daemon-reload
+sudo --login -u sol -- bash -c "
+  echo ~/bin/print-keys.sh >> ~/.profile;
+  mkdir ~/.ssh;
+  chmod 0700 ~/.ssh;
+  echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKU6YrfEw24+hhxOsu7bAXr1m38G9CCmtUtPpgOjXys4 mvines@sol' >> ~/.ssh/authorized_keys;
+  echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAsOLWUu8wbe6C5IdyB+gy1KwPCggiWv2UwhWRNOI6kV ryoqun@ubuqun' >> ~/.ssh/authorized_keys;
+  echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxN1jPgVdSqNmGAjFwA1ypcnME8uM/9NjfaUZBpNdMh sakridge@valverde' >> ~/.ssh/authorized_keys;
+  echo 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOk4jgcX/VWSk3j//wXeIynSQjsOt+AjYXM/XZUMa7R1Q8lfIJGK/qHLBP86CMXdpyEKJ5i37QLYOL+0VuRy0CI=' >> ~/.ssh/authorized_keys;
+  echo 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKMl07qHaMCmnvRKBCmahbBAR6GTWkR5BVe8jdzDJ7xzjXLZlf1aqfaOjt5Cu2VxvW7lUtpJQGLJJiMnWuD4Zmc= dan@Dans-MBP.local' >> ~/.ssh/authorized_keys;
 
-# Start the solana service
-sudo systemctl start solanad
-sudo systemctl enable solanad
-sudo systemctl --no-pager status solanad
+"
 
-# Setup helpful links and shortcuts
-ln -s /home/solanad/service-env.sh .
-ln -s /home/solanad/ledger .
-ln -s /home/solanad/bin .
-ln -s /etc/systemd/system/solanad.service .
+ln -s /etc/systemd/system/sol.service .
 
 cat > stop <<EOF
 #!/usr/bin/env bash
 # Stop the $NODE_TYPE software
 
 set -ex
-sudo systemctl stop solanad
+sudo systemctl stop sol
 EOF
 chmod +x stop
 
@@ -66,7 +65,7 @@ cat > restart <<EOF
 
 set -ex
 sudo systemctl daemon-reload
-sudo systemctl restart solanad
+sudo systemctl restart sol
 EOF
 chmod +x restart
 
@@ -79,14 +78,14 @@ sudo journalctl -f "\$@"
 EOF
 chmod +x journalctl
 
-cat > solanad <<EOF
+cat > sol <<EOF
 #!/usr/bin/env bash
-# Switch to the solanad user
+# Switch to the sol user
 
 set -ex
-sudo --login -u solanad -- "\$@"
+sudo --login -u sol -- "\$@"
 EOF
-chmod +x solanad
+chmod +x sol
 
 cat > update <<EOF
 #!/usr/bin/env bash
@@ -97,35 +96,48 @@ if [[ -z \$1 ]]; then
   exit 1
 fi
 set -ex
-sudo --login -u solanad -- solana-install init "\$@"
+if [[ \$USER != sol ]]; then
+  sudo --login -u sol -- solana-install init "\$@"
+else
+  solana-install init "\$@"
+fi
 sudo systemctl daemon-reload
-sudo systemctl restart solanad
-sudo systemctl --no-pager status solanad
+sudo systemctl restart sol
+sudo systemctl --no-pager status sol
 EOF
 chmod +x update
 
+# Move the remainder of the files in the home directory over to the sol user
+sudo chown -R sol:sol ./*
+sudo mv ./* /home/sol
+# Move the systemd service file into /etc
+sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
+sudo systemctl daemon-reload
 
-echo "~/solanad ./bin/print-keys.sh" >> ~/.profile
+# Start the solana service
+sudo systemctl start sol
+sudo systemctl enable sol
+sudo systemctl --no-pager status sol
 
 [[ $NODE_TYPE = api ]] || exit 0
 
 # Install blockexplorer dependencies
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs screen
-sudo /home/solanad/bin/install-redis.sh
+sudo /home/sol/bin/install-redis.sh
 
-sudo --login -u solanad -- bash -c "
+sudo --login -u sol -- bash -c "
   set -ex;
-  echo '@reboot /home/solanad/bin/run-blockexplorer.sh' > crontab.txt;
+  echo '@reboot /home/sol/bin/run-blockexplorer.sh' > crontab.txt;
   if [[ -f faucet.json ]]; then
-    echo '@reboot /home/solanad/bin/run-faucet.sh' >> crontab.txt;
+    echo '@reboot /home/sol/bin/run-faucet.sh' >> crontab.txt;
   fi;
   cat crontab.txt | crontab -;
   rm crontab.txt;
   crontab -l;
 "
-screen -dmS blockexplorer sudo --login -u solanad /home/solanad/bin/run-blockexplorer.sh
-screen -dmS faucet sudo --login -u solanad /home/solanad/bin/run-blockexplorer.sh
+screen -dmS blockexplorer sudo --login -u sol /home/sol/bin/run-blockexplorer.sh
+screen -dmS faucet sudo --login -u sol /home/sol/bin/run-blockexplorer.sh
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line

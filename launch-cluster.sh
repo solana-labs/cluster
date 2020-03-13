@@ -170,7 +170,7 @@ done
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
     echo export SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
   fi
-  echo PATH=/home/solanad/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+  echo PATH=/home/sol/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
   echo LEDGER_ARCHIVE_INTERVAL_MINUTES="$LEDGER_ARCHIVE_INTERVAL_MINUTES"
   if [[ -n $DISCORD_WEBHOOK ]]; then
     echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
@@ -481,6 +481,11 @@ echo ==========================================================
   gsutil -m cp accounts_owned_by* gs://"$STORAGE_BUCKET"
 )
 
+echo ==========================================================
+(
+  set -x
+  gcloud --project "$PROJECT" compute instances list
+)
 echo ==========================================================
 echo Success
 exit 0

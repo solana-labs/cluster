@@ -11,4 +11,4 @@ if [[ -z $instanceName ]]; then
 fi
 
 set -x
-gcloud --project $PROJECT compute ssh --zone ${ZONE:?} "$instanceName" -- journalctl -u solanad -f
+gcloud --project $PROJECT compute ssh --zone ${ZONE:?} "$instanceName" -- journalctl -u sol -f

@@ -7,9 +7,9 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=solanad
+User=sol
 LogRateLimitIntervalSec=0
-ExecStart=/home/solanad/bin/watchtower.sh
+ExecStart=/home/sol/bin/watchtower.sh
 
 [Install]
 WantedBy=multi-user.target

@@ -6,11 +6,11 @@ After=network.target
 Type=simple
 Restart=always
 RestartSec=1
-User=solanad
+User=sol
 LimitNOFILE=65536
 LogRateLimitIntervalSec=0
 StartLimitIntervalSec=0
-ExecStart=/home/solanad/bin/warehouse.sh
+ExecStart=/home/sol/bin/warehouse.sh
 
 [Install]
 WantedBy=multi-user.target

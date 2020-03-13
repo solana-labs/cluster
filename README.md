@@ -3,10 +3,10 @@ _WARNING_: THIS README IS OUTDATED
 # Machine Overview
 
 Each machine is configured as similarly as possible.  The solana sofware runs
-under the user `solanad` as a systemd service.  The name of the systemd service
-is the same across all nodes, `solanad`.
+under the user `sol` as a systemd service.  The name of the systemd service
+is the same across all nodes, `sol`.
 
-The ledger is stored in /home/solanad/ledger
+The ledger is stored in /home/sol/ledger
 
 ## Cluster Entrypoint Node
 * DNS: cluster.solana.com
@@ -97,23 +97,23 @@ The `./launch-cluster.sh` script programmatically creates and configures the
 cluster instances.
 
 ## Manipulating the systemd service
-The file `/etc/systemd/system/solanad.service` describes the systemd service for
+The file `/etc/systemd/system/sol.service` describes the systemd service for
 each of the instances.
 
 From a shell on the instance, view the current status of the services with
 ```
-$ sudo systemctl status solanad
+$ sudo systemctl status sol
 ```
 
 Follow logs with:
 ```
-$ journalctl -u solanad -f
+$ journalctl -u sol -f
 ```
 
-If `/etc/systemd/system/solanad.service` is modified, apply the changes with:
+If `/etc/systemd/system/sol.service` is modified, apply the changes with:
 ```
 $ sudo systemctl daemon-reload
-$ sudo systemctl restart solanad
+$ sudo systemctl restart sol
 ```
 
 ## Updating the solana software

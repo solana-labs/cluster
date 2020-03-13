@@ -79,7 +79,7 @@ LEDGER_ARCHIVE_INTERVAL_MINUTES=720 # 12 hours
 STORAGE_BUCKET_PREFIX="${PROJECT}-ledger"
 INSTANCE_PREFIX=
 if [[ -z $PRODUCTION ]]; then
-  INSTANCE_PREFIX="$(whoami)-${PROJECT}2-"
+  INSTANCE_PREFIX="$(whoami)-${PROJECT}-"
   STORAGE_BUCKET_PREFIX="$(whoami)-$STORAGE_BUCKET_PREFIX"
 
   PROJECT=principal-lane-200702 # Jump to common development project,
