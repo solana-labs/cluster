@@ -439,41 +439,43 @@ echo ==========================================================
 
 (
   echo === Foundation Stake Accounts ===
-  ./get_accounts_from_seed.sh "$RPC_URL" GRZwoJGisLTszcxtWpeREJ98EGg8pZewhbtcrikoU7b3 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" J51tinoLdmEdUR27LUVymrb2LB3xQo1aSHSgmbSGdj58 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 4xh7vtQCTim3vgpQ1dQQWjtKrBSkbtL3s15FimXVJAAP --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 95Nf8XfoecteSXU9nbcvzkrFQdu6FqPaH3EvhwLaC83t --display_summary
 
   echo === Grant Stake Accounts ===
-  ./get_accounts_from_seed.sh "$RPC_URL" DNaKiBwwbbqk1wVoC5AQxWQbuDhvaDVbAtXzsVos9mrc --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" HvXQPXAijjG1vnQs6HXVtUUtFVzi5HNgXV9LGnHvYF85 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 8w5cgUQfXAZZWyVgenPHpQ1uABXUVLnymqXbuZPx7yqt --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 9eyXtP43dCp59oyvWG2R7WQCeJ2bA6TWoLzXg1KTDfQQ --display_summary
 
   echo === Community Stake Accounts ===
-  ./get_accounts_from_seed.sh "$RPC_URL" BzuqQFnu7oNUeok9ZoJezpqu2vZJU7XR1PxVLkk6wwUD --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" FwMbkDZUb78aiMWhZY4BEroAcqmnrXZV77nwrg71C57d --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 4h1rt2ic4AXwG7p3Qqhw57EMDD4c3tLYb5J3QstGA2p5 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" Eo1iDtrZZiAkQFA8u431hedChaSUnPbU8MWg849MFvEZ --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 7KCzZCbZz6V1U1YXUpBNaqQzQCg2DKo8JsNhKASKtYxe --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 2J8mJU6tWg78DdQVEqMfpN3rMeNbcRT9qGL3yLbmSXYL --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 7vEAL3nS9CWmy1q6njUUyHE7Cf5RmyQpND6CsoHjzPiR --display_summary
 
-  echo === External Stake Accounts ===
-  ./get_accounts_from_seed.sh "$RPC_URL" CDtJpwRSiPRDGeKrvymWQKM7JY9M3hU7iimEKBDxZyoP --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" HbENu65qjWLEB5TrMouSSWLq9mbtGx2bvfhPjk2FpYek --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" C9CfFpmLDsQsz6wt7MrrZquNB5oS4QkpJkmDAiboVEZZ --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 6ne6Rbag4FAnop1KNgVdM1SEHnJEysHSWyqvRpFrzaig --display_summary
+  echo === Service Stake Accounts ===
+  ./get_accounts_from_seed.sh "$RPC_URL" B1hegzthtfNQxyEPzkESySxRjMidNqaxrzbQ28GaEwn8 --display_summary
   ./get_accounts_from_seed.sh "$RPC_URL" 4AcoZa1P8fF5XK21RJsiuMRZPEScbbWNc75oakRFHiBz --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" GTyawCMwt3kMb51AgDtfdp97mDot7jNwc8ifuS9qqANg --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" Fqxs9MhqjKuMq6YwjBG4ktEapuZQ3kj19mpuHLZKtkg9 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 9MYDzj7QuAX9QAK7da1GhzPB4gA3qbPNWsW3MMSZobru --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" E4DLNkmdL34ejA48ApfPDoFVuD9XWAFqi8bXzBGRhKst --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 8cV7zCTF5UMrZakZXiL2Jw5uY3ms2Wz4twzFXEY9Kge2 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" JBGnGdLyo7V2z9hz51mnnbyDp9sBACtw5WYH9YRG8n7e --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" CqKdQ57mBj2mKcAbpjWc28Ls7yXzBXboxSTCRWocmUVj --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 2SCJKvh7wWo32PtfUZdVZQ84WnMWoUpF4WTm6ZxcCJ15 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" FeumxB3gfzrVQzABBiha8AacKPY3Rf4BTFSh2aZWHqR8 --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" HBwFWNGPVZgkf3yqUKxuAds5aANGWX62LzUFvZVCWLdJ --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 3JMz3kaDUZEVK2JVjRqwERGMp7LbWbgUjAFBb42qxoHb --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" XTeBBZextvHkoRqDF8yb4hihjcraKQDwTEXhzjd8fip --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" E5bSU5ywqPiz3ije89ef5gaEC7jy81BAc72Zeb9MqeHY --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 4ZemkSoE75RFE1SVLnnmHcaNWT4qN8KFrKP2wAYfv8CB --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" 72BGEwYee5txFonmpEarTEKCZVN2UxcSUgdphdhcx3V --display_summary
-  ./get_accounts_from_seed.sh "$RPC_URL" DRp1Scyn4yJZQfMAdQew2x8RtvRmsNELN37JTK5Xvzgn --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" AkJ7yssRqS3X4UWLUsPTxbP6LfVgdPYBWH4Jgk5EETgZ --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 4DVkqvRP8y26JvzNwsnQEQuC7HASwpGs58GsAT9XJMVg --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" B2EWnwgmNd3KMpD71yZMijhML1jd4TYp96zJdhMiWZ7b --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" HtQS1CH3nsUHmnLpenj5W6KHzFWTf3mzCn1mTqK7LkB7 --display_summary
+
+  echo === Creator Stake Accounts ===
+  ./get_accounts_from_seed.sh "$RPC_URL" uE3TVEffRp69mrgknYr71M18GDqL7GxCNGYYRjb3oUt --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 9noVEZreMmgQvE8iyKmxy7CGTJ2enELyuJ1qxFtXrfJB --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" BU7LA4kYvicfPCp22EM2Tth3eaeWAXYo6yCgWXQFJ42z --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" BrNFrFeuev8TosKhRe2kvVZTYrcUuYaqCfptWutxs17B --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 34HCVh8Yx4jNkaeLUQEKibFKUZDPQMjWzkXy8qUfdhS4 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" AyZb3xrZE8wnS6gYBdsJg5v8CjyrX2ZGXU2zMakCFyYd --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 7SbpY8LmZUb5XRqDbyoreUrSVVV9c39wkpEz81kEAXu5 --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" C9CfFpmLDsQsz6wt7MrrZquNB5oS4QkpJkmDAiboVEZZ --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 5WbxKiW7bghkr8JN6ZAv2TQt4PfJFvtuqNaN8gyQ5UzU --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" Gc8XnHU6Nnriwt9RbEwi7PTosx4YanLyXak9GTbB8VaH --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" AMmYEynkd78uNTZDFFrMw6NKjWTgqW7M8EFjvajk23VR --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 4qWoqt71p7h6siSDS6osu4oVWpw8R7E6uYYiY7Z6oJbH --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" GYitoBY53E9awc56NWHJ2kxMwj4do5GSmvTRowjGaRDw --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" Drg9uSvSEfjtn15jqmmrEQnA4pvU1ToYSGSa1Dv9C6Fk --display_summary
+  ./get_accounts_from_seed.sh "$RPC_URL" 95HsPFFvwbWpk42MKzenauSoULNzk8Tg6fc6EiJhLsUZ --display_summary
 ) | tee accounts_owned_by.txt
 
 (
