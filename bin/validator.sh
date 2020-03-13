@@ -19,13 +19,13 @@ exec solana-validator \
   --dynamic-port-range 8001-8010 \
   --entrypoint "$ENTRYPOINT" \
   --gossip-port 8001 \
-  --identity-keypair "$identity_keypair" \
+  --identity "$identity_keypair" \
   --ledger ~/ledger \
   --limit-ledger-size 1000000 \
   --log - \
   --no-genesis-fetch \
   --rpc-port 8899 \
-  --voting-keypair ~/validator-vote-account-$ZONE.json \
+  --vote-account ~/validator-vote-account-$ZONE.json \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
