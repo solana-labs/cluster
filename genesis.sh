@@ -36,7 +36,7 @@ default_arg() {
 
 args=(
   --bootstrap-validator-lamports           500000000000 # 500 SOL for voting
-  --bootstrap-validator-stake-lamports  500000000000000 # 500,000 thousand SOL
+  --bootstrap-validator-stake-lamports  500000000000000 # 500,000 SOL
   --rent-burn-percentage 100                            # Burn it all!
   --fee-burn-percentage 100                             # Burn it all!
   --ledger "$CLUSTER"/ledger
