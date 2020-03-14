@@ -145,8 +145,11 @@ for ZONE in "${WAREHOUSE_ZONES[@]}"; do
 
   (
     set -x
-    gsutil -m cp -r "$CLUSTER"/ledger/genesis.tar.bz2 gs://"$STORAGE_BUCKET"
-    gsutil -m cp -r "$CLUSTER"/*.json gs://"$STORAGE_BUCKET"
+    gsutil -m cp -r \
+      "$CLUSTER"/ledger/genesis.tar.bz2 \
+      "$CLUSTER"/*.json \
+      "$CLUSTER"/genesis-summary.txt \
+      gs://"$STORAGE_BUCKET"
   )
 
   (

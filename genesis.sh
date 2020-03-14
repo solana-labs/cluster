@@ -90,7 +90,15 @@ if [[ -z $CREATION_TIME ]]; then
 fi
 
 default_arg --creation-time "$CREATION_TIME"
-(
-  set -x
-  solana-genesis "${args[@]}"
-)
+
+{
+  (
+    set -x
+    solana-genesis "${args[@]}"
+  )
+
+  echo ==========================================================================
+  for keypair in "$CLUSTER"/validator-identity*.json; do
+    echo "--trusted validator $(solana-keygen pubkey "$keypair")"
+  done
+} | tee "$CLUSTER"/genesis-summary.txt
