@@ -1,7 +1,7 @@
 # source this file
 
-RELEASE_CHANNEL_OR_TAG=1.0.6
-#RELEASE_CHANNEL_OR_TAG=beta
+#RELEASE_CHANNEL_OR_TAG=1.0.6
+RELEASE_CHANNEL_OR_TAG=beta
 
 REGION=us-west1
 DEFAULT_ZONE=us-west1-b
@@ -49,8 +49,6 @@ slp)
   VALIDATOR_ZONES=($DEFAULT_ZONE)
   WAREHOUSE_ZONES=($DEFAULT_ZONE)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
-  # Tell `solana-watchtower` to notify the #slp1-validators Discord channel on a sanity failure
-  # DISCORD_WEBHOOK=https://discordapp.com/api/webhooks/654940298375462932/KlprfdAahVxwyHptYsN9Lbitb8-kzRU4wOJ3e3QVndhzdwu28YbVtzRlb_BIZZA7c3ec
   ;;
 tour-de-sol)
   echo "### TdS ###"

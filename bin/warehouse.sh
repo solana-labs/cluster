@@ -92,7 +92,7 @@ args=(
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
-  --identity-keypair "$identity_keypair"
+  --identity "$identity_keypair"
   --ledger "$ledger_dir"
   --log ~/validator.log
   --no-genesis-fetch
