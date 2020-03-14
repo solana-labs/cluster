@@ -12,7 +12,6 @@ source ~/service-env-warehouse-*.sh
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
 
-
 if [[ -z $ENTRYPOINT ]]; then
   echo ENTRYPOINT environment variable not defined
   exit 1
@@ -57,7 +56,7 @@ datapoint_error() {
     comma=,
   fi
 
-  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey,error=1 event=\"$event\"$comma$args"
+  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey error=1,event=\"$event\"$comma$args"
 }
 
 datapoint() {
@@ -69,7 +68,7 @@ datapoint() {
     comma=,
   fi
 
-  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey event=\"$event\"$comma$args"
+  $metricsWriteDatapoint "infra-warehouse-node,host_id=$identity_pubkey error=0,event=\"$event\"$comma$args"
 }
 
 
