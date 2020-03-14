@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 
 set -e
+shopt -s nullglob
+
 here=$(dirname "$0")
 
+panic() {
+  echo "error: $*" >&2
+  exit 1
+
+}
+
 #shellcheck source=/dev/null
-source ~/service-env.sh ~/service-env-*.sh
+source ~/service-env.sh
 
 #shellcheck source=/dev/null
 source ~/service-env-warehouse-*.sh
@@ -113,9 +121,76 @@ kill_node_and_exit() {
 }
 trap 'kill_node_and_exit' INT TERM ERR
 
-last_ledger_dir=
+
+upload_to_storage_bucket() {
+  if [[ ! -d ~/"$STORAGE_BUCKET" ]]; then
+    return
+  fi
+  killall gsutil || true
+
+  SECONDS=
+  while ! timeout $((LEDGER_ARCHIVE_INTERVAL_MINUTES / 2))m gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
+    echo "gsutil rsync failed..."
+    datapoint_error gsutil-rsync-failure
+    sleep 5
+
+    if [[ $((SECONDS / 60)) -lt $((LEDGER_ARCHIVE_INTERVAL_MINUTES / 2)) ]]; then
+      echo Failure to upload ledger in $SECONDS seconds
+      return
+    fi
+  done
+  echo Ledger upload took $SECONDS seconds
+  datapoint ledger-upload-complete "duration_secs=$SECONDS"
+  rm -rf ~/"$STORAGE_BUCKET"
+}
+
+get_latest_snapshot() {
+  declare dir="$1"
+  if [[ ! -d "$dir" ]]; then
+    panic "get_latest_snapshot: not a directory: $dir"
+  fi
+
+  find "$dir" -name snapshot-\*.tar.bz2 | sort | tail -n1
+}
+
+get_snapshot_slot() {
+  declare snapshot="$1"
+
+  snapshot="$(basename "$snapshot")"
+  snapshot="${snapshot#snapshot-}"
+  snapshot="${snapshot%-*}"
+  echo "$snapshot"
+}
+
+archive_snapshot_slot=invalid
+
+prepare_archive_location() {
+  # If a current archive directory does not exist, create it and save the latest
+  # snapshot in it (if not at genesis)
+  if [[ ! -d ~/ledger-archive ]]; then
+    mkdir ~/ledger-archive
+    declare archive_snapshot
+    archive_snapshot=$(get_latest_snapshot "$ledger_dir")
+    if [[ -n "$archive_snapshot" ]]; then
+      ln "$archive_snapshot" ~/ledger-archive/
+    fi
+  fi
+
+  # Determine the current archive slot
+  declare archive_snapshot
+  archive_snapshot=$(get_latest_snapshot ~/ledger-archive)
+  if [[ -n "$archive_snapshot" ]]; then
+    archive_snapshot_slot=$(get_snapshot_slot "$archive_snapshot")
+  else
+    archive_snapshot_slot=0
+  fi
+}
+
+prepare_archive_location
+
 while true; do
   rm -f ~/.init-complete
+
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
@@ -138,7 +213,7 @@ while true; do
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-initialized
         fi
-        sleep 60
+        sleep 10
         continue
       fi
       echo Validator has initialized
@@ -170,16 +245,17 @@ while true; do
       continue
     fi
 
-    latest_snapshot="$(ls "$ledger_dir"/snapshot-*.tar.bz2 | sort | tail -n1)"
-    echo "Latest snapshot: $latest_snapshot"
-    if [[ ! -f "$latest_snapshot" ]]; then
+    latest_snapshot=$(get_latest_snapshot "$ledger_dir")
+    if [[ -z $latest_snapshot ]]; then
       echo "Validator has not produced a snapshot yet"
       datapoint_error snapshot-missing
       minutes_to_next_ledger_archive=1 # try again later
       continue
     fi
+    latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
+    echo "Latest snapshot: slot $latest_snapshot_slot: $latest_snapshot"
 
-    if [[ -d "$last_ledger_dir" ]] && [[ -f "$last_ledger_dir/$(basename "$latest_snapshot")" ]] ; then
+    if [[ "$archive_snapshot_slot" = "$latest_snapshot_slot" ]]; then
       echo "Validator has not produced a new snapshot yet"
       datapoint_error stale-snapshot
       minutes_to_next_ledger_archive=1 # try again later
@@ -190,34 +266,30 @@ while true; do
     datapoint validator-terminated
     kill_node
 
-    echo Open the ledger to force a rocksdb log file cleanup
-    SECONDS=
+    echo "Archiving snapshot from $archive_snapshot_slot and subsequent ledger"
     (
       set -x
-      solana-ledger-tool --ledger "$ledger_dir" bounds | tee bounds.txt
+      solana-ledger-tool --ledger "$ledger_dir" bounds | tee ~/bounds.txt
     )
-    ledger_bounds="$(cat bounds.txt)"
-    echo Ledger compaction took $SECONDS seconds
-    datapoint ledger-compacted "duration_secs=$SECONDS"
+    ledger_bounds="$(cat ~/bounds.txt)"
+    datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
 
-    echo Archive the current ledger and snapshot
-    if [[ -n "$last_ledger_dir" ]]; then
-      rm -rf "$last_ledger_dir"
-    fi
-    timestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-    last_ledger_dir="$ledger_dir$timestamp"
-    mkdir "$last_ledger_dir"
-    mv "$ledger_dir"/rocksdb "$last_ledger_dir"
-    ln "$latest_snapshot" "$last_ledger_dir"/
+    mv "$ledger_dir"/rocksdb ~/ledger-archive/
 
-    SECONDS=
-    while ! gsutil -m rsync -r "$last_ledger_dir" gs://"$STORAGE_BUCKET"/"$timestamp"; do
-      echo "gsutil rsync failed..."
-      datapoint_error gsutil-rsync-failure
-      sleep 5
-    done
-    echo Ledger archiving took $SECONDS seconds
-    datapoint ledger-archived "label=\"$timestamp\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
+    mkdir -p ~/"$STORAGE_BUCKET"
+    mv ~/ledger-archive ~/"$STORAGE_BUCKET"/"$archive_snapshot_slot"
+
+    upload_to_storage_bucket &
+
+    # Clean out the ledger directory from all artifacts other than genesis and
+    # the snapshot archives, so the warehouse node restarts cleanly from its
+    # last snapshot
+    rm -rf "$ledger_dir"/accounts "$ledger_dir"/snapshot
+
+    # Prepare for next archive
+    rm -rf ~/ledger-archive
+    prepare_archive_location
+
     break
   done
 done
