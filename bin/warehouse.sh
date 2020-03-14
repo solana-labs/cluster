@@ -128,6 +128,20 @@ upload_to_storage_bucket() {
   fi
   killall gsutil || true
 
+  for rocksdb in ~/"$STORAGE_BUCKET"/*/rocksdb; do
+    SECONDS=
+    (
+      cd "$(dirname "$rocksdb")"
+      declare slot=$PWD
+      echo "Creating rocksdb.tar.bz2 for slot $slot"
+      rm -rf rocksdb.tar.bz2
+      tar jcf rocksdb.tar.bz2 rocksdb
+      rm -rf rocksdb
+      echo "rocksdb.tar.bz2 for slot $slot created in $SECONDS seconds"
+    )
+    datapoint created-rocksdb-tar-bz2 "duration_secs=$SECONDS"
+  done
+
   SECONDS=
   while ! timeout $((LEDGER_ARCHIVE_INTERVAL_MINUTES / 2))m gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
     echo "gsutil rsync failed..."
@@ -267,6 +281,7 @@ while true; do
     kill_node
 
     echo "Archiving snapshot from $archive_snapshot_slot and subsequent ledger"
+    SECONDS=
     (
       set -x
       solana-ledger-tool --ledger "$ledger_dir" bounds | tee ~/bounds.txt
