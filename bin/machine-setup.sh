@@ -20,6 +20,7 @@ sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 sudo apt-get update
 sudo apt-get --assume-yes install \
   iputils-ping \
+  less \
   psmisc \
   silversearcher-ag \
   software-properties-common \
