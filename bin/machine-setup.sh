@@ -108,6 +108,7 @@ sudo systemctl --no-pager status sol
 EOF
 chmod +x update
 
+
 # Move the remainder of the files in the home directory over to the sol user
 sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
@@ -129,16 +130,17 @@ sudo /home/sol/bin/install-redis.sh
 
 sudo --login -u sol -- bash -c "
   set -ex;
-  echo '@reboot /home/sol/bin/run-blockexplorer.sh' > crontab.txt;
+  echo '#!/bin/sh' > ~/on-reboot;
+  echo '/home/sol/bin/run-blockexplorer.sh &' > ~/on-reboot;
   if [[ -f faucet.json ]]; then
-    echo '@reboot /home/sol/bin/run-faucet.sh' >> crontab.txt;
+    echo '/home/sol/bin/run-faucet.sh &' > ~/on-reboot;
   fi;
-  cat crontab.txt | crontab -;
-  rm crontab.txt;
+  chmod +x ~/on-reboot;
+
+  echo '@reboot /home/sol/on-reboot' | crontab -;
   crontab -l;
+  screen -dmS on-reboot ~/on-reboot
 "
-screen -dmS blockexplorer sudo --login -u sol /home/sol/bin/run-blockexplorer.sh
-screen -dmS faucet sudo --login -u sol /home/sol/bin/run-blockexplorer.sh
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
