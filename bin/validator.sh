@@ -26,6 +26,7 @@ exec solana-validator \
   --no-genesis-fetch \
   --rpc-port 8899 \
   --vote-account ~/validator-vote-account-$ZONE.json \
+  --halt-on-trusted-validators-accounts-hash-mismatch \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
