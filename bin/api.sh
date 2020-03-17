@@ -12,7 +12,7 @@ for tv in ${TRUSTED_VALIDATOR_PUBKEYS[@]}; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
-if [[ -f faucet.json ]]; then
+if [[ -f ~/faucet.json ]]; then
   maybe_rpc_faucet_address="--rpc-faucet-address 127.0.0.1:9900"
 fi
 
