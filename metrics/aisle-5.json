@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1583883736968,
+    "iteration": 1584462797514,
     "links": [],
     "panels": [
         {
@@ -111,7 +111,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT LAST(\"ok\") FROM \"$testnet\".\"autogen\".\"watchtower-sanity\" WHERE \"ok\" = true AND $timeFilter\n\n \n",
+                    "query": "SELECT LAST(\"ok\") FROM \"$cluster\".\"autogen\".\"watchtower-sanity\" WHERE \"ok\" = true AND $timeFilter\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -229,7 +229,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT LAST(\"ok\") FROM \"$testnet\".\"autogen\".\"watchtower-sanity\"  WHERE $timeFilter\n\n \n",
+                    "query": "SELECT LAST(\"ok\") FROM \"$cluster\".\"autogen\".\"watchtower-sanity\"  WHERE $timeFilter\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -347,7 +347,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT count(\"ok\") FROM \"$testnet\".\"autogen\".\"watchtower-sanity\"  WHERE \"ok\" = false AND $timeFilter\n\n \n",
+                    "query": "SELECT count(\"ok\") FROM \"$cluster\".\"autogen\".\"watchtower-sanity\"  WHERE \"ok\" = false AND $timeFilter\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -460,7 +460,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT count(\"event\") FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE \"error\" = 1 AND $timeFilter\n\n \n",
+                    "query": "SELECT count(\"event\") FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"error\" = 1 AND $timeFilter\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -573,7 +573,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT \"label\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' AND time > now() - 24h\n\n \n",
+                    "query": "SELECT \"label\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' AND time > now() - 24h\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -728,10 +728,10 @@
                             "type": "fill"
                         }
                     ],
-                    "measurement": "/^$testnet$/",
+                    "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"test\", \"err\" FROM \"$testnet\".\"autogen\".\"watchtower-sanity-failure\"  WHERE $timeFilter ORDER BY time DESC ",
+                    "query": "SELECT \"test\", \"err\" FROM \"$cluster\".\"autogen\".\"watchtower-sanity-failure\"  WHERE $timeFilter ORDER BY time DESC ",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -890,10 +890,10 @@
                             "type": "fill"
                         }
                     ],
-                    "measurement": "/^$testnet$/",
+                    "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\", \"minutes_remaining\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
+                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\", \"minutes_remaining\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -1025,10 +1025,10 @@
                         }
                     ],
                     "hide": false,
-                    "measurement": "/^$testnet$/",
+                    "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"label\", \"duration_secs\", \"bounds\" FROM \"$testnet\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
+                    "query": "SELECT \"label\", \"duration_secs\", \"bounds\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "table",
@@ -1082,24 +1082,14 @@
                     "text": "cluster",
                     "value": "cluster"
                 },
-                "hide": 1,
+                "hide": 0,
                 "includeAll": false,
                 "label": "Cluster",
                 "multi": false,
-                "name": "testnet",
+                "name": "cluster",
                 "options": [
                     {
                         "selected": true,
-                        "text": "cluster",
-                        "value": "cluster"
-                    },
-                    {
-                        "selected": false,
-                        "text": "tds",
-                        "value": "tds"
-                    },
-                    {
-                        "selected": false,
                         "text": "mainnet-beta",
                         "value": "mainnet-beta"
                     },
@@ -1107,9 +1097,14 @@
                         "selected": false,
                         "text": "devnet",
                         "value": "devnet"
+                    },
+                    {
+                        "selected": false,
+                        "text": "tds",
+                        "value": "tds"
                     }
                 ],
-                "query": "cluster,tds,mainnet-beta,devnet",
+                "query": "mainnet-beta,devnet,tds",
                 "type": "custom"
             }
         ]
@@ -1146,5 +1141,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 24
+    "version": 28
 }

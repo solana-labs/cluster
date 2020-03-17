@@ -35,21 +35,6 @@ mainnet-beta)
   WAREHOUSE_ZONES=($DEFAULT_ZONE europe-west4-c)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet-beta,u=mainnet-beta_write,p=password"
   ;;
-slp)
-  echo "### SLP Cluster ###"
-  PROJECT="solana-mainnet"
-  API_ADDRESS_NAME=api-mainnet-solana-com
-  API_DNS_NAME=softlaunch.solana.com
-  BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=3b7akieYUyCgz3Cwt5sTSErMWjg8NEygD6mbGjhGkduB # "one thanks" catch-all community pool
-  ENTRYPOINT_ADDRESS_NAME=mainnet-solana-com
-  EXTERNAL_ACCOUNTS_FILE=slp-validator-identity-accounts.yml
-  FAUCET_KEYPAIR=
-  FAUCET_RPC=
-  OPERATING_MODE=stable
-  VALIDATOR_ZONES=($DEFAULT_ZONE)
-  WAREHOUSE_ZONES=($DEFAULT_ZONE)
-  [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=slp2"
-  ;;
 tour-de-sol)
   echo "### TdS ###"
   PROJECT="tour-de-sol"
@@ -66,7 +51,7 @@ tour-de-sol)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)
-  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'mainnet-beta', 'slp' or 'tour-de-sol'"
+  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'mainnet-beta', or 'tour-de-sol'"
   exit 1
   ;;
 esac
