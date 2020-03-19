@@ -51,6 +51,13 @@ if [[ -z $RPC_URL ]]; then
 fi
 
 ledger_dir=~/ledger
+exit_signal_file=~/warehouse-exit-signal
+
+if [[ -f $exit_signal_file ]]; then
+  echo $exit_signal_file present, refusing to start
+  exit 0
+fi
+
 
 identity_keypair=~/warehouse-identity-$ZONE.json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
@@ -132,12 +139,12 @@ upload_to_storage_bucket() {
     SECONDS=
     (
       cd "$(dirname "$rocksdb")"
-      declare slot=$PWD
-      echo "Creating rocksdb.tar.bz2 for slot $slot"
+      declare archive_dir=$PWD
+      echo "Creating rocksdb.tar.bz2 in $archive_dir"
       rm -rf rocksdb.tar.bz2
       tar jcf rocksdb.tar.bz2 rocksdb
       rm -rf rocksdb
-      echo "rocksdb.tar.bz2 for slot $slot created in $SECONDS seconds"
+      echo "$archive_dir/rocksdb.tar.bz2 created in $SECONDS seconds"
     )
     datapoint created-rocksdb-tar-bz2 "duration_secs=$SECONDS"
   done
@@ -255,8 +262,13 @@ while true; do
       if ((minutes_to_next_ledger_archive % 60 == 0)); then
         datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
       fi
-      echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
-      continue
+
+      if [[ -f $exit_signal_file ]]; then
+        echo $exit_signal_file present, forcing ledger archive
+      else
+        echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
+        continue
+      fi
     fi
 
     latest_snapshot=$(get_latest_snapshot "$ledger_dir")
@@ -294,8 +306,6 @@ while true; do
     mkdir -p ~/"$STORAGE_BUCKET"
     mv ~/ledger-archive ~/"$STORAGE_BUCKET"/"$archive_snapshot_slot"
 
-    upload_to_storage_bucket &
-
     # Clean out the ledger directory from all artifacts other than genesis and
     # the snapshot archives, so the warehouse node restarts cleanly from its
     # last snapshot
@@ -304,6 +314,13 @@ while true; do
     # Prepare for next archive
     rm -rf ~/ledger-archive
     prepare_archive_location
+
+    if [[ -f $exit_signal_file ]]; then
+      echo $exit_signal_file present, forcing foreground upload
+      upload_to_storage_bucket
+      exit 0
+    fi
+    upload_to_storage_bucket &
 
     break
   done
