@@ -27,7 +27,7 @@ exec solana-validator \
   --no-genesis-fetch \
   --no-voting \
   --rpc-port 8899 \
-  --enable-rpc-get-confirmed-block \
+  --enable-rpc-transaction-history \
   ${maybe_rpc_faucet_address} \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \

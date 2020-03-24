@@ -105,7 +105,7 @@ args=(
   --no-genesis-fetch
   --no-voting
   --rpc-port 8899
-  --enable-rpc-get-confirmed-block
+  --enable-rpc-transaction-history
   "${trusted_validators[@]}"
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
