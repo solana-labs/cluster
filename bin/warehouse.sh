@@ -99,12 +99,13 @@ args=(
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
+  --rpc-port 8899
   --identity "$identity_keypair"
   --ledger "$ledger_dir"
   --log ~/validator.log
   --no-genesis-fetch
   --no-voting
-  --rpc-port 8899
+  --skip-poh-verify
   --enable-rpc-transaction-history
   "${trusted_validators[@]}"
   --no-untrusted-rpc
