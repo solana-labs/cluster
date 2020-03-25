@@ -178,6 +178,7 @@ done
   if [[ -n $DISCORD_WEBHOOK ]]; then
     echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
   fi
+  echo export RUST_BACKTRACE=1
 ) | tee "$CLUSTER"/service-env.sh
 
 echo ==========================================================
