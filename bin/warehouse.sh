@@ -300,9 +300,9 @@ while true; do
     SECONDS=
     (
       set -x
-      solana-ledger-tool --ledger "$ledger_dir" bounds | tee ~/bounds.txt
+      solana-ledger-tool --ledger "$ledger_dir" bounds | tee ~/ledger-archive/bounds.txt
     )
-    ledger_bounds="$(cat ~/bounds.txt)"
+    ledger_bounds="$(cat ~/ledger-archive/bounds.txt)"
     datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
 
     mv "$ledger_dir"/rocksdb ~/ledger-archive/
