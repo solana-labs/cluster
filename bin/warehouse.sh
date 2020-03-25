@@ -234,6 +234,7 @@ while true; do
         echo "waiting for node to initialize..."
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-initialized
+          SECONDS=
         fi
         sleep 10
         continue
@@ -248,6 +249,7 @@ while true; do
         echo "catchup failed..."
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-caught-up
+          SECONDS=
         fi
         sleep 60
         continue
