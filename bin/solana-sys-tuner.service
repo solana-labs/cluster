@@ -9,7 +9,7 @@ RestartSec=1
 User=sol
 StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
-ExecStart=/home/sol/bin/sys-tuner.sh
+ExecStart=/home/sol/bin/solana-sys-tuner.sh
 
 [Install]
 WantedBy=multi-user.target

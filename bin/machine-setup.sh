@@ -112,25 +112,21 @@ chmod +x update
 # Move the remainder of the files in the home directory over to the sol user
 sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
-# Move the systemd service file into /etc
+
+# Move the systemd service files into /etc
+sudo cp /home/sol/bin/sys-tuner.service /etc/systemd/system/sys-tuner.service
 sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
 sudo systemctl daemon-reload
+
+# Start the solana-sys-tuner service
+sudo systemctl start solana-sys-tuner
+sudo systemctl enable solana-sys-tuner
+sudo systemctl --no-pager status solana-sys-tuner
 
 # Start the solana service
 sudo systemctl start sol
 sudo systemctl enable sol
 sudo systemctl --no-pager status sol
-
-if [[ $NODE_TYPE = validator ]]; then
-  # Move the sys-tuner systemd service file into /etc
-  sudo cp /home/sol/bin/sys-tuner.service /etc/systemd/system/sys-tuner.service
-  sudo systemctl daemon-reload
-
-  # Start the sys-tuner service
-  sudo systemctl start sys-tuner
-  sudo systemctl enable sys-tuner
-  sudo systemctl --no-pager status sys-tuner
-fi
 
 [[ $NODE_TYPE = api ]] || exit 0
 
