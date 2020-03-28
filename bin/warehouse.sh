@@ -227,6 +227,11 @@ while true; do
   while true; do
     if [[ -z $pid ]] || ! kill -0 "$pid"; then
       datapoint_error unexpected-validator-exit
+
+      # cool down for a minute before restarting to avoid a tight restart loop
+      # if there's a failure very early in the validator boot
+      sleep 60
+
       break  # validator exited unexpectedly, restart it
     fi
 
