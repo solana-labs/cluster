@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# |touch ~/warehouse-exit-signal| will trigger a clean shutdown
+exit_signal_file=~/warehouse-exit-signal
+
+# The time remaining before the next ledger archive can be dynamically adjusted
+# by writing a new value to ~/warehouse-minutes-remaining.
+# To disable archiving entirely, write a value of 0
+minutes_remaining_file=~/warehouse-minutes-remaining
+
 set -e
 shopt -s nullglob
 
@@ -51,13 +59,11 @@ if [[ -z $RPC_URL ]]; then
 fi
 
 ledger_dir=~/ledger
-exit_signal_file=~/warehouse-exit-signal
 
 if [[ -f $exit_signal_file ]]; then
   echo $exit_signal_file present, refusing to start
   exit 0
 fi
-
 
 identity_keypair=~/warehouse-identity-$ZONE.json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
@@ -220,7 +226,8 @@ while true; do
 
   echo "pid: $pid"
 
-  minutes_to_next_ledger_archive=$LEDGER_ARCHIVE_INTERVAL_MINUTES
+  echo "$LEDGER_ARCHIVE_INTERVAL_MINUTES" > $minutes_remaining_file
+
   caught_up=false
   initialized=false
   SECONDS=
@@ -267,7 +274,14 @@ while true; do
 
     sleep 60
 
+    minutes_to_next_ledger_archive=$(cat $minutes_remaining_file)
+    if ((minutes_to_next_ledger_archive == 0 )); then
+      echo "ledger archive disabled due to: $minutes_to_next_ledger_archive"
+      continue
+    fi
+
     if ((--minutes_to_next_ledger_archive > 0)); then
+      echo "$minutes_to_next_ledger_archive" > $minutes_remaining_file
       if ((minutes_to_next_ledger_archive % 60 == 0)); then
         datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
       fi
@@ -284,7 +298,7 @@ while true; do
     if [[ -z $latest_snapshot ]]; then
       echo "Validator has not produced a snapshot yet"
       datapoint_error snapshot-missing
-      minutes_to_next_ledger_archive=1 # try again later
+      echo 1 > $minutes_remaining_file # try again later
       continue
     fi
     latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
@@ -293,7 +307,7 @@ while true; do
     if [[ "$archive_snapshot_slot" = "$latest_snapshot_slot" ]]; then
       echo "Validator has not produced a new snapshot yet"
       datapoint_error stale-snapshot
-      minutes_to_next_ledger_archive=1 # try again later
+      echo 1 > $minutes_remaining_file # try again later
       continue
     fi
 
