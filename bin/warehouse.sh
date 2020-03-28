@@ -320,6 +320,7 @@ while true; do
     (
       set -x
       solana-ledger-tool --ledger "$ledger_dir" bounds | tee ~/ledger-archive/bounds.txt
+      solana-ledger-tool --version | tee ~/ledger-archive/version.txt
     )
     ledger_bounds="$(cat ~/ledger-archive/bounds.txt)"
     datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
