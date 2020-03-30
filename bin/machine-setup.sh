@@ -114,18 +114,16 @@ sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
 
 # Move the systemd service files into /etc
-sudo cp /home/sol/bin/sys-tuner.service /etc/systemd/system/sys-tuner.service
+sudo cp /home/sol/bin/solana-sys-tuner.service /etc/systemd/system/solana-sys-tuner.service
 sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
 sudo systemctl daemon-reload
 
 # Start the solana-sys-tuner service
-sudo systemctl start solana-sys-tuner
-sudo systemctl enable solana-sys-tuner
+sudo systemctl enable --now solana-sys-tuner
 sudo systemctl --no-pager status solana-sys-tuner
 
 # Start the solana service
-sudo systemctl start sol
-sudo systemctl enable sol
+sudo systemctl enable --now sol
 sudo systemctl --no-pager status sol
 
 [[ $NODE_TYPE = api ]] || exit 0

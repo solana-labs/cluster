@@ -1,6 +1,7 @@
 [Unit]
 Description=Solana Warehouse Node
 After=network.target
+Wants=solana-sys-tuner.service
 
 [Service]
 Type=simple
