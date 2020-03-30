@@ -72,7 +72,7 @@ chmod +x restart
 
 cat > journalctl <<EOF
 #!/usr/bin/env bash
-# Stop the $NODE_TYPE software
+# Follow new journalctl entries for a service to the console
 
 set -ex
 sudo journalctl -f "\$@"
@@ -112,13 +112,18 @@ chmod +x update
 # Move the remainder of the files in the home directory over to the sol user
 sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
-# Move the systemd service file into /etc
+
+# Move the systemd service files into /etc
+sudo cp /home/sol/bin/solana-sys-tuner.service /etc/systemd/system/solana-sys-tuner.service
 sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
 sudo systemctl daemon-reload
 
+# Start the solana-sys-tuner service
+sudo systemctl enable --now solana-sys-tuner
+sudo systemctl --no-pager status solana-sys-tuner
+
 # Start the solana service
-sudo systemctl start sol
-sudo systemctl enable sol
+sudo systemctl enable --now sol
 sudo systemctl --no-pager status sol
 
 [[ $NODE_TYPE = api ]] || exit 0
