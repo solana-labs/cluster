@@ -7,9 +7,7 @@ Before=sol.service
 Type=simple
 Restart=always
 RestartSec=1
-User=sol
-StartLimitIntervalSec=0
-LogRateLimitIntervalSec=0
+User=root
 ExecStart=/home/sol/bin/solana-sys-tuner.sh
 
 [Install]

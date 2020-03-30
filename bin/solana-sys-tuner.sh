@@ -2,6 +2,6 @@
 set -ex
 
 #shellcheck source=/dev/null
-. ~/service-env.sh
+. /home/sol/service-env.sh
 
-exec solana-sys-tuner --user $(whoami)
+exec solana-sys-tuner --user sol
