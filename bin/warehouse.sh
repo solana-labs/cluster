@@ -196,8 +196,8 @@ archive_snapshot_slot=invalid
 prepare_archive_location() {
   # If a current archive directory does not exist, create it and save the latest
   # snapshot in it (if not at genesis)
-  if [[ ! -d ~/ledger-archive/hourly ]]; then
-    mkdir -p ~/ledger-archive/hourly
+  if [[ ! -d ~/ledger-archive ]]; then
+    mkdir -p ~/ledger-archive
     declare archive_snapshot
     archive_snapshot=$(get_latest_snapshot "$ledger_dir")
     if [[ -n "$archive_snapshot" ]]; then
@@ -290,7 +290,8 @@ while true; do
           latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
 
           # Archive the hourly snapshot
-          ln "$latest_snapshot" ~/ledger-archive/hourly/
+          mkdir -p ~/ledger-archive/hourly
+          ln -f "$latest_snapshot" ~/ledger-archive/hourly/
 
           # Sanity check: ensure the snapshot verifies
           echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
