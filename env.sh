@@ -38,7 +38,7 @@ mainnet-beta)
 tour-de-sol)
   echo "### TdS ###"
   PROJECT="tour-de-sol"
-  API_DNS_NAME=tds.solana.com
+  API_DNS_NAME=testnet.solana.com
   API_ADDRESS_NAME=tds-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   ENTRYPOINT_DNS_NAME=
