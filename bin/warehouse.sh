@@ -196,8 +196,8 @@ archive_snapshot_slot=invalid
 prepare_archive_location() {
   # If a current archive directory does not exist, create it and save the latest
   # snapshot in it (if not at genesis)
-  if [[ ! -d ~/ledger-archive ]]; then
-    mkdir ~/ledger-archive
+  if [[ ! -d ~/ledger-archive/hourly ]]; then
+    mkdir -p ~/ledger-archive/hourly
     declare archive_snapshot
     archive_snapshot=$(get_latest_snapshot "$ledger_dir")
     if [[ -n "$archive_snapshot" ]]; then
@@ -284,6 +284,26 @@ while true; do
       echo "$minutes_to_next_ledger_archive" > $minutes_remaining_file
       if ((minutes_to_next_ledger_archive % 60 == 0)); then
         datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
+
+        latest_snapshot=$(get_latest_snapshot "$ledger_dir")
+        if [[ -n $latest_snapshot ]]; then
+          latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
+
+          # Archive the hourly snapshot
+          ln "$latest_snapshot" ~/ledger-archive/hourly/
+
+          # Sanity check: ensure the snapshot verifies
+          echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
+          rm -rf "$ledger_dir"/snapshot-check
+          mkdir "$ledger_dir"/snapshot-check
+          ln "$ledger_dir"/genesis.bin "$ledger_dir"/snapshot-check/
+          ln "$latest_snapshot" "$ledger_dir"/snapshot-check/
+          if solana-ledger-tool --ledger "$ledger_dir"/snapshot-check verify; then
+            datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
+          else
+            datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
+          fi
+        fi
       fi
 
       if [[ -f $exit_signal_file ]]; then
