@@ -220,26 +220,91 @@ prepare_archive_location
 while true; do
   rm -f ~/.init-complete
 
+  solana-validator "${args[@]}" &
+  pid=$!
   datapoint validator-started
+
+  echo "pid: $pid"
 
   echo "$LEDGER_ARCHIVE_INTERVAL_MINUTES" > $minutes_remaining_file
 
+  caught_up=false
+  initialized=false
   SECONDS=
   while true; do
-    sleep 1
+    if [[ -z $pid ]] || ! kill -0 "$pid"; then
+      datapoint_error unexpected-validator-exit
+
+      # cool down for a minute before restarting to avoid a tight restart loop
+      # if there's a failure very early in the validator boot
+      sleep 60
+
+      break  # validator exited unexpectedly, restart it
+    fi
+
+    if ! $initialized; then
+      if [[ ! -f ~/.init-complete ]]; then
+        echo "waiting for node to initialize..."
+        if [[ $SECONDS -gt 600 ]]; then
+          datapoint_error validator-not-initialized
+          SECONDS=
+        fi
+        sleep 10
+        continue
+      fi
+      echo Validator has initialized
+      datapoint validator-initialized
+      initialized=true
+    fi
+
+    if ! $caught_up; then
+      if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey"; then
+        echo "catchup failed..."
+        if [[ $SECONDS -gt 600 ]]; then
+          datapoint_error validator-not-caught-up
+          SECONDS=
+        fi
+        sleep 60
+        continue
+      fi
+      echo Validator has caught up
+      datapoint validator-caught-up
+      caught_up=true
+    fi
+
+    sleep 60
 
     minutes_to_next_ledger_archive=$(cat $minutes_remaining_file)
+    if ((minutes_to_next_ledger_archive == 0 )); then
+      echo "ledger archive disabled due to: $minutes_to_next_ledger_archive"
+      continue
+    fi
 
-    if true; then
+    if ((--minutes_to_next_ledger_archive > 0)); then
       echo "$minutes_to_next_ledger_archive" > $minutes_remaining_file
+      if ((minutes_to_next_ledger_archive % 60 == 0)); then
+        datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
 
-      latest_snapshot=$(get_latest_snapshot "$ledger_dir")
-      if [[ -n $latest_snapshot ]]; then
-        latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
+        latest_snapshot=$(get_latest_snapshot "$ledger_dir")
+        if [[ -n $latest_snapshot ]]; then
+          latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
 
-        echo "latest_snapshot: $latest_snapshot"
-        echo "latest_snapshot_slot: $latest_snapshot_slot"
+          # Archive the hourly snapshot
+          mkdir -p ~/ledger-archive/hourly
+          ln -f "$latest_snapshot" ~/ledger-archive/hourly/
 
+          # Sanity check: ensure the snapshot verifies
+          echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
+          rm -rf "$ledger_dir"/snapshot-check
+          mkdir "$ledger_dir"/snapshot-check
+          ln "$ledger_dir"/genesis.bin "$ledger_dir"/snapshot-check/
+          ln "$latest_snapshot" "$ledger_dir"/snapshot-check/
+          if solana-ledger-tool --ledger "$ledger_dir"/snapshot-check verify; then
+            datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
+          else
+            datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
+          fi
+        fi
       fi
 
       if [[ -f $exit_signal_file ]]; then
@@ -249,7 +314,6 @@ while true; do
         continue
       fi
     fi
-    continue
 
     latest_snapshot=$(get_latest_snapshot "$ledger_dir")
     if [[ -z $latest_snapshot ]]; then
