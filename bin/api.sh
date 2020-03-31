@@ -31,7 +31,6 @@ exec solana-validator \
   ${maybe_rpc_faucet_address} \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
-  --blockstream /tmp/solana-blockstream.sock \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
   "${trusted_validators[@]}" \
   --no-untrusted-rpc \
