@@ -295,11 +295,11 @@ while true; do
 
           # Sanity check: ensure the snapshot verifies
           echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
-          rm -rf "$ledger_dir"/snapshot-check
-          mkdir "$ledger_dir"/snapshot-check
-          ln "$ledger_dir"/genesis.bin "$ledger_dir"/snapshot-check/
-          ln "$latest_snapshot" "$ledger_dir"/snapshot-check/
-          if solana-ledger-tool --ledger "$ledger_dir"/snapshot-check verify; then
+          rm -rf ~/snapshot-check
+          mkdir ~/snapshot-check
+          ln "$ledger_dir"/genesis.bin ~/snapshot-check/
+          ln "$latest_snapshot" ~/snapshot-check/
+          if solana-ledger-tool --ledger ~/snapshot-check verify; then
             datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
           else
             datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
