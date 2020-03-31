@@ -10,10 +10,15 @@ source ~/service-env-validator-*.sh
 identity_keypair=~/validator-identity-"$ZONE".json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
-trusted_validators=()
+trusted_validator_args=()
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
-  [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
+  [[ $tv = "$identity_pubkey" ]] || trusted_validator_args+=(--trusted-validator "$tv")
 done
+
+if [[ ${trusted_validator_args[@]} -gt 0 ]]; then
+  trusted_validator_args+=(--halt-on-trusted-validators-accounts-hash-mismatch)
+  trusted_validator_args+=(--no-untrusted-rpc)
+fi
 
 frozen_accounts=()
 if [[ -r ~/frozen-accounts ]]; then
@@ -43,10 +48,8 @@ exec solana-validator \
   --no-genesis-fetch \
   --rpc-port 8899 \
   --vote-account ~/validator-vote-account-"$ZONE".json \
-  --halt-on-trusted-validators-accounts-hash-mismatch \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
-  "${trusted_validators[@]}" \
+  "${trusted_validator_args[@]}" \
   "${frozen_accounts[@]}" \
-  --no-untrusted-rpc \
