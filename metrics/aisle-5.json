@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1585243052228,
+    "iteration": 1585616529405,
     "links": [],
     "panels": [
         {
@@ -1086,6 +1086,22 @@
                     "unit": "short"
                 },
                 {
+                    "alias": "Slot",
+                    "colorMode": null,
+                    "colors": [
+                        "rgba(245, 54, 54, 0.9)",
+                        "rgba(237, 129, 40, 0.89)",
+                        "rgba(50, 172, 45, 0.97)"
+                    ],
+                    "dateFormat": "YYYY-MM-DD HH:mm:ss",
+                    "decimals": 0,
+                    "mappingType": 1,
+                    "pattern": "infra-warehouse-node.slot",
+                    "thresholds": [],
+                    "type": "number",
+                    "unit": "none"
+                },
+                {
                     "alias": "",
                     "colorMode": null,
                     "colors": [
@@ -1119,7 +1135,7 @@
                     "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\", \"minutes_remaining\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
+                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\",\"slot\", \"minutes_remaining\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -1493,12 +1509,12 @@
                 "name": "cluster",
                 "options": [
                     {
-                        "selected": true,
+                        "selected": false,
                         "text": "mainnet-beta",
                         "value": "mainnet-beta"
                     },
                     {
-                        "selected": false,
+                        "selected": true,
                         "text": "devnet",
                         "value": "devnet"
                     },
@@ -1545,5 +1561,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 32
+    "version": 35
 }

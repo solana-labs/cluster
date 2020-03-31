@@ -2,6 +2,7 @@
 set -e
 
 cd "$(dirname "$0")"
+CLUSTER=devnet
 . ../env.sh
 . setup-grafcli.sh
 
