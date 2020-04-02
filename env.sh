@@ -56,8 +56,6 @@ tour-de-sol)
   ;;
 esac
 
-LEDGER_ARCHIVE_INTERVAL_MINUTES=720 # 12 hours
-
 STORAGE_BUCKET_PREFIX="${PROJECT}-ledger"
 INSTANCE_PREFIX=
 if [[ -z $PRODUCTION ]]; then
@@ -72,7 +70,6 @@ if [[ -z $PRODUCTION ]]; then
   ENTRYPOINT_ADDRESS_NAME=
 
   RECREATE_STORAGE_BUCKET=1     # Flush the ledger on restarts
-  LEDGER_ARCHIVE_INTERVAL_MINUTES=10   # Archive faster for easier testing
 else
   echo "!!!!!!!!!!!!!! PRODUCTION !!!!!!!!!!!!!!"
   sleep 2

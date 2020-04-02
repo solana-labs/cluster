@@ -3,11 +3,6 @@
 # |touch ~/warehouse-exit-signal| will trigger a clean shutdown
 exit_signal_file=~/warehouse-exit-signal
 
-# The time remaining before the next ledger archive can be dynamically adjusted
-# by writing a new value to ~/warehouse-minutes-remaining.
-# To disable archiving entirely, write a value of 0
-minutes_remaining_file=~/warehouse-minutes-remaining
-
 set -e
 shopt -s nullglob
 
@@ -40,11 +35,6 @@ fi
 
 if [[ -z $EXPECTED_SHRED_VERSION ]]; then
   echo EXPECTED_SHRED_VERSION environment variable not defined
-  exit 1
-fi
-
-if [[ -z $LEDGER_ARCHIVE_INTERVAL_MINUTES ]]; then
-  echo LEDGER_ARCHIVE_INTERVAL_MINUTES environment variable not defined
   exit 1
 fi
 
@@ -158,15 +148,10 @@ upload_to_storage_bucket() {
   done
 
   SECONDS=
-  while ! timeout $((LEDGER_ARCHIVE_INTERVAL_MINUTES / 2))m gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
+  while ! timeout 1h gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
     echo "gsutil rsync failed..."
     datapoint_error gsutil-rsync-failure
-    sleep 5
-
-    if [[ $((SECONDS / 60)) -lt $((LEDGER_ARCHIVE_INTERVAL_MINUTES / 2)) ]]; then
-      echo Failure to upload ledger in $SECONDS seconds
-      return
-    fi
+    sleep 30
   done
   echo Ledger upload took $SECONDS seconds
   datapoint ledger-upload-complete "duration_secs=$SECONDS"
@@ -192,6 +177,8 @@ get_snapshot_slot() {
 }
 
 archive_snapshot_slot=invalid
+archive_epoch=invalid
+minutes_since_last_ledger_archive=invalid
 
 prepare_archive_location() {
   # If a current archive directory does not exist, create it and save the latest
@@ -213,6 +200,8 @@ prepare_archive_location() {
   else
     archive_snapshot_slot=0
   fi
+
+  minutes_since_last_ledger_archive=0
 }
 
 prepare_archive_location
@@ -225,8 +214,6 @@ while true; do
   datapoint validator-started
 
   echo "pid: $pid"
-
-  echo "$LEDGER_ARCHIVE_INTERVAL_MINUTES" > $minutes_remaining_file
 
   caught_up=false
   initialized=false
@@ -272,46 +259,58 @@ while true; do
       caught_up=true
     fi
 
-    sleep 60
-
-    minutes_to_next_ledger_archive=$(cat $minutes_remaining_file)
-    if ((minutes_to_next_ledger_archive == 0 )); then
-      echo "ledger archive disabled due to: $minutes_to_next_ledger_archive"
+    archive_epoch=$(cat ~/ledger-archive/epoch || true)
+    if [[ -z "$archive_epoch" ]]; then
+      if ! solana epoch > ~/ledger-archive/epoch; then
+        datapoint_error failed-to-set-epoch
+        sleep 10
+      fi
       continue
     fi
 
-    if ((--minutes_to_next_ledger_archive > 0)); then
-      echo "$minutes_to_next_ledger_archive" > $minutes_remaining_file
-      if ((minutes_to_next_ledger_archive % 60 == 0)); then
-        datapoint waiting-to-archive "minutes_remaining=$minutes_to_next_ledger_archive"
+    sleep 60
 
-        latest_snapshot=$(get_latest_snapshot "$ledger_dir")
-        if [[ -n $latest_snapshot ]]; then
-          latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
+    current_epoch=$(solana epoch || true)
+    if [[ -z "$current_epoch" ]]; then
+      datapoint_error failed-to-get-epoch
+      continue
+    fi
 
-          # Archive the hourly snapshot
-          mkdir -p ~/ledger-archive/hourly
-          ln -f "$latest_snapshot" ~/ledger-archive/hourly/
+    if [[ -f $exit_signal_file ]]; then
+      echo "$exit_signal_file present, forcing ledger archive for epoch $current_epoch"
+    else
+      if [[ $current_epoch == "$archive_epoch" ]]; then
+        ((++minutes_since_last_ledger_archive))
 
-          # Sanity check: ensure the snapshot verifies
-          echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
-          rm -rf ~/snapshot-check
-          mkdir ~/snapshot-check
-          ln "$ledger_dir"/genesis.bin ~/snapshot-check/
-          ln "$latest_snapshot" ~/snapshot-check/
-          if solana-ledger-tool --ledger ~/snapshot-check verify; then
-            datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
-          else
-            datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
+        # Every hour while waiting for the next epoch, emit a metric and verify/archive a snapshot
+        if ((minutes_since_last_ledger_archive % 60 == 0)); then
+          echo "Current epoch: $current_epoch"
+          datapoint waiting-to-archive "minutes_since=$minutes_since_last_ledger_archive"
+
+          latest_snapshot=$(get_latest_snapshot "$ledger_dir")
+          if [[ -n $latest_snapshot ]]; then
+            latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
+
+            # Archive the hourly snapshot
+            mkdir -p ~/ledger-archive/hourly
+            ln -f "$latest_snapshot" ~/ledger-archive/hourly/
+
+            # Sanity check: ensure the snapshot verifies
+            echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
+            rm -rf ~/snapshot-check
+            mkdir ~/snapshot-check
+            ln "$ledger_dir"/genesis.bin ~/snapshot-check/
+            ln "$latest_snapshot" ~/snapshot-check/
+            if solana-ledger-tool --ledger ~/snapshot-check verify; then
+              datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
+            else
+              datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
+            fi
           fi
         fi
-      fi
-
-      if [[ -f $exit_signal_file ]]; then
-        echo $exit_signal_file present, forcing ledger archive
-      else
-        echo "$minutes_to_next_ledger_archive minutes before next ledger archive"
         continue
+      else
+        echo "Time to archive.  Current epoch:$current_epoch, last archive epoch: $archive_epoch"
       fi
     fi
 
@@ -319,7 +318,6 @@ while true; do
     if [[ -z $latest_snapshot ]]; then
       echo "Validator has not produced a snapshot yet"
       datapoint_error snapshot-missing
-      echo 1 > $minutes_remaining_file # try again later
       continue
     fi
     latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
@@ -328,7 +326,6 @@ while true; do
     if [[ "$archive_snapshot_slot" = "$latest_snapshot_slot" ]]; then
       echo "Validator has not produced a new snapshot yet"
       datapoint_error stale-snapshot
-      echo 1 > $minutes_remaining_file # try again later
       continue
     fi
 

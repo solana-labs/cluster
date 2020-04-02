@@ -174,7 +174,6 @@ done
     echo export SOLANA_METRICS_CONFIG="$SOLANA_METRICS_CONFIG"
   fi
   echo PATH=/home/sol/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-  echo LEDGER_ARCHIVE_INTERVAL_MINUTES="$LEDGER_ARCHIVE_INTERVAL_MINUTES"
   if [[ -n $DISCORD_WEBHOOK ]]; then
     echo DISCORD_WEBHOOK="$DISCORD_WEBHOOK"
   fi
