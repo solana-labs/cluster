@@ -42,9 +42,6 @@ sudo --login -u sol -- bash -c "
   mkdir ~/.ssh;
   chmod 0700 ~/.ssh;
   echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKU6YrfEw24+hhxOsu7bAXr1m38G9CCmtUtPpgOjXys4 mvines@sol' >> ~/.ssh/authorized_keys;
-  echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAsOLWUu8wbe6C5IdyB+gy1KwPCggiWv2UwhWRNOI6kV ryoqun@ubuqun' >> ~/.ssh/authorized_keys;
-  echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxN1jPgVdSqNmGAjFwA1ypcnME8uM/9NjfaUZBpNdMh sakridge@valverde' >> ~/.ssh/authorized_keys;
-  echo 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOk4jgcX/VWSk3j//wXeIynSQjsOt+AjYXM/XZUMa7R1Q8lfIJGK/qHLBP86CMXdpyEKJ5i37QLYOL+0VuRy0CI=' >> ~/.ssh/authorized_keys;
   echo 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKMl07qHaMCmnvRKBCmahbBAR6GTWkR5BVe8jdzDJ7xzjXLZlf1aqfaOjt5Cu2VxvW7lUtpJQGLJJiMnWuD4Zmc= dan@Dans-MBP.local' >> ~/.ssh/authorized_keys;
 
 "
