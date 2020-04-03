@@ -1,7 +1,7 @@
 # source this file
 
-RELEASE_CHANNEL_OR_TAG=1.0.7
-#RELEASE_CHANNEL_OR_TAG=beta
+#RELEASE_CHANNEL_OR_TAG=1.0.7
+RELEASE_CHANNEL_OR_TAG=stable
 
 REGION=us-west1
 DEFAULT_ZONE=us-west1-b
@@ -35,13 +35,14 @@ mainnet-beta)
   WAREHOUSE_ZONES=($DEFAULT_ZONE europe-west4-c)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet-beta,u=mainnet-beta_write,p=password"
   ;;
-tour-de-sol)
-  echo "### TdS ###"
+testnet)
+  echo "### Testnet ###"
   PROJECT="tour-de-sol"
   API_DNS_NAME=testnet.solana.com
   API_ADDRESS_NAME=tds-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   ENTRYPOINT_DNS_NAME=
+  ENTRYPOINT_ADDRESS_NAME=entrypoint
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET_KEYPAIR=1
   FAUCET_RPC=
@@ -51,7 +52,7 @@ tour-de-sol)
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)
-  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'mainnet-beta', or 'tour-de-sol'"
+  echo "Error: unsupported CLUSTER='$CLUSTER'. Try 'devnet', 'testnet' or 'mainnet-beta'"
   exit 1
   ;;
 esac
