@@ -48,6 +48,13 @@ if [[ -z $RPC_URL ]]; then
   exit 1
 fi
 
+
+# MINIMUM_MINUTES_BETWEEN_ARCHIVE=720 is useful to define in devnet's service-env.sh
+# since the devnet epochs are so short
+if [[ -z $MINIMUM_MINUTES_BETWEEN_ARCHIVE ]]; then
+  MINIMUM_MINUTES_BETWEEN_ARCHIVE=1
+fi
+
 ledger_dir=~/ledger
 
 if [[ -f $exit_signal_file ]]; then
@@ -177,7 +184,7 @@ get_snapshot_slot() {
 }
 
 archive_snapshot_slot=invalid
-archive_epoch=invalid
+last_archive_epoch=invalid
 minutes_since_last_ledger_archive=invalid
 
 prepare_archive_location() {
@@ -259,8 +266,8 @@ while true; do
       caught_up=true
     fi
 
-    archive_epoch=$(cat ~/ledger-archive/epoch || true)
-    if [[ -z "$archive_epoch" ]]; then
+    last_archive_epoch=$(cat ~/ledger-archive/epoch || true)
+    if [[ -z "$last_archive_epoch" ]]; then
       if ! solana epoch > ~/ledger-archive/epoch; then
         datapoint_error failed-to-set-epoch
         sleep 10
@@ -279,7 +286,7 @@ while true; do
     if [[ -f $exit_signal_file ]]; then
       echo "$exit_signal_file present, forcing ledger archive for epoch $current_epoch"
     else
-      if [[ $current_epoch == "$archive_epoch" ]]; then
+      if ((minutes_since_last_ledger_archive < MINIMUM_MINUTES_BETWEEN_ARCHIVE)) || [[ $current_epoch == "$last_archive_epoch" ]]; then
         ((++minutes_since_last_ledger_archive))
 
         # Every hour while waiting for the next epoch, emit a metric and verify/archive a snapshot
@@ -310,7 +317,7 @@ while true; do
         fi
         continue
       else
-        echo "Time to archive.  Current epoch:$current_epoch, last archive epoch: $archive_epoch"
+        echo "Time to archive.  Current epoch:$current_epoch, last archive epoch: $last_archive_epoch"
       fi
     fi
 
