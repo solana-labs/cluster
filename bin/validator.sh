@@ -15,7 +15,7 @@ for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validator_args+=(--trusted-validator "$tv")
 done
 
-if [[ ${trusted_validator_args[@]} -gt 0 ]]; then
+if [[ ${#trusted_validator_args[@]} -gt 0 ]]; then
   trusted_validator_args+=(--halt-on-trusted-validators-accounts-hash-mismatch)
   trusted_validator_args+=(--no-untrusted-rpc)
 fi
