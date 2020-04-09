@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1585616529405,
+    "iteration": 1586457579044,
     "links": [],
     "panels": [
         {
@@ -686,7 +686,7 @@
                     "hide": false,
                     "orderByTime": "ASC",
                     "policy": "default",
-                    "query": "SELECT \"label\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' AND time > now() - 24h\n\n \n",
+                    "query": "SELECT \"label\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' AND time > now() - 72h\n\n \n",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -1561,5 +1561,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 35
+    "version": 36
 }
