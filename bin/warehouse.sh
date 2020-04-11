@@ -3,6 +3,9 @@
 # |touch ~/warehouse-exit-signal| will trigger a clean shutdown
 exit_signal_file=~/warehouse-exit-signal
 
+# |touch ~/warehouse-no-archive| to prevent the node from archiving even when it's time
+no_archive_signal_file=~/warehouse-no-archive
+
 set -e
 shopt -s nullglob
 
@@ -286,12 +289,17 @@ while true; do
     if [[ -f $exit_signal_file ]]; then
       echo "$exit_signal_file present, forcing ledger archive for epoch $current_epoch"
     else
-      if ((minutes_since_last_ledger_archive < MINIMUM_MINUTES_BETWEEN_ARCHIVE)) || [[ $current_epoch == "$last_archive_epoch" ]]; then
+      if ((minutes_since_last_ledger_archive < MINIMUM_MINUTES_BETWEEN_ARCHIVE)) ||
+          [[ $current_epoch == "$last_archive_epoch" ]] || [[ -f $no_archive_signal_file ]]; then
         ((++minutes_since_last_ledger_archive))
 
         # Every hour while waiting for the next epoch, emit a metric and verify/archive a snapshot
         if ((minutes_since_last_ledger_archive % 60 == 0)); then
           echo "Current epoch: $current_epoch"
+          if [[ -f $no_archive_signal_file ]]; then
+            echo "Archiving disabled due to $no_archive_signal_file"
+          fi
+
           datapoint waiting-to-archive "minutes_since=$minutes_since_last_ledger_archive"
 
           latest_snapshot=$(get_latest_snapshot "$ledger_dir")
