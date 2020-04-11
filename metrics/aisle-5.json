@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 1154,
-    "iteration": 1586457579044,
+    "iteration": 1586532067424,
     "links": [],
     "panels": [
         {
@@ -1001,7 +1001,7 @@
             "fontSize": "100%",
             "gridPos": {
                 "h": 12,
-                "w": 13,
+                "w": 22,
                 "x": 0,
                 "y": 10
             },
@@ -1022,7 +1022,7 @@
                     "type": "date"
                 },
                 {
-                    "alias": "Time Remaining",
+                    "alias": "Time since last archive",
                     "colorMode": null,
                     "colors": [
                         "rgba(245, 54, 54, 0.9)",
@@ -1032,7 +1032,7 @@
                     "dateFormat": "YYYY-MM-DD HH:mm:ss",
                     "decimals": 0,
                     "mappingType": 1,
-                    "pattern": "infra-warehouse-node.minutes_remaining",
+                    "pattern": "infra-warehouse-node.minutes_since",
                     "thresholds": [],
                     "type": "number",
                     "unit": "m"
@@ -1135,7 +1135,7 @@
                     "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\",\"slot\", \"minutes_remaining\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
+                    "query": "SELECT \"event\", \"host_id\",\"duration_secs\",\"slot\", \"minutes_since\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE $timeFilter ORDER BY time DESC ",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "time_series",
@@ -1165,10 +1165,10 @@
             "datasource": "$datasource",
             "fontSize": "100%",
             "gridPos": {
-                "h": 12,
-                "w": 9,
-                "x": 13,
-                "y": 10
+                "h": 8,
+                "w": 22,
+                "x": 0,
+                "y": 22
             },
             "hideTimeOverride": false,
             "id": 12,
@@ -1270,7 +1270,7 @@
                     "measurement": "/^$cluster$/",
                     "orderByTime": "ASC",
                     "policy": "autogen",
-                    "query": "SELECT \"label\", \"duration_secs\", \"bounds\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
+                    "query": "SELECT \"label\", \"host_id\", \"duration_secs\", \"bounds\" FROM \"$cluster\".\"autogen\".\"infra-warehouse-node\"  WHERE \"event\" = 'ledger-archived' ORDER BY time DESC LIMIT 12",
                     "rawQuery": true,
                     "refId": "A",
                     "resultFormat": "table",
@@ -1302,7 +1302,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 22
+                "y": 30
             },
             "id": 13,
             "panels": [],
@@ -1317,7 +1317,7 @@
                 "h": 7,
                 "w": 22,
                 "x": 0,
-                "y": 23
+                "y": 31
             },
             "id": 14,
             "links": [],
@@ -1561,5 +1561,5 @@
     "timezone": "",
     "title": "Aisle 5",
     "uid": "cluster",
-    "version": 36
+    "version": 37
 }
