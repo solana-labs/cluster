@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -ex
+shopt -s nullglob
 
 #shellcheck source=/dev/null
 source ~/service-env.sh
@@ -9,6 +10,11 @@ source ~/service-env-validator-*.sh
 
 identity_keypair=~/validator-identity-"$ZONE".json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
+
+authorized_voter_args=()
+for av in ~/validator-authorized-voter*.json; do
+  authorized_voter_args+=(--authorized-voter "$av")
+done
 
 trusted_validator_args=()
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
@@ -51,5 +57,6 @@ exec solana-validator \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
+  "${authorized_voter_args[@]}" \
   "${trusted_validator_args[@]}" \
   "${frozen_accounts[@]}" \
