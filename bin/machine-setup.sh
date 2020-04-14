@@ -169,6 +169,8 @@ frontend http
     stats uri /stats
     acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     use_backend letsencrypt if letsencrypt-acl
+    acl is_websocket hdr(Upgrade) -i WebSocket
+    use_backend pubsub if is_websocket
 
 frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
@@ -181,6 +183,8 @@ frontend https
     stats uri /stats
     #acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     #use_backend letsencrypt if letsencrypt-acl
+    acl is_websocket hdr(Upgrade) -i WebSocket
+    use_backend pubsub if is_websocket
 
 frontend wss
     bind *:8901 ssl crt /etc/ssl/private/haproxy.pem
@@ -198,15 +202,6 @@ backend pubsub
 backend letsencrypt
     mode http
     server letsencrypt 127.0.0.1:4444
-
-
-frontend blockexplorer_api_wss
-    bind *:3443 ssl crt /etc/ssl/private/haproxy.pem
-    default_backend blockexplorer_api
-
-backend blockexplorer_api
-    mode http
-    server blockexplorer 127.0.0.1:3001
 
 EOF
 } | sudo tee -a /etc/haproxy/haproxy.cfg
