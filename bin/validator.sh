@@ -44,7 +44,7 @@ fi
 
 
 exec solana-validator \
-  --dynamic-port-range 8001-8010 \
+  --dynamic-port-range 8002-8012 \
   --entrypoint "$ENTRYPOINT" \
   --gossip-port 8001 \
   --identity "$identity_keypair" \

@@ -99,7 +99,7 @@ for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
 done
 
 args=(
-  --dynamic-port-range 8001-8010
+  --dynamic-port-range 8002-8012
   --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"

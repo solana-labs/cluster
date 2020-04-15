@@ -17,9 +17,9 @@ if [[ -f ~/faucet.json ]]; then
 fi
 
 exec solana-validator \
-  --dynamic-port-range 8001-8010 \
-  --entrypoint "${ENTRYPOINT}" \
   --gossip-port 8001 \
+  --dynamic-port-range 8002-8012 \
+  --entrypoint "${ENTRYPOINT}" \
   --ledger ~/ledger \
   --identity "$identity_keypair" \
   --limit-ledger-size 250000000000 \
