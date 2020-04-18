@@ -12,7 +12,7 @@ source ~/bin/configure-metrics.sh
 
 while true; do
   # collect top twice because the first time is inaccurate
-  top_ouput="$(top -bn2 -d1)"
+  top_ouput="$(top -bn2 -d1 || true)"
   # collect the total cpu usage by subtracting idle usage from 100%
   cpu_usage=$(echo "${top_ouput}" | grep '%Cpu(s):' | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | tail -1 | awk '{print 100 - $1}')
   # collect the total ram usage by dividing used memory / total memory

@@ -21,6 +21,7 @@ sudo apt-get update
 sudo apt-get --assume-yes install \
   iputils-ping \
   less \
+  lsof \
   psmisc \
   silversearcher-ag \
   software-properties-common \
