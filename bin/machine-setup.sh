@@ -123,17 +123,10 @@ sudo systemctl --no-pager status solana-sys-tuner
 sudo systemctl enable --now sol
 sudo systemctl --no-pager status sol
 
-[[ $NODE_TYPE = api ]] || exit 0
-
-# Install blockexplorer dependencies
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install -y nodejs screen
-sudo /home/sol/bin/install-redis.sh
-
 sudo --login -u sol -- bash -c "
   set -ex;
   echo '#!/bin/sh' > ~/on-reboot;
-  echo '/home/sol/bin/run-blockexplorer.sh &' > ~/on-reboot;
+  echo '/home/sol/bin/run-monitors.sh &' > ~/on-reboot;
   if [[ -f faucet.json ]]; then
     echo '/home/sol/bin/run-faucet.sh &' > ~/on-reboot;
   fi;
@@ -143,6 +136,8 @@ sudo --login -u sol -- bash -c "
   crontab -l;
   screen -dmS on-reboot ~/on-reboot
 "
+
+[[ $NODE_TYPE = api ]] || exit 0
 
 # Create a self-signed certificate for haproxy to use
 # https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
