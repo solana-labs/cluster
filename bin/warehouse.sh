@@ -150,8 +150,8 @@ upload_to_storage_bucket() {
       declare archive_dir=$PWD
       echo "Creating rocksdb.tar.bz2 in $archive_dir"
       rm -rf rocksdb.tar.bz2
-      tar jcf rocksdb.tar.bz2 rocksdb
-      rm -rf rocksdb
+      tar jcf rocksdb.tar.bz2 rocksdb shreds
+      rm -rf rocksdb shreds
       echo "$archive_dir/rocksdb.tar.bz2 created in $SECONDS seconds"
     )
     datapoint created-rocksdb-tar-bz2 "duration_secs=$SECONDS"
@@ -359,6 +359,8 @@ while true; do
     datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
 
     mv "$ledger_dir"/rocksdb ~/ledger-archive/
+    mkdir -p "$ledger_dir"/shreds # 1.2 adds support for a shreds/ directory
+    mv "$ledger_dir"/shreds ~/ledger-archive/
 
     mkdir -p ~/"$STORAGE_BUCKET"
     mv ~/ledger-archive ~/"$STORAGE_BUCKET"/"$archive_snapshot_slot"
