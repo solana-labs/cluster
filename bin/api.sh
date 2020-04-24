@@ -8,7 +8,7 @@ identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 
 trusted_validators=()
-for tv in ${TRUSTED_VALIDATOR_PUBKEYS[@]}; do
+for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
 done
 
@@ -23,7 +23,7 @@ exec solana-validator \
   --ledger ~/ledger \
   --identity "$identity_keypair" \
   --limit-ledger-size 250000000000 \
-  --log - \
+  --log ~/solana-validator.log \
   --no-genesis-fetch \
   --no-voting \
   --rpc-port 8899 \

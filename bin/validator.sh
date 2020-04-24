@@ -50,7 +50,7 @@ exec solana-validator \
   --identity "$identity_keypair" \
   --ledger ~/ledger \
   --limit-ledger-size 250000000000 \
-  --log - \
+  --log ~/solana-validator.log \
   --no-genesis-fetch \
   --rpc-port 8899 \
   --vote-account ~/validator-vote-account-"$ZONE".json \

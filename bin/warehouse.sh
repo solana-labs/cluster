@@ -51,7 +51,6 @@ if [[ -z $RPC_URL ]]; then
   exit 1
 fi
 
-
 # MINIMUM_MINUTES_BETWEEN_ARCHIVE=720 is useful to define in devnet's service-env.sh
 # since the devnet epochs are so short
 if [[ -z $MINIMUM_MINUTES_BETWEEN_ARCHIVE ]]; then
@@ -108,7 +107,7 @@ args=(
   --rpc-port 8899
   --identity "$identity_keypair"
   --ledger "$ledger_dir"
-  --log ~/validator.log
+  --log ~/solana-validator.log
   --no-genesis-fetch
   --no-voting
   --skip-poh-verify

@@ -49,6 +49,20 @@ sudo --login -u sol -- bash -c "
 
 ln -s /etc/systemd/system/sol.service .
 
+# Setup log rotation
+cat > logrotate.sol <<EOF
+/home/sol/solana-validator.log {
+  rotate 7
+  daily
+  missingok
+  postrotate
+    systemctl kill -s USR1 sol.service
+  endscript
+}
+EOF
+sudo cp logrotate.sol /etc/logrotate.d/sol
+rm logrotate.sol
+
 cat > stop <<EOF
 #!/usr/bin/env bash
 # Stop the $NODE_TYPE software
