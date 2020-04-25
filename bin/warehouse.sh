@@ -218,6 +218,7 @@ prepare_archive_location
 while true; do
   rm -f ~/.init-complete
 
+  rm -f ~/solana-validator.log
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
