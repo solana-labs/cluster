@@ -43,20 +43,28 @@ if [[ -r ~/frozen-accounts ]]; then
 fi
 
 
-exec solana-validator \
-  --dynamic-port-range 8002-8012 \
-  --entrypoint "$ENTRYPOINT" \
-  --gossip-port 8001 \
-  --identity "$identity_keypair" \
-  --ledger ~/ledger \
-  --limit-ledger-size 250000000000 \
-  --log ~/solana-validator.log \
-  --no-genesis-fetch \
-  --rpc-port 8899 \
-  --vote-account ~/validator-vote-account-"$ZONE".json \
-  --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
-  --expected-shred-version "$EXPECTED_SHRED_VERSION" \
-  --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
-  "${authorized_voter_args[@]}" \
-  "${trusted_validator_args[@]}" \
-  "${frozen_accounts[@]}" \
+
+args=(
+  --dynamic-port-range 8002-8012
+  --gossip-port 8001
+  --identity "$identity_keypair"
+  --ledger ~/ledger
+  --limit-ledger-size 250000000000
+  --log ~/solana-validator.log
+  --rpc-port 8899
+  --vote-account ~/validator-vote-account-"$ZONE".json
+  --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
+  --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
+  "${authorized_voter_args[@]}"
+  "${trusted_validator_args[@]}"
+  "${frozen_accounts[@]}"
+)
+
+if [[ -n $GOSSIP_HOST ]]; then
+  args+=(--gossip-host "$GOSSIP_HOST")
+else
+  args+=(--entrypoint "$ENTRYPOINT" --no-genesis-fetch)
+fi
+
+exec solana-validator "${args[@]}"
