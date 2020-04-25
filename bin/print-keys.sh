@@ -3,9 +3,9 @@
 #shellcheck source=/dev/null
 . ~/service-env.sh
 
-echo ----------------------------------------------------------------
+echo --[ solana version ]--------------------------------------------
 solana-install info
-echo ----------------------------------------------------------------
+echo --[ system summary ]--------------------------------------------
 (
   export PS4="==> "
   set -x
@@ -14,7 +14,9 @@ echo ----------------------------------------------------------------
   free -h
   uptime
 )
-echo ----------------------------------------------------------------
+echo --[ validator logs ]--------------------------------------------
+ls -l ~/solana-validator.log*
+echo --[ keypairs ]--------------------------------------------------
 shopt -s nullglob
 for keypair in ~/*.json; do
   echo "$(basename "$keypair"): $(solana-keygen pubkey "$keypair")"
