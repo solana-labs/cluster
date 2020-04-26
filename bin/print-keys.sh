@@ -9,6 +9,7 @@ echo --[ system summary ]--------------------------------------------
 (
   export PS4="==> "
   set -x
+  ~/bin/hc
   df -h . ledger/
   du -hs ledger/
   free -h
