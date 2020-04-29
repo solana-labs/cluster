@@ -52,6 +52,7 @@ args=(
   --limit-ledger-size 250000000000
   --log ~/solana-validator.log
   --rpc-port 8899
+  --private-rpc
   --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
@@ -64,7 +65,8 @@ args=(
 if [[ -n $GOSSIP_HOST ]]; then
   args+=(--gossip-host "$GOSSIP_HOST")
 else
-  args+=(--entrypoint "$ENTRYPOINT" --no-genesis-fetch)
+  args+=(--entrypoint "$ENTRYPOINT")
+  args+=(--no-genesis-fetch)
 fi
 
 exec solana-validator "${args[@]}"

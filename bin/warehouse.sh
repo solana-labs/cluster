@@ -105,6 +105,7 @@ args=(
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
   --rpc-port 8899
+  --private-rpc
   --identity "$identity_keypair"
   --ledger "$ledger_dir"
   --log ~/solana-validator.log
@@ -255,7 +256,7 @@ while true; do
     fi
 
     if ! $caught_up; then
-      if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey"; then
+      if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey" http://127.0.0.1:8899; then
         echo "catchup failed..."
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-caught-up
