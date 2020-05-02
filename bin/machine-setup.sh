@@ -171,35 +171,46 @@ sudo apt-get --assume-yes install haproxy certbot
   cat <<EOF
 frontend http
     bind *:80
-    default_backend jsonrpc
+
+    # rate limit to 10 RPC requests in 2 seconds per IP
+    stick-table  type ip  size 100k  expire 30s  store http_req_rate(2s)
+    http-request track-sc0 src
+    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 10 }
+
     stats enable
     stats hide-version
     stats refresh 30s
     stats show-node
     stats uri /stats
+
     acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     use_backend letsencrypt if letsencrypt-acl
     acl is_websocket hdr(Upgrade) -i WebSocket
+
+    default_backend jsonrpc
     use_backend pubsub if is_websocket
 
 frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
     bind *:8443 ssl crt /etc/ssl/private/haproxy.pem
-    default_backend jsonrpc
+
+    # rate limit to 10 RPC requests in 2 seconds per IP
+    stick-table  type ip  size 100k  expire 30s  store http_req_rate(2s)
+    http-request track-sc0 src
+    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 10 }
+
     stats enable
     stats hide-version
     stats refresh 30s
     stats show-node
     stats uri /stats
+
     #acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     #use_backend letsencrypt if letsencrypt-acl
     acl is_websocket hdr(Upgrade) -i WebSocket
-    use_backend pubsub if is_websocket
 
-frontend wss
-    bind *:8901 ssl crt /etc/ssl/private/haproxy.pem
-    bind *:8444 ssl crt /etc/ssl/private/haproxy.pem
-    default_backend pubsub
+    default_backend jsonrpc
+    use_backend pubsub if is_websocket
 
 backend jsonrpc
     mode http
