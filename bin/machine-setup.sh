@@ -142,7 +142,7 @@ sudo --login -u sol -- bash -c "
   set -ex;
   echo '#!/bin/sh' > ~/on-reboot;
   echo '/home/sol/bin/run-monitors.sh &' > ~/on-reboot;
-  if [[ -f faucet.json ]]; then
+  if [[ -f /home/sol/faucet.json ]]; then
     echo '/home/sol/bin/run-faucet.sh &' > ~/on-reboot;
   fi;
   chmod +x ~/on-reboot;
