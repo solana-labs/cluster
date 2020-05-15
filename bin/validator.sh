@@ -49,7 +49,7 @@ args=(
   --gossip-port 8001
   --identity "$identity_keypair"
   --ledger ~/ledger
-  --limit-ledger-size 250000000000
+  --limit-ledger-size
   --log ~/solana-validator.log
   --rpc-port 8899
   --private-rpc

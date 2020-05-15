@@ -22,7 +22,7 @@ exec solana-validator \
   --entrypoint "${ENTRYPOINT}" \
   --ledger ~/ledger \
   --identity "$identity_keypair" \
-  --limit-ledger-size 250000000000 \
+  --limit-ledger-size \
   --log ~/solana-validator.log \
   --no-genesis-fetch \
   --no-voting \
