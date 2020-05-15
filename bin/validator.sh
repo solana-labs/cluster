@@ -52,7 +52,6 @@ args=(
   --limit-ledger-size
   --log ~/solana-validator.log
   --rpc-port 8899
-  --private-rpc
   --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
