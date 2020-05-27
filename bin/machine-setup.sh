@@ -19,6 +19,8 @@ sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 # Install minimal tools
 sudo apt-get update
 sudo apt-get --assume-yes install \
+  graphviz \
+  iotop \
   iputils-ping \
   less \
   lsof \
