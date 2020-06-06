@@ -19,12 +19,14 @@ sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 # Install minimal tools
 sudo apt-get update
 sudo apt-get --assume-yes install \
+  cron \
   graphviz \
   iotop \
   iputils-ping \
   less \
   lsof \
   psmisc \
+  screen \
   silversearcher-ag \
   software-properties-common \
   vim \
@@ -166,7 +168,7 @@ sudo bash -c "cat server.key server.crt >> /etc/ssl/private/haproxy.pem"
 
 rm ca.key ca.crt ca.srl server.crt server.csr server.key
 
-sudo add-apt-repository --yes ppa:certbot/certbot
+sudo add-apt-repository --yes ppa:certbot/certbot -r
 sudo apt-get --assume-yes install haproxy certbot
 
 {

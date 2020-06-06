@@ -180,6 +180,8 @@ done
   echo export RUST_BACKTRACE=1
 ) | tee "$CLUSTER"/service-env.sh
 
+OS_IMAGE=ubuntu-minimal-2004-focal-v20200529
+
 echo ==========================================================
 echo "Creating $ENTRYPOINT_INSTANCE"
 echo ==========================================================
@@ -196,7 +198,7 @@ echo ==========================================================
     --machine-type n1-standard-1 \
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
     --min-cpu-platform "Intel Skylake" \
     ${maybe_address}
 )
@@ -217,7 +219,7 @@ echo ==========================================================
     --machine-type n1-standard-16 \
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
     --min-cpu-platform "Intel Skylake" \
     ${maybe_address}
 )
@@ -233,7 +235,7 @@ echo ==========================================================
     --machine-type n1-standard-1 \
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
-    --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+    --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
     --min-cpu-platform "Intel Skylake" \
 
 )
@@ -253,7 +255,7 @@ for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
       --machine-type n1-standard-8 \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \
-      --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+      --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
       --min-cpu-platform "Intel Skylake" \
 
   )
@@ -274,7 +276,7 @@ for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
       --machine-type n1-standard-8 \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \
-      --image ubuntu-minimal-1804-bionic-v20191113 --image-project ubuntu-os-cloud \
+      --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
       --min-cpu-platform "Intel Skylake" \
       --scopes=storage-rw \
 
