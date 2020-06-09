@@ -278,15 +278,11 @@ EOF
 } | sudo tee /solana-renew-cert.sh
 sudo chmod +x /solana-renew-cert.sh
 
-
 sudo /solana-renew-cert.sh
-# TODO: By default, LetsEncrypt creates a CRON entry at /etc/cron.d/certbot.
-# The entry runs twice a day (by default, LetsEncrypt will only renew the
-# certificate if its expiring within 30 days).
-#
-# What I like to do is to run a bash script that's run monthly, and to force a renewal of the certificate every time.
-#
-# We can start by editing the CRON file to run a script monthly:
-# "0 0 1 * * root bash /opt/update-certs.sh"
+cat > solana-renew-cert <<EOF
+@weekly /solana-renew-cert.sh
+EOF
+sudo cp solana-renew-cert /etc/cron.d/
+rm solana-renew-cert
 
 exit 0
