@@ -219,7 +219,7 @@ prepare_archive_location
 while true; do
   rm -f ~/.init-complete
 
-  rm -f ~/solana-validator.log
+  sudo logrotate --force /etc/logrotate.d/sol
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
