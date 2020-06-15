@@ -360,8 +360,6 @@ while true; do
     datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
 
     mv "$ledger_dir"/rocksdb ~/ledger-archive/
-    mkdir -p "$ledger_dir"/shreds # 1.2 adds support for a shreds/ directory
-    mv "$ledger_dir"/shreds ~/ledger-archive/
 
     mkdir -p ~/"$STORAGE_BUCKET"
     mv ~/ledger-archive ~/"$STORAGE_BUCKET"/"$archive_snapshot_slot"
