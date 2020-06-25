@@ -53,6 +53,12 @@ sudo --login -u sol -- bash -c "
 
 ln -s /etc/systemd/system/sol.service .
 
+# Put `syslog` user in the `tty` group
+# This prevents log spam due to rsyslogd not having access to /etc/console
+# which is configured as the log source for Google's services
+sudo usermod -aG tty syslog
+sudo systemctl restart rsyslog.service
+
 # Setup log rotation
 cat > logrotate.sol <<EOF
 /home/sol/solana-validator.log {
