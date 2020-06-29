@@ -2,6 +2,7 @@
 Description=Solana Validator
 After=network.target
 Wants=solana-sys-tuner.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -9,7 +10,6 @@ Restart=always
 RestartSec=1
 User=sol
 LimitNOFILE=65536
-StartLimitIntervalSec=0
 LogRateLimitIntervalSec=0
 ExecStart=/home/sol/bin/validator.sh
 

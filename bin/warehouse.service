@@ -2,6 +2,7 @@
 Description=Solana Warehouse Node
 After=network.target
 Wants=solana-sys-tuner.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -10,7 +11,6 @@ RestartSec=1
 User=sol
 LimitNOFILE=65536
 LogRateLimitIntervalSec=0
-StartLimitIntervalSec=0
 ExecStart=/home/sol/bin/warehouse.sh
 
 [Install]

@@ -1,8 +1,8 @@
 [Unit]
 Description=Solana Watchtower
 After=network.target
-StartLimitIntervalSec=0
 Wants=solana-sys-tuner.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
