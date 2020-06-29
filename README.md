@@ -14,7 +14,7 @@ The ledger is stored in /home/sol/ledger
 * GCE Instance Name: cluster-entrypoint
 * OS Image: Ubuntu 18.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
-* Machine type: n1-standard-1
+* Machine type: n1-standard-4
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-entrypoint`
 
