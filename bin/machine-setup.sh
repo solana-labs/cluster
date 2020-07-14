@@ -141,11 +141,17 @@ sudo mv ./* /home/sol
 # Move the systemd service files into /etc
 sudo cp /home/sol/bin/solana-sys-tuner.service /etc/systemd/system/solana-sys-tuner.service
 sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
+sudo cp /home/sol/bin/warehouse-upload-to-storage-bucket.service /etc/systemd/system/solana-warehouse-upload.service
 sudo systemctl daemon-reload
 
 # Start the solana-sys-tuner service
 sudo systemctl enable --now solana-sys-tuner
 sudo systemctl --no-pager status solana-sys-tuner
+
+if [[ $NODE_TYPE = warehouse ]]; then
+  sudo systemctl enable --now solana-warehouse-upload
+  sudo systemctl --no-pager status solana-warehouse-upload
+fi
 
 # Start the solana service
 sudo systemctl enable --now sol

@@ -2,6 +2,7 @@
 Description=Solana Warehouse Node
 After=network.target
 Wants=solana-sys-tuner.service
+Wants=solana-warehouse-upload.service
 StartLimitIntervalSec=0
 
 [Service]
