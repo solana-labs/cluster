@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+~/bin/check-hostname.sh
+
 #shellcheck source=/dev/null
 . ~/service-env.sh
 

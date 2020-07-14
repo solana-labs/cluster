@@ -17,6 +17,8 @@ panic() {
   exit 1
 }
 
+~/bin/check-hostname.sh
+
 #shellcheck source=/dev/null
 source ~/service-env.sh
 
