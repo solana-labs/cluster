@@ -281,7 +281,15 @@ while true; do
 
     sleep 60
 
-    current_epoch=$(solana epoch || true)
+    current_epoch=""
+    for _ in $(seq 1 10); do
+      current_epoch=$(solana epoch || true)
+      if [[ -n "$current_epoch" ]]; then
+        break
+      fi
+      sleep 2
+    done
+
     if [[ -z "$current_epoch" ]]; then
       datapoint_error failed-to-get-epoch
       continue
