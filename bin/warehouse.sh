@@ -10,11 +10,11 @@ set -e
 shopt -s nullglob
 
 here=$(dirname "$0")
+command_name=$(basename "$0" .sh)
 
 panic() {
   echo "error: $*" >&2
   exit 1
-
 }
 
 #shellcheck source=/dev/null
@@ -139,6 +139,7 @@ trap 'kill_node_and_exit' INT TERM ERR
 
 upload_to_storage_bucket() {
   if [[ ! -d ~/"$STORAGE_BUCKET" ]]; then
+    echo "~/$STORAGE_BUCKET does not exist"
     return
   fi
   killall gsutil || true
@@ -150,8 +151,8 @@ upload_to_storage_bucket() {
       declare archive_dir=$PWD
       echo "Creating rocksdb.tar.bz2 in $archive_dir"
       rm -rf rocksdb.tar.bz2
-      tar jcf rocksdb.tar.bz2 rocksdb shreds
-      rm -rf rocksdb shreds
+      tar jcf rocksdb.tar.bz2 rocksdb
+      rm -rf rocksdb
       echo "$archive_dir/rocksdb.tar.bz2 created in $SECONDS seconds"
     )
     datapoint created-rocksdb-tar-bz2 "duration_secs=$SECONDS"
@@ -215,6 +216,16 @@ prepare_archive_location() {
 }
 
 prepare_archive_location
+
+if [[ $command_name = "upload-to-storage-bucket" ]]; then
+  upload_to_storage_bucket
+  exit
+fi
+
+if [[ $command_name != "warehouse" ]]; then
+  echo "Unknown command: $command_name"
+  exit 1
+fi
 
 while true; do
   rm -f ~/.init-complete
