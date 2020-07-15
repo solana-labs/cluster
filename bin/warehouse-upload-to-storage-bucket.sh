@@ -26,6 +26,9 @@ if [[ -z $STORAGE_BUCKET ]]; then
   exit 1
 fi
 
+identity_keypair=~/warehouse-identity-$ZONE.json
+identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
+
 datapoint_error() {
   declare event=$1
   declare args=$2
