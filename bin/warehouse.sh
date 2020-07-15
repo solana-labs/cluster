@@ -10,12 +10,13 @@ set -e
 shopt -s nullglob
 
 here=$(dirname "$0")
-command_name=$(basename "$0" .sh)
 
 panic() {
   echo "error: $*" >&2
   exit 1
 }
+
+~/bin/check-hostname.sh
 
 #shellcheck source=/dev/null
 source ~/service-env.sh
@@ -136,39 +137,6 @@ kill_node_and_exit() {
 }
 trap 'kill_node_and_exit' INT TERM ERR
 
-
-upload_to_storage_bucket() {
-  if [[ ! -d ~/"$STORAGE_BUCKET" ]]; then
-    echo "~/$STORAGE_BUCKET does not exist"
-    return
-  fi
-  killall gsutil || true
-
-  for rocksdb in ~/"$STORAGE_BUCKET"/*/rocksdb; do
-    SECONDS=
-    (
-      cd "$(dirname "$rocksdb")"
-      declare archive_dir=$PWD
-      echo "Creating rocksdb.tar.bz2 in $archive_dir"
-      rm -rf rocksdb.tar.bz2
-      tar jcf rocksdb.tar.bz2 rocksdb
-      rm -rf rocksdb
-      echo "$archive_dir/rocksdb.tar.bz2 created in $SECONDS seconds"
-    )
-    datapoint created-rocksdb-tar-bz2 "duration_secs=$SECONDS"
-  done
-
-  SECONDS=
-  while ! timeout 1h gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
-    echo "gsutil rsync failed..."
-    datapoint_error gsutil-rsync-failure
-    sleep 30
-  done
-  echo Ledger upload took $SECONDS seconds
-  datapoint ledger-upload-complete "duration_secs=$SECONDS"
-  rm -rf ~/"$STORAGE_BUCKET"
-}
-
 get_latest_snapshot() {
   declare dir="$1"
   if [[ ! -d "$dir" ]]; then
@@ -216,16 +184,6 @@ prepare_archive_location() {
 }
 
 prepare_archive_location
-
-if [[ $command_name = "upload-to-storage-bucket" ]]; then
-  upload_to_storage_bucket
-  exit
-fi
-
-if [[ $command_name != "warehouse" ]]; then
-  echo "Unknown command: $command_name"
-  exit 1
-fi
 
 while true; do
   rm -f ~/.init-complete
@@ -380,8 +338,8 @@ while true; do
 
     mv "$ledger_dir"/rocksdb ~/ledger-archive/
 
-    mkdir -p ~/"$STORAGE_BUCKET"
-    mv ~/ledger-archive ~/"$STORAGE_BUCKET"/"$archive_snapshot_slot"
+    mkdir -p ~/"$STORAGE_BUCKET".inbox
+    mv ~/ledger-archive ~/"$STORAGE_BUCKET".inbox/"$archive_snapshot_slot"
 
     # Clean out the ledger directory from all artifacts other than genesis and
     # the snapshot archives, so the warehouse node restarts cleanly from its
@@ -393,11 +351,9 @@ while true; do
     prepare_archive_location
 
     if [[ -f $exit_signal_file ]]; then
-      echo $exit_signal_file present, forcing foreground upload
-      upload_to_storage_bucket
+      echo $exit_signal_file present, exiting
       exit 0
     fi
-    upload_to_storage_bucket &
 
     break
   done

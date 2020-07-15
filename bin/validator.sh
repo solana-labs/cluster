@@ -2,6 +2,8 @@
 set -ex
 shopt -s nullglob
 
+~/bin/check-hostname.sh
+
 #shellcheck source=/dev/null
 source ~/service-env.sh
 
