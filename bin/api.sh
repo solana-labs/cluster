@@ -33,6 +33,8 @@ exec solana-validator \
   ${maybe_rpc_faucet_address} \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
+  --expected-bank-hash "$EXPECTED_BANK_HASH" \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
   "${trusted_validators[@]}" \
   --no-untrusted-rpc \
+  --snapshot-version 1.1.0 \

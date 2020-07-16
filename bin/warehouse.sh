@@ -103,6 +103,7 @@ args=(
   --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  --expected-bank-hash "$EXPECTED_BANK_HASH"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   --gossip-port 8001
   --rpc-port 8899
@@ -117,6 +118,7 @@ args=(
   "${trusted_validators[@]}"
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
+  --snapshot-version 1.1.0
 )
 
 pid=

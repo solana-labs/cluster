@@ -57,10 +57,12 @@ args=(
   --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  --expected-bank-hash "$EXPECTED_BANK_HASH"
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   "${authorized_voter_args[@]}"
   "${trusted_validator_args[@]}"
   "${frozen_accounts[@]}"
+  --snapshot-version 1.1.0
 )
 
 if [[ -n $GOSSIP_HOST ]]; then
