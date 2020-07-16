@@ -168,6 +168,7 @@ done
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
   echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
+  echo EXPECTED_BANK_HASH="$8osXYbYF7drjZAJedHuwB8A56t7Pwa6bZbtCjiVhJBbT" # TODO: add ledger-tool command to fetch this correctly...
   echo TRUSTED_VALIDATOR_PUBKEYS="(${TRUSTED_VALIDATOR_PUBKEYS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
