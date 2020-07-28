@@ -66,6 +66,22 @@ while true; do
     (
       cd "$(dirname "$rocksdb")"
       declare archive_dir=$PWD
+
+      if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
+        if [[ ! -f "$archive_dir"/.bigtable ]]; then
+          echo "Uploading $archive_dir to BigTable"
+          SECONDS=
+          while ! timeout 24h /home/sol/solana-ledger-tool.bigtable --ledger "$archive_dir" bigtable upload; do
+            echo "bigtable upload failed..."
+            datapoint_error bigtable-upload-failure
+            sleep 30
+          done
+          touch "$archive_dir"/.bigtable
+          echo Ledger upload to bigtable took $SECONDS seconds
+          datapoint bigtable-upload-complete "duration_secs=$SECONDS"
+        fi
+      fi
+
       echo "Creating rocksdb.tar.bz2 in $archive_dir"
       rm -rf rocksdb.tar.bz2
       tar jcf rocksdb.tar.bz2 rocksdb
@@ -89,7 +105,7 @@ while true; do
     datapoint_error gsutil-rsync-failure
     sleep 30
   done
-  echo Ledger upload took $SECONDS seconds
+  echo Ledger upload to storage bucket took $SECONDS seconds
   datapoint ledger-upload-complete "duration_secs=$SECONDS"
   rm -rf ~/"$STORAGE_BUCKET"
 done
