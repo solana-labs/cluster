@@ -12,7 +12,7 @@ The ledger is stored in /home/sol/ledger
 * DNS: cluster.solana.com
 * Static IP: 35.227.139.150
 * GCE Instance Name: cluster-entrypoint
-* OS Image: Ubuntu 18.04 LTS Minimal
+* OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
 * Machine type: n1-standard-4
 * Region: us-west-1
@@ -22,7 +22,7 @@ The ledger is stored in /home/sol/ledger
 * DNS: none
 * Static IP: none
 * GCE Instance Name: cluster-bootstrap-validator
-* OS Image: Ubuntu 18.04 LTS Minimal
+* OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
@@ -32,7 +32,7 @@ The ledger is stored in /home/sol/ledger
 * DNS: api.cluster.solana.com
 * Static IP: 35.197.59.229
 * GCE Resource Name: cluster-api
-* OS Image: Ubuntu 18.04 LTS Minimal
+* OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
@@ -42,7 +42,7 @@ The ledger is stored in /home/sol/ledger
 * DNS: none
 * Static IP: none
 * GCE Instance Name: cluster-warehouse
-* OS Image: Ubuntu 18.04 LTS Minimal
+* OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
 * Machine type: n1-standard-8
 * Region: us-west-1
@@ -52,7 +52,7 @@ The ledger is stored in /home/sol/ledger
 * DNS: none
 * Static IP: none
 * GCE Instance Name: cluster-watchtower
-* OS Image: Ubuntu 18.04 LTS Minimal
+* OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
 * Machine type: n1-standard-1
 * Region: us-west-1
