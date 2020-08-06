@@ -9,7 +9,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=sol
-LimitNOFILE=65536
+LimitNOFILE=500000
 LogRateLimitIntervalSec=0
 ExecStart=/home/sol/bin/api.sh
 
