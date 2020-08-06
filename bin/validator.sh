@@ -62,7 +62,6 @@ args=(
   "${authorized_voter_args[@]}"
   "${trusted_validator_args[@]}"
   "${frozen_accounts[@]}"
-  --snapshot-version 1.1.0
 )
 
 if [[ -n $GOSSIP_HOST ]]; then

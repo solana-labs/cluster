@@ -118,7 +118,6 @@ args=(
   "${trusted_validators[@]}"
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
-  --snapshot-version 1.1.0
 )
 
 pid=

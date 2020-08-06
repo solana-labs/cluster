@@ -37,4 +37,3 @@ exec solana-validator \
   --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY" \
   "${trusted_validators[@]}" \
   --no-untrusted-rpc \
-  --snapshot-version 1.1.0 \
