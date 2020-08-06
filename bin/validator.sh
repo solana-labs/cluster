@@ -68,7 +68,7 @@ if [[ -n $GOSSIP_HOST ]]; then
   args+=(--gossip-host "$GOSSIP_HOST")
 else
   args+=(--entrypoint "$ENTRYPOINT")
-  args+=(--no-genesis-fetch)
+  args+=(--no-genesis-fetch --no-snapshot-fetch)
 fi
 
 exec solana-validator "${args[@]}"

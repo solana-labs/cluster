@@ -30,7 +30,7 @@ exec solana-validator \
   --identity "$identity_keypair" \
   --limit-ledger-size 600000000 \
   --log ~/solana-validator.log \
-  --no-genesis-fetch \
+  --no-genesis-fetch --no-snapshot-fetch \
   --no-voting \
   --rpc-port 8899 \
   --enable-rpc-transaction-history \

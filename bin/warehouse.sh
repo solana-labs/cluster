@@ -111,7 +111,7 @@ args=(
   --identity "$identity_keypair"
   --ledger "$ledger_dir"
   --log ~/solana-validator.log
-  --no-genesis-fetch
+  --no-genesis-fetch --no-snapshot-fetch
   --no-voting
   --skip-poh-verify
   --enable-rpc-transaction-history
