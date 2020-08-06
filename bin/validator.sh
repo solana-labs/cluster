@@ -57,12 +57,20 @@ args=(
   --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
-  --expected-bank-hash "$EXPECTED_BANK_HASH"
-  --wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY"
   "${authorized_voter_args[@]}"
   "${trusted_validator_args[@]}"
   "${frozen_accounts[@]}"
 )
+
+if [[ -n "$EXPECTED_BANK_HASH" ]]; then
+  args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
+  if [[ -n "$WAIT_FOR_SUPER_MAJORITY" ]]; then
+    args+=(--wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY")
+  fi
+elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
+  echo "WAIT_FOR_SUPERMAJORITY requires EXPECTED_BANK_HASH be specified as well!" 1>&2
+  exit 1
+fi
 
 if [[ -n $GOSSIP_HOST ]]; then
   args+=(--gossip-host "$GOSSIP_HOST")
