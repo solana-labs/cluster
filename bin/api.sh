@@ -18,6 +18,10 @@ if [[ -f ~/faucet.json ]]; then
   maybe_rpc_faucet_address="--rpc-faucet-address 127.0.0.1:9900"
 fi
 
+if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
+  maybe_rpc_big_table_storage="--enable-rpc-bigtable-ledger-storage"
+fi
+
 exec solana-validator \
   --gossip-port 8001 \
   --dynamic-port-range 8002-8012 \
@@ -31,6 +35,7 @@ exec solana-validator \
   --rpc-port 8899 \
   --enable-rpc-transaction-history \
   ${maybe_rpc_faucet_address} \
+  ${maybe_rpc_big_table_storage} \
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
   --expected-shred-version "$EXPECTED_SHRED_VERSION" \
   --expected-bank-hash "$EXPECTED_BANK_HASH" \
