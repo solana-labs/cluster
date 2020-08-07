@@ -120,7 +120,7 @@ args=(
 
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
-  if [[ -n "$WAIT_FOR_SUPER_MAJORITY" ]]; then
+  if [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
     args+=(--wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY")
   fi
 elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then

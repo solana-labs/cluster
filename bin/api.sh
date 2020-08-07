@@ -24,7 +24,7 @@ fi
 
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then
   maybe_expected_bank_hash="--expected-bank-hash $EXPECTED_BANK_HASH"
-  if [[ -n "$WAIT_FOR_SUPER_MAJORITY" ]]; then
+  if [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
     maybe_wait_for_supermajority="--wait-for-supermajority $WAIT_FOR_SUPERMAJORITY"
   fi
 elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
