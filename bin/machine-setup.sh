@@ -139,6 +139,9 @@ sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
 
 # Move the systemd service files into /etc
+if [[ $NODE_TYPE = api -a -e ~/faucet.json ]]; then
+  sudo cp /home/sol/bin/faucet.service /etc/systemd/system/solana-faucet.service
+fi
 sudo cp /home/sol/bin/solana-sys-tuner.service /etc/systemd/system/solana-sys-tuner.service
 sudo cp /home/sol/bin/"$NODE_TYPE".service /etc/systemd/system/sol.service
 sudo cp /home/sol/bin/warehouse-upload-to-storage-bucket.service /etc/systemd/system/solana-warehouse-upload.service
@@ -147,6 +150,11 @@ sudo systemctl daemon-reload
 # Start the solana-sys-tuner service
 sudo systemctl enable --now solana-sys-tuner
 sudo systemctl --no-pager status solana-sys-tuner
+
+if [[ $NODE_TYPE = api -a -e ~/faucet.json ]]; then
+  sudo systemctl enable --now solana-faucet
+  sudo systemctl --no-pager status solana-faucet
+fi
 
 if [[ $NODE_TYPE = warehouse ]]; then
   sudo systemctl enable --now solana-warehouse-upload
@@ -161,9 +169,6 @@ sudo --login -u sol -- bash -c "
   set -ex;
   echo '#!/bin/sh' > ~/on-reboot;
   echo '/home/sol/bin/run-monitors.sh &' > ~/on-reboot;
-  if [[ -f /home/sol/faucet.json ]]; then
-    echo '/home/sol/bin/run-faucet.sh &' > ~/on-reboot;
-  fi;
   chmod +x ~/on-reboot;
 
   echo '@reboot /home/sol/on-reboot' | crontab -;

@@ -1,0 +1,16 @@
+[Unit]
+Description=Solana Faucet
+After=network.target
+Wants=sol.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=sol
+LogRateLimitIntervalSec=0
+ExecStart=/home/sol/bin/run-faucet.sh
+
+[Install]
+WantedBy=multi-user.target
