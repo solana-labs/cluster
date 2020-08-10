@@ -218,6 +218,7 @@ echo ==========================================================
     "$API_INSTANCE" \
     --zone "$DEFAULT_ZONE" \
     --machine-type n1-standard-16 \
+    --boot-disk-type=pd-ssd \
     --boot-disk-size=2TB \
     --tags solana-validator-minimal,solana-validator-rpc \
     --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
@@ -254,6 +255,7 @@ for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
       "$VALIDATOR_INSTANCE" \
       --zone "$ZONE" \
       --machine-type n1-standard-8 \
+      --boot-disk-type=pd-ssd \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \
       --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
@@ -275,6 +277,7 @@ for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
       "$WAREHOUSE_INSTANCE" \
       --zone "$ZONE" \
       --machine-type n1-standard-8 \
+      --boot-disk-type=pd-ssd \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \
       --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
