@@ -10,7 +10,7 @@ case $CLUSTER in
 devnet)
   echo "### Devnet Cluster ###"
   PROJECT="solana-devnet"
-  API_ADDRESS_NAME=devnet-solana-com
+  API_ADDRESS_NAME=api #devnet-solana-com
   API_DNS_NAME=devnet.solana.com
   FAUCET_KEYPAIR=1
   FAUCET_RPC=1
