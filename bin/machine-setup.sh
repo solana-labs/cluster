@@ -44,7 +44,7 @@ sudo --login -u sol -- bash -c "
 
 sudo --login -u sol -- bash -c "
   echo ~/bin/print-keys.sh >> ~/.profile;
-  cp /etc/hostname ~/.hostname
+  cp /etc/hostname ~/.hostname;
   mkdir ~/.ssh;
   chmod 0700 ~/.ssh;
   echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKU6YrfEw24+hhxOsu7bAXr1m38G9CCmtUtPpgOjXys4 mvines@sol' >> ~/.ssh/authorized_keys;
