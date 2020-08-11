@@ -191,6 +191,9 @@ rm ca.key ca.crt ca.srl server.crt server.csr server.key
 sudo add-apt-repository --yes ppa:certbot/certbot -r
 sudo apt-get --assume-yes install haproxy certbot
 
+# Our certs have a 2048bit DH param, haproxy's default is 1024. Bump it
+sudo sed -i'' -e 's/^\(global\)/\1\n\ttune.ssl.default-dh-param 2048/' /etc/haproxy/haproxy.cfg
+
 {
   cat <<EOF
 frontend http
