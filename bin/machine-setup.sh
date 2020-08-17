@@ -196,6 +196,7 @@ sudo sed -i'' -e 's/^\(global\)/\1\n\ttune.ssl.default-dh-param 2048/' /etc/hapr
 
 {
   cat <<EOF
+    errorfile 429 /etc/haproxy/errors/429.http
 frontend http
     bind *:80
 
@@ -253,6 +254,17 @@ backend letsencrypt
 
 EOF
 } | sudo tee -a /etc/haproxy/haproxy.cfg
+
+{
+  cat <<EOF
+HTTP/1.0 429 Too Many Requests
+Cache-Control: no-cache
+Connection: close
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":"1","error": {"code":-32099, "message":"you have sent too many requests in a given amount of time"}}
+EOF
+} | sudo tee -a /etc/haproxy/errors/429.http
 
 sudo haproxy -c -f /etc/haproxy/haproxy.cfg
 sudo systemctl restart haproxy
