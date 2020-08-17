@@ -17,6 +17,7 @@ devnet)
   OPERATING_MODE=development
   VALIDATOR_ZONES=($DEFAULT_ZONE)
   WAREHOUSE_ZONES=($DEFAULT_ZONE)
+  # These public credentials are a known risk
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=devnet,u=scratch_writer,p=topsecret"
   ;;
 mainnet-beta)
@@ -33,6 +34,7 @@ mainnet-beta)
   CREATION_TIME="2020-03-16T07:29:00-07:00"
   VALIDATOR_ZONES=($DEFAULT_ZONE us-east1-b europe-west4-c asia-northeast3-a)
   WAREHOUSE_ZONES=($DEFAULT_ZONE europe-west4-c)
+  # These public credentials are a known risk
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=mainnet-beta,u=mainnet-beta_write,p=password"
   ;;
 testnet)
@@ -49,6 +51,7 @@ testnet)
   OPERATING_MODE=preview
   VALIDATOR_ZONES=($DEFAULT_ZONE)
   WAREHOUSE_ZONES=($DEFAULT_ZONE)
+  # These public credentials are a known risk
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;
 *)

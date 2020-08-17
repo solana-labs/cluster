@@ -61,6 +61,7 @@ The ledger is stored in /home/sol/ledger
 # Metrics
 The following metrics configuration is used in production:
 ```
+# These public credentials are a known risk
 SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
 ```
 
@@ -177,6 +178,7 @@ contain the validator identity and vote keypairs that were registered in the
 genesis configuration, run:
 
 ```bash
+# These public credentials are a known risk
 $ export SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=cluster,u=cluster_write,p=2aQdShmtsPSAgABLQiK2FpSCJGLtG8h3vMEVz1jE7Smf"
 $ export EXPECTED_GENESIS_HASH=##### <--- To be communicated by Solana
 $ solana-validator \
