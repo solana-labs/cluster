@@ -199,10 +199,10 @@ sudo sed -i'' -e 's/^\(global\)/\1\n\ttune.ssl.default-dh-param 2048/' /etc/hapr
 frontend http
     bind *:80
 
-    # rate limit to 30 RPC requests in 2 seconds per IP
+    # rate limit to 10 RPC requests in 2 seconds per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(2s)
     http-request track-sc0 src
-    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 30 }
+    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 10 }
 
     stats enable
     stats hide-version
@@ -221,10 +221,10 @@ frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
     bind *:8443 ssl crt /etc/ssl/private/haproxy.pem
 
-    # rate limit to 30 RPC requests in 2 seconds per IP
+    # rate limit to 10 RPC requests in 2 seconds per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(2s)
     http-request track-sc0 src
-    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 30 }
+    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 10 }
 
     stats enable
     stats hide-version
