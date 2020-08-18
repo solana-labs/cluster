@@ -47,7 +47,7 @@ testnet)
   ENTRYPOINT_ADDRESS_NAME=entrypoint
   EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET_KEYPAIR=1
-  FAUCET_RPC=
+  FAUCET_RPC=1
   OPERATING_MODE=preview
   VALIDATOR_ZONES=($DEFAULT_ZONE)
   WAREHOUSE_ZONES=($DEFAULT_ZONE)
