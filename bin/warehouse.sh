@@ -293,20 +293,26 @@ while true; do
           if [[ -n $latest_snapshot ]]; then
             latest_snapshot_slot=$(get_snapshot_slot "$latest_snapshot")
 
-            # Archive the hourly snapshot
-            mkdir -p ~/ledger-archive/hourly
-            ln -f "$latest_snapshot" ~/ledger-archive/hourly/
-
-            # Sanity check: ensure the snapshot verifies
-            echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
-            rm -rf ~/snapshot-check
-            mkdir ~/snapshot-check
-            ln "$ledger_dir"/genesis.bin ~/snapshot-check/
-            ln "$latest_snapshot" ~/snapshot-check/
-            if solana-ledger-tool --ledger ~/snapshot-check verify; then
-              datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
+            if [[ $latest_snapshot_slot = "$last_known_good_snapshot_slot" ]]; then
+              # Problem!  No new snapshot in the last hour
+              datapoint_error snapshot-stuck "slot=$latest_snapshot_slot"
             else
-              datapoint snapshot-verification-failed "slot=$latest_snapshot_slot"
+              # Archive the hourly snapshot
+              mkdir -p ~/ledger-archive/hourly
+              ln -f "$latest_snapshot" ~/ledger-archive/hourly/
+
+              # Sanity check: ensure the snapshot verifies
+              echo "Verifying snapshot for $latest_snapshot_slot: $latest_snapshot"
+              rm -rf ~/snapshot-check
+              mkdir ~/snapshot-check
+              ln "$ledger_dir"/genesis.bin ~/snapshot-check/
+              ln "$latest_snapshot" ~/snapshot-check/
+              if solana-ledger-tool --ledger ~/snapshot-check verify; then
+                datapoint snapshot-verification-ok "slot=$latest_snapshot_slot"
+                last_known_good_snapshot_slot=$latest_snapshot_slot
+              else
+                datapoint_error snapshot-verification-failed "slot=$latest_snapshot_slot"
+              fi
             fi
           fi
         fi
