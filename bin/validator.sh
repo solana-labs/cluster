@@ -4,6 +4,9 @@ shopt -s nullglob
 
 ~/bin/check-hostname.sh
 
+# Delete any zero-length snapshots that can cause validator startup to fail
+find ~/ledger/snapshot-* -size 0 -print -exec rm {} \;
+
 #shellcheck source=/dev/null
 source ~/service-env.sh
 
