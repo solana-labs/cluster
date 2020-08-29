@@ -254,7 +254,7 @@ for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
     gcloud --project "$PROJECT" compute instances create \
       "$VALIDATOR_INSTANCE" \
       --zone "$ZONE" \
-      --machine-type n1-standard-8 \
+      --machine-type n1-standard-16 \
       --boot-disk-type=pd-ssd \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \
@@ -276,7 +276,7 @@ for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
     gcloud --project "$PROJECT" compute instances create \
       "$WAREHOUSE_INSTANCE" \
       --zone "$ZONE" \
-      --machine-type n1-standard-8 \
+      --machine-type n1-standard-16 \
       --boot-disk-type=pd-ssd \
       --boot-disk-size=2TB \
       --tags solana-validator-minimal,solana-validator-rpc \

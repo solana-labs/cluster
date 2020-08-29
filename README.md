@@ -14,7 +14,7 @@ The ledger is stored in /home/sol/ledger
 * GCE Instance Name: cluster-entrypoint
 * OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 200GB
-* Machine type: n1-standard-4
+* Machine type: n1-standard-1
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-entrypoint`
 
@@ -24,7 +24,7 @@ The ledger is stored in /home/sol/ledger
 * GCE Instance Name: cluster-bootstrap-validator
 * OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
-* Machine type: n1-standard-8
+* Machine type: n1-standard-16
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-bootstrap-validator`
 
@@ -34,7 +34,7 @@ The ledger is stored in /home/sol/ledger
 * GCE Resource Name: cluster-api
 * OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
-* Machine type: n1-standard-8
+* Machine type: n1-standard-16
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-api`
 
@@ -44,7 +44,7 @@ The ledger is stored in /home/sol/ledger
 * GCE Instance Name: cluster-warehouse
 * OS Image: Ubuntu 20.04 LTS Minimal
 * Boot disk: Standard disk, 2TB
-* Machine type: n1-standard-8
+* Machine type: n1-standard-16
 * Region: us-west-1
 * ssh: `gcloud --project solana-cluster compute ssh cluster-warehouse`
 
