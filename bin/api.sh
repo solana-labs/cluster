@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -ex
 
+#shellcheck source=/dev/null
+. ~/service-env.sh
+
 ~/bin/check-hostname.sh
 
 # Delete any zero-length snapshots that can cause validator startup to fail
 find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
-
-#shellcheck source=/dev/null
-. ~/service-env.sh
 
 identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)

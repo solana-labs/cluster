@@ -16,16 +16,16 @@ panic() {
   exit 1
 }
 
-~/bin/check-hostname.sh
-
-# Delete any zero-length snapshots that can cause validator startup to fail
-find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
-
 #shellcheck source=/dev/null
 source ~/service-env.sh
 
 #shellcheck source=/dev/null
 source ~/service-env-warehouse-*.sh
+
+~/bin/check-hostname.sh
+
+# Delete any zero-length snapshots that can cause validator startup to fail
+find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
 
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
