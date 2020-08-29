@@ -4,7 +4,7 @@ set -ex
 ~/bin/check-hostname.sh
 
 # Delete any zero-length snapshots that can cause validator startup to fail
-find ~/ledger/snapshot-* -size 0 -print -exec rm {} \;
+find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
 
 #shellcheck source=/dev/null
 . ~/service-env.sh
@@ -35,24 +35,30 @@ elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
   exit 1
 fi
 
-exec solana-validator \
-  --gossip-port 8001 \
-  --dynamic-port-range 8002-8012 \
-  --entrypoint "${ENTRYPOINT}" \
-  --ledger ~/ledger \
-  --identity "$identity_keypair" \
-  --limit-ledger-size 600000000 \
-  --log ~/solana-validator.log \
-  --no-genesis-fetch --no-snapshot-fetch \
-  --no-voting \
-  --rpc-port 8899 \
-  --enable-rpc-transaction-history \
-  ${maybe_rpc_faucet_address} \
-  ${maybe_rpc_big_table_storage} \
-  --expected-genesis-hash "$EXPECTED_GENESIS_HASH" \
-  --expected-shred-version "$EXPECTED_SHRED_VERSION" \
-  ${maybe_expected_bank_hash} \
-  ${maybe_wait_for_supermajority} \
-  "${trusted_validators[@]}" \
-  --no-untrusted-rpc \
-  --wal-recovery-mode skip_any_corrupted_record \
+args=(
+  --gossip-port 8001
+  --dynamic-port-range 8002-8012
+  --entrypoint "${ENTRYPOINT}"
+  --ledger ~/ledger
+  --identity "$identity_keypair"
+  --limit-ledger-size 600000000
+  --log ~/solana-validator.log
+  --no-voting
+  --rpc-port 8899
+  --enable-rpc-transaction-history
+  ${maybe_rpc_faucet_address}
+  ${maybe_rpc_big_table_storage}
+  --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
+  --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  ${maybe_expected_bank_hash}
+  ${maybe_wait_for_supermajority}
+  "${trusted_validators[@]}"
+  --no-untrusted-rpc
+  --wal-recovery-mode skip_any_corrupted_record
+)
+
+if [[ -d ~/ledger ]]; then
+  args+=(--no-genesis-fetch --no-snapshot-fetch)
+fi
+
+exec solana-validator "${args[@]}"
