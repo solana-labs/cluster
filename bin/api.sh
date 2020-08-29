@@ -41,7 +41,7 @@ args=(
   --entrypoint "${ENTRYPOINT}"
   --ledger ~/ledger
   --identity "$identity_keypair"
-  --limit-ledger-size 600000000
+  --limit-ledger-size 500000000
   --log ~/solana-validator.log
   --no-voting
   --rpc-port 8899
