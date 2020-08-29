@@ -52,3 +52,4 @@ exec solana-validator \
   ${maybe_wait_for_supermajority} \
   "${trusted_validators[@]}" \
   --no-untrusted-rpc \
+  --wal-recovery-mode skip_any_corrupted_record \

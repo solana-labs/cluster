@@ -60,6 +60,7 @@ args=(
   "${authorized_voter_args[@]}"
   "${trusted_validator_args[@]}"
   "${frozen_accounts[@]}"
+  --wal-recovery-mode skip_any_corrupted_record
 )
 
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then

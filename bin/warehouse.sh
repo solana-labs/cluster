@@ -116,6 +116,7 @@ args=(
   "${trusted_validators[@]}"
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
+  --wal-recovery-mode skip_any_corrupted_record
 )
 
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then
