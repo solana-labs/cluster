@@ -194,6 +194,8 @@ sudo apt-get --assume-yes install haproxy certbot
 
 # Our certs have a 2048bit DH param, haproxy's default is 1024. Bump it
 sudo sed -i'' -e 's/^\(global\)/\1\n\ttune.ssl.default-dh-param 2048/' /etc/haproxy/haproxy.cfg
+# Increase socket/fd allowances
+sudo sed -i'' -e 's/^\(global\)/\1\n\tulimit-n 15134\n\tmaxconn 7500/' /etc/haproxy/haproxy.cfg
 
 {
   cat <<EOF
