@@ -1,7 +1,8 @@
 # source this file
 
 #RELEASE_CHANNEL_OR_TAG=1.0.7
-RELEASE_CHANNEL_OR_TAG=stable
+#RELEASE_CHANNEL_OR_TAG=stable
+RELEASE_CHANNEL_OR_TAG=beta
 
 REGION=us-west1
 DEFAULT_ZONE=us-west1-b
@@ -16,7 +17,7 @@ devnet)
   FAUCET_RPC=1
   OPERATING_MODE=development
   VALIDATOR_ZONES=($DEFAULT_ZONE)
-  WAREHOUSE_ZONES=($DEFAULT_ZONE)
+  #WAREHOUSE_ZONES=($DEFAULT_ZONE)
   # These public credentials are a known risk
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=devnet,u=scratch_writer,p=topsecret"
   ;;
@@ -45,12 +46,13 @@ testnet)
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   ENTRYPOINT_DNS_NAME=
   ENTRYPOINT_ADDRESS_NAME=entrypoint
-  EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
+  #EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET_KEYPAIR=1
   FAUCET_RPC=1
+  NO_WATCHTOWER=1
   OPERATING_MODE=preview
-  VALIDATOR_ZONES=($DEFAULT_ZONE)
-  WAREHOUSE_ZONES=($DEFAULT_ZONE)
+  VALIDATOR_ZONES=($DEFAULT_ZONE us-west1-a us-central1-a us-east1-b)
+  #WAREHOUSE_ZONES=($DEFAULT_ZONE)
   # These public credentials are a known risk
   [[ -z $PRODUCTION ]] || SOLANA_METRICS_CONFIG="host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
   ;;

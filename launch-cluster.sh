@@ -41,13 +41,16 @@ done
 
 ENTRYPOINT_INSTANCE=${INSTANCE_PREFIX}entrypoint
 API_INSTANCE=${INSTANCE_PREFIX}api
-WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}watchtower
 
 INSTANCES=(
   "$ENTRYPOINT_INSTANCE:$DEFAULT_ZONE"
   "$API_INSTANCE:$DEFAULT_ZONE"
-  "$WATCHTOWER_INSTANCE:$DEFAULT_ZONE"
 )
+
+if [[ -z $NO_WATCHTOWER ]]; then
+  WATCHTOWER_INSTANCE=${INSTANCE_PREFIX}watchtower
+  INSTANCES+=("$WATCHTOWER_INSTANCE:$DEFAULT_ZONE")
+fi
 
 VALIDATOR_INSTANCES=()
 for ZONE in "${VALIDATOR_ZONES[@]}"; do
@@ -123,6 +126,7 @@ done
 
 GENESIS_HASH="$(RUST_LOG=none solana-ledger-tool genesis-hash --ledger "$CLUSTER"/ledger)"
 SHRED_VERSION="$(RUST_LOG=none solana-ledger-tool shred-version --ledger "$CLUSTER"/ledger)"
+BANK_HASH="$(RUST_LOG=none solana-ledger-tool bank-hash --ledger "$CLUSTER"/ledger)"
 
 if [[ -z $SOLANA_METRICS_CONFIG ]]; then
   echo Note: SOLANA_METRICS_CONFIG is not configured
@@ -168,7 +172,7 @@ done
 (
   echo EXPECTED_GENESIS_HASH="$GENESIS_HASH"
   echo EXPECTED_SHRED_VERSION="$SHRED_VERSION"
-  echo EXPECTED_BANK_HASH="8osXYbYF7drjZAJedHuwB8A56t7Pwa6bZbtCjiVhJBbT" # TODO: add ledger-tool command to fetch this correctly...
+  echo EXPECTED_BANK_HASH="$BANK_HASH"
   echo TRUSTED_VALIDATOR_PUBKEYS="(${TRUSTED_VALIDATOR_PUBKEYS[*]})"
   echo WAIT_FOR_SUPERMAJORITY=0
   if [[ -n $SOLANA_METRICS_CONFIG ]]; then
@@ -196,7 +200,7 @@ echo ==========================================================
   gcloud --project "$PROJECT" compute instances create \
     "$ENTRYPOINT_INSTANCE" \
     --zone "$DEFAULT_ZONE" \
-    --machine-type n1-standard-1 \
+    --machine-type n1-standard-4 \
     --boot-disk-size=200GB \
     --tags solana-validator-minimal \
     --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
@@ -226,21 +230,23 @@ echo ==========================================================
     ${maybe_address}
 )
 
-echo ==========================================================
-echo "Creating $WATCHTOWER_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute instances create \
-    "$WATCHTOWER_INSTANCE" \
-    --zone "$DEFAULT_ZONE" \
-    --machine-type n1-standard-1 \
-    --boot-disk-size=200GB \
-    --tags solana-validator-minimal \
-    --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
-    --min-cpu-platform "Intel Skylake" \
+if [[ -z $NO_WATCHTOWER ]]; then
+  echo ==========================================================
+  echo "Creating $WATCHTOWER_INSTANCE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute instances create \
+      "$WATCHTOWER_INSTANCE" \
+      --zone "$DEFAULT_ZONE" \
+      --machine-type n1-standard-1 \
+      --boot-disk-size=200GB \
+      --tags solana-validator-minimal \
+      --image "$OS_IMAGE" --image-project ubuntu-os-cloud \
+      --min-cpu-platform "Intel Skylake" \
 
-)
+  )
+fi
 
 for INSTANCE_ZONE in "${VALIDATOR_INSTANCES[@]}"; do
   declare VALIDATOR_INSTANCE=${INSTANCE_ZONE%:*}
@@ -382,18 +388,20 @@ for INSTANCE_ZONE in "${WAREHOUSE_INSTANCES[@]}"; do
   )
 done
 
-echo ==========================================================
-echo "Transferring files to $WATCHTOWER_INSTANCE"
-echo ==========================================================
-(
-  set -x
-  gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" --recurse \
-    "$CLUSTER"/service-env.sh \
-    bin/ \
-    "$WATCHTOWER_INSTANCE":
-  gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$WATCHTOWER_INSTANCE" -- \
-    bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" watchtower ""
-)
+if [[ -z $NO_WATCHTOWER ]]; then
+  echo ==========================================================
+  echo "Transferring files to $WATCHTOWER_INSTANCE"
+  echo ==========================================================
+  (
+    set -x
+    gcloud --project "$PROJECT" compute scp --zone "$DEFAULT_ZONE" --recurse \
+      "$CLUSTER"/service-env.sh \
+      bin/ \
+      "$WATCHTOWER_INSTANCE":
+    gcloud --project "$PROJECT" compute ssh --zone "$DEFAULT_ZONE" "$WATCHTOWER_INSTANCE" -- \
+      bash bin/machine-setup.sh "$RELEASE_CHANNEL_OR_TAG" watchtower ""
+  )
+fi
 
 echo ==========================================================
 echo "Transferring files to $API_INSTANCE"
@@ -449,10 +457,13 @@ echo ==========================================================
   ./get-all-accounts-owned-in-genesis.sh "$RPC_URL"
 ) | tee accounts_owned_by.txt
 
-(
-  set -x
-  gsutil -m cp accounts_owned_by* gs://"$STORAGE_BUCKET"
-)
+
+if [[ -n $STORAGE_BUCKET ]]; then
+  (
+    set -x
+    gsutil -m cp accounts_owned_by* gs://"$STORAGE_BUCKET"
+  )
+fi
 
 echo ==========================================================
 (
