@@ -14,7 +14,7 @@ for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   args+=(--validator-identity "$tv")
 done
 
-if [[ -n TRANSACTION_NOTIFIER_SLACK_WEBHOOK ]]; then
+if [[ -n $TRANSACTION_NOTIFIER_SLACK_WEBHOOK ]]; then
   args+=(--notify-on-transactions)
 fi
 

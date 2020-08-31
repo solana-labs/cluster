@@ -41,15 +41,14 @@ mainnet-beta)
 testnet)
   echo "### Testnet ###"
   PROJECT="tour-de-sol"
-  API_DNS_NAME=testnet.solana.com
-  API_ADDRESS_NAME=tds-solana-com
+  #API_DNS_NAME=testnet.solana.com
+  #API_ADDRESS_NAME=tds-solana-com
   BOOTSTRAP_STAKE_AUTHORIZED_PUBKEY=
   ENTRYPOINT_DNS_NAME=
   ENTRYPOINT_ADDRESS_NAME=entrypoint
   #EXTERNAL_ACCOUNTS_FILE_URL=https://raw.githubusercontent.com/solana-labs/tour-de-sol/master/validators/all-pubkey.yml
   FAUCET_KEYPAIR=1
   FAUCET_RPC=1
-  NO_WATCHTOWER=1
   OPERATING_MODE=preview
   VALIDATOR_ZONES=($DEFAULT_ZONE us-west1-a us-central1-a us-east1-b)
   #WAREHOUSE_ZONES=($DEFAULT_ZONE)

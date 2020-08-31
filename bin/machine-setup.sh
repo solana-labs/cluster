@@ -134,13 +134,18 @@ sudo systemctl --no-pager status sol
 EOF
 chmod +x update
 
+if [ $NODE_TYPE = api -a -e ~/faucet.json ]; then
+  FAUCET=true
+else
+  FAUCET=false
+fi
 
 # Move the remainder of the files in the home directory over to the sol user
 sudo chown -R sol:sol ./*
 sudo mv ./* /home/sol
 
 # Move the systemd service files into /etc
-if [ $NODE_TYPE = api -a -e ~/faucet.json ]; then
+if $FAUCET; then
   sudo cp /home/sol/bin/faucet.service /etc/systemd/system/solana-faucet.service
 fi
 sudo cp /home/sol/bin/solana-sys-tuner.service /etc/systemd/system/solana-sys-tuner.service
@@ -152,7 +157,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now solana-sys-tuner
 sudo systemctl --no-pager status solana-sys-tuner
 
-if [ $NODE_TYPE = api -a -e ~/faucet.json ]; then
+if $FAUCET; then
   sudo systemctl enable --now solana-faucet
   sudo systemctl --no-pager status solana-faucet
 fi

@@ -447,9 +447,9 @@ echo ==========================================================
 (
   set -x
   solana --url "$RPC_URL" cluster-version
-  solana --url "$RPC_URL" get-genesis-hash
-  solana --url "$RPC_URL" get-epoch-info
-  solana --url "$RPC_URL" show-validators
+  solana --url "$RPC_URL" genesis-hash
+  solana --url "$RPC_URL" epoch-info
+  solana --url "$RPC_URL" validators
 )
 
 echo ==========================================================
