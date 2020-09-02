@@ -42,6 +42,7 @@ elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
   exit 1
 fi
 
+
 args=(
   --gossip-port 8001
   --dynamic-port-range 8002-8012
@@ -63,6 +64,11 @@ args=(
   --no-untrusted-rpc
   --wal-recovery-mode skip_any_corrupted_record
 )
+
+if [[ -n "$RPC_HEALTH_CHECK_SLOT_DISTANCE" ]]; then
+  args+=(--health-check-slot-distance "$RPC_HEALTH_CHECK_SLOT_DISTANCE")
+fi
+
 
 if [[ -d ~/ledger ]]; then
   args+=(--no-genesis-fetch --no-snapshot-fetch)
