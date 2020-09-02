@@ -6,6 +6,13 @@ set -ex
 
 ~/bin/check-hostname.sh
 
+SOLANA_INSTALL_UPDATE_MANIFEST=vip561nm2cF95PcmY98MndAkxNHoiK2fNT6jRBozamW
+if [[ -n $SOLANA_INSTALL_UPDATE_MANIFEST ]]; then
+  while ! solana-install init --url "$RPC_URL" --pubkey "$SOLANA_INSTALL_UPDATE_MANIFEST"; do
+    sleep 2
+  done
+fi
+
 # Delete any zero-length snapshots that can cause validator startup to fail
 find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
 
