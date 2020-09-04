@@ -71,7 +71,7 @@ fi
 
 
 if [[ -d ~/ledger ]]; then
-  args+=(--no-genesis-fetch --no-snapshot-fetch)
+  args+=(--no-snapshot-fetch)
 fi
 
 exec solana-validator "${args[@]}"
