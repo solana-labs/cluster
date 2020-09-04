@@ -122,6 +122,11 @@ args=(
   --wal-recovery-mode skip_any_corrupted_record
 )
 
+if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
+  args+=(--enable-bigtable-ledger-upload)
+fi
+
+
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
   if [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
