@@ -6,7 +6,6 @@ set -ex
 
 ~/bin/check-hostname.sh
 
-SOLANA_INSTALL_UPDATE_MANIFEST=vip561nm2cF95PcmY98MndAkxNHoiK2fNT6jRBozamW
 if [[ -n $SOLANA_INSTALL_UPDATE_MANIFEST ]]; then
   while ! solana-install init --url "$RPC_URL" --pubkey "$SOLANA_INSTALL_UPDATE_MANIFEST"; do
     sleep 2
@@ -51,7 +50,6 @@ args=(
   --identity "$identity_keypair"
   --limit-ledger-size 500000000
   --log ~/solana-validator.log
-  --no-voting
   --rpc-port 8899
   --enable-rpc-transaction-history
   ${maybe_rpc_faucet_address}
@@ -69,6 +67,12 @@ if [[ -n "$RPC_HEALTH_CHECK_SLOT_DISTANCE" ]]; then
   args+=(--health-check-slot-distance "$RPC_HEALTH_CHECK_SLOT_DISTANCE")
 fi
 
+
+if [[ -r ~/api-vote-account.json ]]; then
+  args+=(--vote-account ~/api-vote-account.json)
+else
+  args+=(--no-voting)
+fi
 
 if [[ -d ~/ledger ]]; then
   args+=(--no-snapshot-fetch)
