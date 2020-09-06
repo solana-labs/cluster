@@ -30,6 +30,7 @@ sudo apt-get --assume-yes install \
   silversearcher-ag \
   software-properties-common \
   vim \
+  zstd \
 
 # Create sol user
 sudo adduser sol --gecos "" --disabled-password --quiet
