@@ -207,10 +207,18 @@ sudo sed -i'' -e 's/^\(global\)/\1\n\tulimit-n 15134\n\tmaxconn 7500/' /etc/hapr
 frontend http
     bind *:80
 
+    # capture/log requests
+    option http-buffer-request
+    http-request capture req.body len 500
+    log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %{+Q}r %[capture.req.hdr(0)]"
+
     # rate limit to 300 RPC requests in 2 seconds per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
     http-request deny deny_status 429 if { sc_http_req_rate(0) gt 300 }
+
+    # increase websocket idle timeout
+    timeout client 30s
 
     stats enable
     stats hide-version
@@ -229,10 +237,18 @@ frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
     bind *:8443 ssl crt /etc/ssl/private/haproxy.pem
 
+    # capture/log requests
+    option http-buffer-request
+    http-request capture req.body len 500
+    log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %{+Q}r %[capture.req.hdr(0)]"
+
     # rate limit to 300 RPC requests in 2 seconds per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
     http-request deny deny_status 429 if { sc_http_req_rate(0) gt 300 }
+
+    # increase websocket idle timeout
+    timeout client 30s
 
     stats enable
     stats hide-version
@@ -246,6 +262,15 @@ frontend https
 
     default_backend jsonrpc
     use_backend pubsub if is_websocket
+
+frontend wss
+    bind *:8901 ssl crt /etc/ssl/private/haproxy.pem
+    bind *:8444 ssl crt /etc/ssl/private/haproxy.pem
+
+    # increase websocket idle timeout
+    timeout client 30s
+
+    default_backend pubsub
 
 backend jsonrpc
     mode http
