@@ -161,7 +161,7 @@ get_latest_snapshot() {
     panic "get_latest_snapshot: not a directory: $dir"
   fi
 
-  find "$dir" -name snapshot-\*.tar.bz2 | sort | tail -n1
+  find "$dir" -name snapshot-\*.tar\* | sort | tail -n1
 }
 
 get_snapshot_slot() {
