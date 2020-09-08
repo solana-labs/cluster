@@ -243,7 +243,7 @@ while true; do
     fi
 
     if ! $caught_up; then
-      if ! timeout 10m solana catchup --url "$RPC_URL" "$identity_pubkey" http://127.0.0.1:8899; then
+      if ! timeout 15m solana catchup --url "$RPC_URL" "$identity_pubkey" http://127.0.0.1:8899; then
         echo "catchup failed..."
         if [[ $SECONDS -gt 600 ]]; then
           datapoint_error validator-not-caught-up
