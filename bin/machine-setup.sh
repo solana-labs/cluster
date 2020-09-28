@@ -214,10 +214,12 @@ frontend http
     capture request header X-Forwarded-For len 15
     log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %{+Q}r %[capture.req.hdr(1)] %[capture.req.hdr(0)]"
 
-    # rate limit to 300 RPC requests in 2 seconds per IP
+    # rate limit to 300 RPC requests in 1 second per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
-    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 300 }
+    acl too_many_requests sc_http_req_rate(0) gt 300
+    http-request set-header Access-Control-Allow-Origin "*" if too_many_requests
+    http-request deny deny_status 429 if too_many_requests
 
     # increase websocket idle timeout
     timeout client 30s
@@ -245,10 +247,12 @@ frontend https
     capture request header X-Forwarded-For len 15
     log-format "%ci:%cp [%tr] %ft %b/%s %TR/%Tw/%Tc/%Tr/%Ta %ST %B %CC %CS %tsc %ac/%fc/%bc/%sc/%rc %sq/%bq %{+Q}r %[capture.req.hdr(1)] %[capture.req.hdr(0)]"
 
-    # rate limit to 300 RPC requests in 2 seconds per IP
+    # rate limit to 300 RPC requests in 1 second per IP
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
-    http-request deny deny_status 429 if { sc_http_req_rate(0) gt 300 }
+    acl too_many_requests sc_http_req_rate(0) gt 300
+    http-request set-header Access-Control-Allow-Origin "*" if too_many_requests
+    http-request deny deny_status 429 if too_many_requests
 
     # increase websocket idle timeout
     timeout client 30s
