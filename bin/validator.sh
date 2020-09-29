@@ -8,7 +8,7 @@ source ~/service-env.sh
 ~/bin/check-hostname.sh
 
 # Delete any zero-length snapshots that can cause validator startup to fail
-find ~/ledger/snapshot-* -size 0 -print -exec rm {} \; || true
+find ~/ledger/ -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
 
 #shellcheck source=/dev/null
 source ~/service-env-validator-*.sh
