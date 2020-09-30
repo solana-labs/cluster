@@ -196,6 +196,7 @@ sudo bash -c "cat server.key server.crt >> /etc/ssl/private/haproxy.pem"
 rm ca.key ca.crt ca.srl server.crt server.csr server.key
 
 sudo add-apt-repository --yes ppa:certbot/certbot -r
+sudo add-apt-repository --yes ppa:vbernat/haproxy-2.2
 sudo apt-get --assume-yes install haproxy certbot
 
 # Our certs have a 2048bit DH param, haproxy's default is 1024. Bump it
@@ -218,7 +219,7 @@ frontend http
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
     acl too_many_requests sc_http_req_rate(0) gt 300
-    http-request set-header Access-Control-Allow-Origin "*" if too_many_requests
+    http-request deny deny_status 429 hdr Access-Control-Allow-Origin "*" hdr Access-Control-Max-Age 86400  hdr Access-Control-Allow-Methods "POST, GET, OPTIONS" if too_many_requests METH_OPTIONS
     http-request deny deny_status 429 if too_many_requests
 
     # increase websocket idle timeout
@@ -251,7 +252,7 @@ frontend https
     stick-table  type ip  size 100k  expire 30s  store http_req_rate(1s)
     http-request track-sc0 src
     acl too_many_requests sc_http_req_rate(0) gt 300
-    http-request set-header Access-Control-Allow-Origin "*" if too_many_requests
+    http-request deny deny_status 429 hdr Access-Control-Allow-Origin "*" hdr Access-Control-Max-Age 86400  hdr Access-Control-Allow-Methods "POST, GET, OPTIONS" if too_many_requests METH_OPTIONS
     http-request deny deny_status 429 if too_many_requests
 
     # increase websocket idle timeout
