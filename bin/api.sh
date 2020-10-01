@@ -48,7 +48,7 @@ args=(
   --entrypoint "${ENTRYPOINT}"
   --ledger ~/ledger
   --identity "$identity_keypair"
-  --limit-ledger-size 500000000
+  --limit-ledger-size
   --log ~/solana-validator.log
   --rpc-port 8899
   --enable-rpc-transaction-history
