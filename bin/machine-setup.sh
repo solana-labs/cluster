@@ -237,7 +237,6 @@ frontend http
 
 frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
-    bind *:8443 ssl crt /etc/ssl/private/haproxy.pem
 
     # capture/log requests
     option http-buffer-request
@@ -265,15 +264,6 @@ frontend https
 
     default_backend jsonrpc
     use_backend pubsub if is_websocket
-
-frontend wss
-    bind *:8901 ssl crt /etc/ssl/private/haproxy.pem
-    bind *:8444 ssl crt /etc/ssl/private/haproxy.pem
-
-    # increase websocket idle timeout
-    timeout client 30s
-
-    default_backend pubsub
 
 backend jsonrpc
     mode http
