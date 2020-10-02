@@ -235,6 +235,7 @@ frontend http
     default_backend jsonrpc
     use_backend pubsub if is_websocket
 
+# Only used when not behind other load balancers (reverse proxies)
 frontend https
     bind *:443 ssl crt /etc/ssl/private/haproxy.pem
 
