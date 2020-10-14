@@ -370,6 +370,10 @@ while true; do
     # last snapshot
     rm -rf "$ledger_dir"/accounts "$ledger_dir"/snapshot
 
+    # Remove the tower state to avoid a panic on validator restart due to the manual
+    # manipulation of the ledger directory
+    rm -f "$ledger_dir"/tower*.bin
+
     # Prepare for next archive
     rm -rf ~/ledger-archive
     prepare_archive_location
