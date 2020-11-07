@@ -259,7 +259,7 @@ while true; do
 
     last_archive_epoch=$(cat ~/ledger-archive/epoch || true)
     if [[ -z "$last_archive_epoch" ]]; then
-      if ! solana epoch > ~/ledger-archive/epoch; then
+      if ! solana --url "$RPC_URL" epoch > ~/ledger-archive/epoch; then
         datapoint_error failed-to-set-epoch
         sleep 10
       fi
@@ -270,7 +270,7 @@ while true; do
 
     current_epoch=""
     for _ in $(seq 1 10); do
-      current_epoch=$(solana epoch || true)
+      current_epoch=$(solana --url "$RPC_URL" epoch || true)
       if [[ -n "$current_epoch" ]]; then
         break
       fi
