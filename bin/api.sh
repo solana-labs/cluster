@@ -59,6 +59,7 @@ args=(
   ${maybe_expected_bank_hash}
   ${maybe_wait_for_supermajority}
   "${trusted_validators[@]}"
+  --no-port-check
   --no-untrusted-rpc
   --wal-recovery-mode skip_any_corrupted_record
 )

@@ -117,6 +117,7 @@ args=(
   --skip-poh-verify
   --enable-rpc-transaction-history
   "${trusted_validators[@]}"
+  --no-port-check
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
   --wal-recovery-mode skip_any_corrupted_record

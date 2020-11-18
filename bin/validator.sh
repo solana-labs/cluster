@@ -60,6 +60,7 @@ args=(
   --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --expected-shred-version "$EXPECTED_SHRED_VERSION"
+  --no-port-check
   "${authorized_voter_args[@]}"
   "${trusted_validator_args[@]}"
   "${frozen_accounts[@]}"
