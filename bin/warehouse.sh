@@ -123,6 +123,10 @@ args=(
   --wal-recovery-mode skip_any_corrupted_record
 )
 
+if [[ -w /mnt/solana-accounts/ ]]; then
+  args+=(--accounts /mnt/solana-accounts)
+fi
+
 if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
   args+=(--enable-bigtable-ledger-upload)
 fi

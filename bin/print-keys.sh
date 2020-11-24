@@ -10,7 +10,7 @@ echo --[ system summary ]--------------------------------------------
   export PS4="==> "
   set -x
   ~/bin/hc
-  df -h . ledger/
+  df -h . ledger/ /mnt/solana-accounts
   du -hs ledger/
   free -h
   uptime

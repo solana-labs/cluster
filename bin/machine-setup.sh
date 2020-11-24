@@ -78,6 +78,14 @@ EOF
 sudo cp logrotate.sol /etc/logrotate.d/sol
 rm logrotate.sol
 
+# Setup tmpfs for accounts
+sudo -- bash -c '
+  mkdir /mnt/solana-accounts;
+  echo "tmpfs /mnt/solana-accounts tmpfs rw,size=64G,user=sol 0 0" >> /etc/fstab;
+  mount /mnt/solana-accounts
+'
+
+
 cat > stop <<EOF
 #!/usr/bin/env bash
 # Stop the $NODE_TYPE software
