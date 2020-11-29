@@ -5,9 +5,9 @@ set -ex
 . ~/service-env.sh
 
 args=(
-  --url "$RPC_URL" \
-  --monitor-active-stake \
-  --no-duplicate-notifications \
+  --url "$RPC_URL"
+  --monitor-active-stake
+  --unhealthy-threshold 2
 )
 
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
