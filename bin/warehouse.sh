@@ -96,16 +96,10 @@ datapoint() {
 }
 
 
-trusted_validators=()
-for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
-  [[ $tv = "$identity_pubkey" ]] || trusted_validators+=(--trusted-validator "$tv")
-done
-
 args=(
   --dynamic-port-range 8002-8012
   --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
-  --expected-shred-version "$EXPECTED_SHRED_VERSION"
   --gossip-port 8001
   --rpc-port 8899
   --private-rpc
@@ -116,12 +110,15 @@ args=(
   --no-voting
   --skip-poh-verify
   --enable-rpc-transaction-history
-  "${trusted_validators[@]}"
   --no-port-check
   --no-untrusted-rpc
   --init-complete-file ~/.init-complete
   --wal-recovery-mode skip_any_corrupted_record
 )
+
+for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
+  [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
+done
 
 if [[ -w /mnt/solana-accounts/ ]]; then
   args+=(--accounts /mnt/solana-accounts)
@@ -131,6 +128,13 @@ if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
   args+=(--enable-bigtable-ledger-upload)
 fi
 
+if [[ -n $EXPECTED_SHRED_VERSION ]]; then
+  args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
+fi
+
+for hard_fork in "${HARD_FORKS[@]}"; do
+  args+=(--hard-fork "$hard_fork")
+done
 
 if [[ -n "$EXPECTED_BANK_HASH" ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")

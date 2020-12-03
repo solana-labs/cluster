@@ -16,22 +16,38 @@ source ~/service-env-validator-*.sh
 identity_keypair=~/validator-identity-"$ZONE".json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
-authorized_voter_args=()
+args=(
+  --dynamic-port-range 8002-8012
+  --gossip-port 8001
+  --identity "$identity_keypair"
+  --ledger ~/ledger
+  --limit-ledger-size
+  --log ~/solana-validator.log
+  --rpc-port 8899
+  --vote-account ~/validator-vote-account-"$ZONE".json
+  --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
+  --no-port-check
+  --wal-recovery-mode skip_any_corrupted_record
+)
+
 for av in ~/validator-authorized-voter*.json; do
-  authorized_voter_args+=(--authorized-voter "$av")
+  args+=(--authorized-voter "$av")
+done
+
+for hard_fork in "${HARD_FORKS[@]}"; do
+  args+=(--hard-fork "$hard_fork")
 done
 
 trusted_validator_args=()
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
-  [[ $tv = "$identity_pubkey" ]] || trusted_validator_args+=(--trusted-validator "$tv")
+  [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
 done
 
 if [[ ${#trusted_validator_args[@]} -gt 0 ]]; then
-  trusted_validator_args+=(--halt-on-trusted-validators-accounts-hash-mismatch)
-  trusted_validator_args+=(--no-untrusted-rpc)
+  args+=(--halt-on-trusted-validators-accounts-hash-mismatch)
+  args+=(--no-untrusted-rpc)
 fi
 
-frozen_accounts=()
 if [[ -r ~/frozen-accounts ]]; then
   #
   # The frozen-accounts file should be formatted as:
@@ -43,36 +59,20 @@ if [[ -r ~/frozen-accounts ]]; then
   #shellcheck source=/dev/null
   . ~/frozen-accounts
   for tv in "${FROZEN_ACCOUNT_PUBKEYS[@]}"; do
-    frozen_accounts+=(--frozen-account "$tv")
+    args+=(--frozen-account "$tv")
   done
 fi
 
+if [[ -n $EXPECTED_SHRED_VERSION ]]; then
+  args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
+fi
 
-
-args=(
-  --dynamic-port-range 8002-8012
-  --gossip-port 8001
-  --identity "$identity_keypair"
-  --ledger ~/ledger
-  --limit-ledger-size
-  --log ~/solana-validator.log
-  --rpc-port 8899
-  --vote-account ~/validator-vote-account-"$ZONE".json
-  --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
-  --expected-shred-version "$EXPECTED_SHRED_VERSION"
-  --no-port-check
-  "${authorized_voter_args[@]}"
-  "${trusted_validator_args[@]}"
-  "${frozen_accounts[@]}"
-  --wal-recovery-mode skip_any_corrupted_record
-)
-
-if [[ -n "$EXPECTED_BANK_HASH" ]]; then
+if [[ -n $EXPECTED_BANK_HASH ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
-  if [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
+  if [[ -n $WAIT_FOR_SUPERMAJORITY ]]; then
     args+=(--wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY")
   fi
-elif [[ -n "$WAIT_FOR_SUPERMAJORITY" ]]; then
+elif [[ -n $WAIT_FOR_SUPERMAJORITY ]]; then
   echo "WAIT_FOR_SUPERMAJORITY requires EXPECTED_BANK_HASH be specified as well!" 1>&2
   exit 1
 fi
