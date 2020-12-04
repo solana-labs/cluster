@@ -81,7 +81,7 @@ if [[ -n $GOSSIP_HOST ]]; then
   args+=(--gossip-host "$GOSSIP_HOST")
 else
   args+=(--entrypoint "$ENTRYPOINT")
-  args+=(--no-snapshot-fetch)
+  args+=(--no-snapshot-fetch --no-genesis-fetch)
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
