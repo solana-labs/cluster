@@ -29,6 +29,7 @@ args=(
   --no-port-check
   --wal-recovery-mode skip_any_corrupted_record
 )
+args+=(--bpf-jit)
 
 for av in ~/validator-authorized-voter*.json; do
   args+=(--authorized-voter "$av")

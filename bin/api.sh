@@ -33,6 +33,7 @@ args=(
   --no-untrusted-rpc
   --wal-recovery-mode skip_any_corrupted_record
 )
+args+=(--bpf-jit)
 
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
