@@ -43,6 +43,10 @@ if [[ -f ~/faucet.json ]]; then
   args+=(--rpc-faucet-address 127.0.0.1:9900)
 fi
 
+if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
+  args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
+fi
+
 if [[ -n $EXPECTED_SHRED_VERSION ]]; then
   args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
 fi

@@ -31,6 +31,10 @@ args=(
 )
 args+=(--bpf-jit)
 
+if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
+  args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
+fi
+
 for av in ~/validator-authorized-voter*.json; do
   args+=(--authorized-voter "$av")
 done
