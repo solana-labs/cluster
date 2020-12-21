@@ -16,11 +16,12 @@ source ~/service-env-validator-*.sh
 identity_keypair=~/validator-identity-"$ZONE".json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
+ledger_dir=~/ledger
 args=(
   --dynamic-port-range 8002-8012
   --gossip-port 8001
   --identity "$identity_keypair"
-  --ledger ~/ledger
+  --ledger "$ledger_dir"
   --limit-ledger-size
   --log ~/solana-validator.log
   --rpc-port 8899
@@ -90,7 +91,11 @@ else
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
-  args+=(--accounts /mnt/solana-accounts)
+  args+=(
+    --accounts /mnt/solana-accounts
+    --accounts "$ledger_dir"/accounts
+    --account-shrink-path "$ledger_dir"/accounts-shrink
+  )
 fi
 
 exec solana-validator "${args[@]}"

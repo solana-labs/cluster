@@ -17,12 +17,13 @@ find ~/ledger/ -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
 
 identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
+ledger_dir=~/ledger
 
 args=(
   --gossip-port 8001
   --dynamic-port-range 8002-8012
   --entrypoint "${ENTRYPOINT}"
-  --ledger ~/ledger
+  --ledger "$ledger_dir"
   --identity "$identity_keypair"
   --limit-ledger-size
   --log ~/solana-validator.log
@@ -85,7 +86,11 @@ if [[ -d ~/ledger ]]; then
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
-  args+=(--accounts /mnt/solana-accounts)
+  args+=(
+    --accounts /mnt/solana-accounts
+    --accounts "$ledger_dir"/accounts
+    --account-shrink-path "$ledger_dir"/accounts-shrink
+  )
 fi
 
 exec solana-validator "${args[@]}"
