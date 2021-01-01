@@ -44,6 +44,10 @@ if [[ -f ~/faucet.json ]]; then
   args+=(--rpc-faucet-address 127.0.0.1:9900)
 fi
 
+if [[ -n $SNAPSHOT_COMPRESSION ]]; then
+  args+=(--snapshot-compression "$SNAPSHOT_COMPRESSION")
+fi
+
 if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
   args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
 fi

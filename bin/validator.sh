@@ -73,6 +73,10 @@ if [[ -n $EXPECTED_SHRED_VERSION ]]; then
   args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
 fi
 
+if [[ -n $SNAPSHOT_COMPRESSION ]]; then
+  args+=(--snapshot-compression "$SNAPSHOT_COMPRESSION")
+fi
+
 if [[ -n $EXPECTED_BANK_HASH ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
   if [[ -n $WAIT_FOR_SUPERMAJORITY ]]; then

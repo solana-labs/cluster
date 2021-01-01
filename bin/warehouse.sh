@@ -137,6 +137,10 @@ if [[ -n $EXPECTED_SHRED_VERSION ]]; then
   args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
 fi
 
+if [[ -n $SNAPSHOT_COMPRESSION ]]; then
+  args+=(--snapshot-compression "$SNAPSHOT_COMPRESSION")
+fi
+
 for hard_fork in "${HARD_FORKS[@]}"; do
   args+=(--hard-fork "$hard_fork")
 done
