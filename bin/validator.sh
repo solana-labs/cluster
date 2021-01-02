@@ -95,11 +95,7 @@ else
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
-  args+=(
-    --accounts /mnt/solana-accounts
-    --accounts "$ledger_dir"/accounts
-    --account-shrink-path "$ledger_dir"/accounts-shrink
-  )
+  args+=(--accounts /mnt/solana-accounts)
 fi
 
 exec solana-validator "${args[@]}"

@@ -122,11 +122,7 @@ for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
 done
 
 if [[ -w /mnt/solana-accounts/ ]]; then
-  args+=(
-    --accounts /mnt/solana-accounts
-    --accounts "$ledger_dir"/accounts
-    --account-shrink-path "$ledger_dir"/accounts-shrink
-  )
+  args+=(--accounts /mnt/solana-accounts)
 fi
 
 if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then

@@ -78,10 +78,15 @@ EOF
 sudo cp logrotate.sol /etc/logrotate.d/sol
 rm logrotate.sol
 
-# Setup tmpfs for accounts
+# Setup tmpfs+swap for accounts
 sudo -- bash -c '
+  fallocate -l 250G /swapfile;
+  mkswap /swapfile;
+  echo "/swapfile swap swap defaults 0 0" >> /etc/fstab;
+  chmod 0600 /swapfile;
+  swapon -a;
   mkdir /mnt/solana-accounts;
-  echo "tmpfs /mnt/solana-accounts tmpfs rw,size=64G,user=sol 0 0" >> /etc/fstab;
+  echo "tmpfs /mnt/solana-accounts tmpfs rw,size=300G,user=sol 0 0" >> /etc/fstab;
   mount /mnt/solana-accounts
 '
 
