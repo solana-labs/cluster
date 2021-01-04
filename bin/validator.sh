@@ -25,7 +25,6 @@ args=(
   --limit-ledger-size
   --log ~/solana-validator.log
   --rpc-port 8899
-  --vote-account ~/validator-vote-account-"$ZONE".json
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --no-port-check
   --wal-recovery-mode skip_any_corrupted_record
@@ -34,6 +33,12 @@ args+=(--bpf-jit)
 
 if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
   args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
+fi
+
+if [[ -f ~/validator-vote-account-"$ZONE".json ]]; then
+  args+=(--vote-account ~/validator-vote-account-"$ZONE".json)
+else
+  args+=(--no-voting)
 fi
 
 for av in ~/validator-authorized-voter*.json; do
@@ -90,7 +95,16 @@ fi
 if [[ -n $GOSSIP_HOST ]]; then
   args+=(--gossip-host "$GOSSIP_HOST")
 else
-  args+=(--entrypoint "$ENTRYPOINT")
+  if [[ -n "$ENTRYPOINT" ]]; then
+    args+=(--entrypoint "$ENTRYPOINT")
+  fi
+
+  for entrypoint in "${ENTRYPOINTS[@]}"; do
+    args+=(--entrypoint "$entrypoint")
+  done
+fi
+
+if [[ -d "$ledger_dir" ]]; then
   args+=(--no-snapshot-fetch --no-genesis-fetch)
 fi
 
