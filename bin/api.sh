@@ -79,6 +79,10 @@ if [[ -n "$RPC_HEALTH_CHECK_SLOT_DISTANCE" ]]; then
   args+=(--health-check-slot-distance "$RPC_HEALTH_CHECK_SLOT_DISTANCE")
 fi
 
+for index in "${ACCOUNT_INDEXES[@]}"; do
+  args+=(--account-index "$index")
+done
+
 if [[ -r ~/api-vote-account.json ]]; then
   args+=(--vote-account ~/api-vote-account.json)
 else
