@@ -106,7 +106,6 @@ args=(
   --identity "$identity_keypair"
   --ledger "$ledger_dir"
   --log ~/solana-validator.log
-  --no-snapshot-fetch
   --no-voting
   --skip-poh-verify
   --enable-rpc-transaction-history
@@ -120,6 +119,10 @@ args+=(--bpf-jit)
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
 done
+
+if [[ -d ~/ledger ]]; then
+  args+=(--no-genesis-fetch --no-snapshot-fetch)
+fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
   args+=(--accounts /mnt/solana-accounts)
