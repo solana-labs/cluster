@@ -49,12 +49,15 @@ for hard_fork in "${HARD_FORKS[@]}"; do
   args+=(--hard-fork "$hard_fork")
 done
 
-trusted_validator_args=()
+trusted_validators=
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
-  [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
+  if [[ $tv != "$identity_pubkey" ]]; then
+    args+=(--trusted-validator "$tv")
+    trusted_validators=1
+  fi
 done
 
-if [[ ${#trusted_validator_args[@]} -gt 0 ]]; then
+if [[ -n $trusted_validators ]]; then
   args+=(--halt-on-trusted-validators-accounts-hash-mismatch)
   args+=(--no-untrusted-rpc)
 fi
