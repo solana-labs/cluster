@@ -12,12 +12,13 @@ if [[ -n $SOLANA_INSTALL_UPDATE_MANIFEST ]]; then
   done
 fi
 
-# Delete any zero-length snapshots that can cause validator startup to fail
-find ~/ledger/ -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
-
 identity_keypair=~/api-identity.json
 identity_pubkey=$(solana-keygen pubkey $identity_keypair)
 ledger_dir=~/ledger
+
+# Delete any zero-length snapshots that can cause validator startup to fail
+find "$ledger_dir" -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
+
 
 args=(
   --gossip-port 8001
@@ -33,6 +34,7 @@ args=(
   --no-port-check
   --no-untrusted-rpc
   --wal-recovery-mode skip_any_corrupted_record
+  --skip-poh-verify
 )
 args+=(--bpf-jit)
 
@@ -83,14 +85,21 @@ for index in "${ACCOUNT_INDEXES[@]}"; do
   args+=(--account-index "$index")
 done
 
+if [[ -n $RPC_THREADS ]]; then
+  args+=(--rpc-threads "$RPC_THREADS")
+fi
+
 if [[ -r ~/api-vote-account.json ]]; then
   args+=(--vote-account ~/api-vote-account.json)
 else
   args+=(--no-voting)
 fi
 
-if [[ -d ~/ledger ]]; then
-  args+=(--no-genesis-fetch --no-snapshot-fetch)
+if [[ -d "$ledger_dir"/genesis.bin ]]; then
+  args+=(--no-genesis-fetch)
+fi
+if [[ -d "$ledger_dir"/snapshot ]]; then
+  args+=(--no-snapshot-fetch)
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
