@@ -29,7 +29,6 @@ args=(
   --no-port-check
   --wal-recovery-mode skip_any_corrupted_record
 )
-args+=(--bpf-jit)
 
 if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
   args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
@@ -102,9 +101,11 @@ else
     args+=(--entrypoint "$ENTRYPOINT")
   fi
 
-  for entrypoint in "${ENTRYPOINTS[@]}"; do
-    args+=(--entrypoint "$entrypoint")
-  done
+  if ! solana --version | ag '1\.4'; then
+    for entrypoint in "${ENTRYPOINTS[@]}"; do
+      args+=(--entrypoint "$entrypoint")
+    done
+  fi
 fi
 
 if [[ -d "$ledger_dir" ]]; then
@@ -113,6 +114,13 @@ fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
   args+=(--accounts /mnt/solana-accounts)
+fi
+
+if ! solana --version | ag '1\.4'; then
+  args+=(
+    --accounts-db-caching-enabled
+    --bpf-jit
+  )
 fi
 
 exec solana-validator "${args[@]}"

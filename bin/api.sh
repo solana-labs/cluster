@@ -36,7 +36,16 @@ args=(
   --wal-recovery-mode skip_any_corrupted_record
   --skip-poh-verify
 )
-args+=(--bpf-jit)
+
+if ! solana --version | ag '1\.4'; then
+  args+=(
+    --accounts-db-caching-enabled
+    --bpf-jit
+  )
+  for entrypoint in "${ENTRYPOINTS[@]}"; do
+    args+=(--entrypoint "$entrypoint")
+  done
+fi
 
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
