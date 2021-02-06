@@ -116,7 +116,7 @@ if [[ -w /mnt/solana-accounts/ ]]; then
   args+=(--accounts /mnt/solana-accounts)
 fi
 
-if ! solana --version | ag '1\.4'; then
+if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
   args+=(
     --accounts-db-caching-enabled
     --bpf-jit

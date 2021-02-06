@@ -115,7 +115,7 @@ args=(
   --wal-recovery-mode skip_any_corrupted_record
 )
 
-if ! solana --version | ag '1\.4'; then
+if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
   args+=(
     --accounts-db-caching-enabled
     --bpf-jit
