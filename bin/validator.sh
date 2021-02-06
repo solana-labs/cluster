@@ -117,10 +117,18 @@ if [[ -w /mnt/solana-accounts/ ]]; then
 fi
 
 if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
-  args+=(
-    --accounts-db-caching-enabled
-    --bpf-jit
-  )
+  if [[ -n $ENABLE_BPF_JIT ]]; then
+    args+=(--bpf-jit)
+  fi
+  if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
+    args+=(--no-accounts-db-caching)
+  fi
+  if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
+    args+=(--enabled-cpi-and-log-storage)
+  fi
+  for entrypoint in "${ENTRYPOINTS[@]}"; do
+    args+=(--entrypoint "$entrypoint")
+  done
 fi
 
 exec solana-validator "${args[@]}"
