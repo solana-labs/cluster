@@ -123,7 +123,7 @@ if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
     args+=(--no-accounts-db-caching)
   fi
   if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
-    args+=(--enabled-cpi-and-log-storage)
+    args+=(--enable-cpi-and-log-storage)
   fi
   for entrypoint in "${ENTRYPOINTS[@]}"; do
     args+=(--entrypoint "$entrypoint")
