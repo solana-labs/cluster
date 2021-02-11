@@ -237,7 +237,6 @@ prepare_archive_location
 while true; do
   rm -f ~/.init-complete
 
-  sudo logrotate --force /etc/logrotate.d/sol
   solana-validator "${args[@]}" &
   pid=$!
   datapoint validator-started
@@ -392,6 +391,11 @@ while true; do
     datapoint ledger-archived "label=\"$archive_snapshot_slot\",duration_secs=$SECONDS,bounds=\"$ledger_bounds\""
 
     mv "$ledger_dir"/rocksdb ~/ledger-archive/
+
+    if [[ -f ~/solana-validator.log ]]; then
+      zstd --rm ~/solana-validator.log
+      mv ~/solana-validator.log.zst ~/ledger-archive/
+    fi
 
     mkdir -p ~/"$STORAGE_BUCKET".inbox
     mv ~/ledger-archive ~/"$STORAGE_BUCKET".inbox/"$archive_snapshot_slot"
