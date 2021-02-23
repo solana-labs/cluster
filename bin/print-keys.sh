@@ -11,7 +11,7 @@ echo --[ system summary ]--------------------------------------------
   set -x
   ~/bin/hc
   df -h . ledger/ /mnt/solana-accounts
-  du -hs ledger/
+  du -hs ledger/ 2>/dev/null
   free -h
   uptime
 )
