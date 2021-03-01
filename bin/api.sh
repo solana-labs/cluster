@@ -37,20 +37,18 @@ args=(
   --skip-poh-verify
 )
 
-if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
-  if [[ -n $ENABLE_BPF_JIT ]]; then
-    args+=(--bpf-jit)
-  fi
-  if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
-    args+=(--no-accounts-db-caching)
-  fi
-  if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
-    args+=(--enable-cpi-and-log-storage)
-  fi
-  for entrypoint in "${ENTRYPOINTS[@]}"; do
-    args+=(--entrypoint "$entrypoint")
-  done
+if [[ -n $ENABLE_BPF_JIT ]]; then
+  args+=(--bpf-jit)
 fi
+if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
+  args+=(--no-accounts-db-caching)
+fi
+if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
+  args+=(--enable-cpi-and-log-storage)
+fi
+for entrypoint in "${ENTRYPOINTS[@]}"; do
+  args+=(--entrypoint "$entrypoint")
+done
 
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")

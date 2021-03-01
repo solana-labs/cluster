@@ -34,6 +34,10 @@ if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
   args+=(--public-rpc-address "$PUBLIC_RPC_ADDRESS")
 fi
 
+if ! [[ $(solana --version) =~ \ 1\.5\.[0-9]+ ]]; then
+  args+=(--minimal-rpc-api)
+fi
+
 if [[ -f ~/validator-vote-account-"$ZONE".json ]]; then
   args+=(--vote-account ~/validator-vote-account-"$ZONE".json)
 else
@@ -100,12 +104,6 @@ else
   if [[ -n "$ENTRYPOINT" ]]; then
     args+=(--entrypoint "$ENTRYPOINT")
   fi
-
-  if ! solana --version | ag '1\.4'; then
-    for entrypoint in "${ENTRYPOINTS[@]}"; do
-      args+=(--entrypoint "$entrypoint")
-    done
-  fi
 fi
 
 if [[ -d "$ledger_dir" ]]; then
@@ -116,19 +114,17 @@ if [[ -w /mnt/solana-accounts/ ]]; then
   args+=(--accounts /mnt/solana-accounts)
 fi
 
-if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
-  if [[ -n $ENABLE_BPF_JIT ]]; then
-    args+=(--bpf-jit)
-  fi
-  if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
-    args+=(--no-accounts-db-caching)
-  fi
-  if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
-    args+=(--enable-cpi-and-log-storage)
-  fi
-  for entrypoint in "${ENTRYPOINTS[@]}"; do
-    args+=(--entrypoint "$entrypoint")
-  done
+if [[ -n $ENABLE_BPF_JIT ]]; then
+  args+=(--bpf-jit)
 fi
+if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
+  args+=(--no-accounts-db-caching)
+fi
+if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
+  args+=(--enable-cpi-and-log-storage)
+fi
+for entrypoint in "${ENTRYPOINTS[@]}"; do
+  args+=(--entrypoint "$entrypoint")
+done
 
 exec solana-validator "${args[@]}"
