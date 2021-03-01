@@ -13,13 +13,13 @@ if [ $DIFFSLOT -gt $RMLEDGER ]; then
         ./stop
         rm -rf ledger/
         ./restart
-        echo "Node was:" $DIFFSLOT " behind, Services has been stopped, ledger deleted and service restarted" >> $logfile
+        echo "Node was:" $DIFFSLOT " slots behind, Services has been stopped, ledger deleted and service restarted" >> $logfile
 elif [ $DIFFSLOT -gt $FSNAPSHOT ]; then
         cd ~
         ./stop
         ./fetch-snapshot.sh bv1
         ./restart
-        echo "Node was:" $DIFFSLOT " behind, Services has been stopped, snapshot restored from bv1 and service restarted" >> $logfile
+        echo "Node was:" $DIFFSLOT " slots behind, Services has been stopped, snapshot restored from bv1 and service restarted" >> $logfile
 else
-        echo "Node was:" $DIFFSLOT " behind, so no Operation performed" >> $logfile
+        echo "Node was:" $DIFFSLOT " slots behind, so no operation performed" >> $logfile
 fi
