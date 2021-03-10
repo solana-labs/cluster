@@ -4,7 +4,7 @@ logfile=`date +"%d-%b-%Y"`_log.log
 echo "================= $currenttime"  >> $logfile
 max_slot_distance=1500
 CLUSTERSLOT=$(solana slot -u http://10.142.0.4:8899)
-NODESLOT=$(solana slot -u http://127.0.0.1:8899)
+node_slot=$(solana slot -u http://127.0.0.1:8899)
 DIFFSLOT=$(($CLUSTERSLOT-$NODESLOT))
 echo "Cluster Slot:" $CLUSTERSLOT "Current Slot:" $NODESLOT "Difference in Slots:" $DIFFSLOT >> $logfile
 if [[ $DIFFSLOT -gt $RMLEDGER ]]; then
