@@ -2,7 +2,7 @@
 currenttime=`date +"%d-%b-%Y %H:%M:%S"`
 logfile=`date +"%d-%b-%Y"`_log.log
 echo "================= $currenttime"  >> $logfile
-RMLEDGER=1500
+max_slot_distance=1500
 CLUSTERSLOT=$(solana slot -u http://10.142.0.4:8899)
 NODESLOT=$(solana slot -u http://127.0.0.1:8899)
 DIFFSLOT=$(($CLUSTERSLOT-$NODESLOT))
