@@ -37,7 +37,7 @@ if [[ $slot_distance -gt $max_slot_distance ]]; then
     rm -rf ledger/
     ./restart
     echo "Node was:" $slot_distance " slots behind, Services has been stopped, ledger deleted and service restarted" >> $logfile
-	datapoint slot-distance-failed "slot_dif=$slot_distance"
+    datapoint slot-distance-failed "slot_dif=$slot_distance"
 else
     echo "Node was:" $slot_distance " slots behind, so no operation performed" >> $logfile
     datapoint slot-distance-passed "slot_dif=$slot_distance"
