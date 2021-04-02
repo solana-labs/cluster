@@ -107,7 +107,7 @@ else
   args+=(--no-voting)
 fi
 
-if [[ -d "$ledger_dir"/genesis.bin ]]; then
+if [[ -f "$ledger_dir"/genesis.bin ]]; then
   args+=(--no-genesis-fetch)
 fi
 if [[ -d "$ledger_dir"/snapshot ]]; then
