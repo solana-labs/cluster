@@ -286,6 +286,11 @@ frontend https
 
 backend jsonrpc
     mode http
+    # Until https://github.com/paritytech/jsonrpc/issues/577 is fixed...
+    # Without this option, haproxy would multiplex unrelated requests into
+    # a single server-side keep-alive connection, causing innocent lightweight
+    # requests are choked on preceeding long ones.
+    option http-server-close
     server rpc 127.0.0.1:8899
 
 backend pubsub
