@@ -7,8 +7,11 @@ source ~/service-env.sh
 
 ~/bin/check-hostname.sh
 
+ledger_dir=~/ledger
+ledger_snapshots_dir=~/ledger-snapshots
+
 # Delete any zero-length snapshots that can cause validator startup to fail
-find ~/ledger/ -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
+find $ledger_dir -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
 
 #shellcheck source=/dev/null
 source ~/service-env-validator-*.sh
@@ -16,7 +19,6 @@ source ~/service-env-validator-*.sh
 identity_keypair=~/validator-identity-"$ZONE".json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
-ledger_dir=~/ledger
 args=(
   --dynamic-port-range 8002-8012
   --gossip-port 8001
@@ -28,6 +30,7 @@ args=(
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --no-port-check
   --wal-recovery-mode skip_any_corrupted_record
+  --snapshots "$ledger_snapshots_dir"
 )
 
 if [[ -n $PUBLIC_RPC_ADDRESS ]]; then
@@ -107,7 +110,13 @@ else
 fi
 
 if [[ -d "$ledger_dir" ]]; then
-  args+=(--no-snapshot-fetch --no-genesis-fetch)
+  args+=(--no-genesis-fetch)
+fi
+if [[ -d "$ledger_snapshots_dir" ]]; then
+    args+=(--no-snapshot-fetch)
+fi
+if [[ -n $INCREMENTAL_SNAPSHOTS ]]; then
+    args+=(--incremental-snapshots)
 fi
 
 if [[ -w /mnt/solana-accounts/ ]]; then
