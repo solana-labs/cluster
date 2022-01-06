@@ -18,7 +18,7 @@ identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
 ledger_dir=~/ledger
 args=(
-  --dynamic-port-range 8002-8012
+  --dynamic-port-range 8002-8020
   --gossip-port 8001
   --identity "$identity_keypair"
   --ledger "$ledger_dir"

@@ -22,7 +22,7 @@ find "$ledger_dir" -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
 
 args=(
   --gossip-port 8001
-  --dynamic-port-range 8002-8012
+  --dynamic-port-range 8002-8020
   --entrypoint "${ENTRYPOINT}"
   --ledger "$ledger_dir"
   --identity "$identity_keypair"

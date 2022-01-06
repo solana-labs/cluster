@@ -97,7 +97,7 @@ datapoint() {
 
 
 args=(
-  --dynamic-port-range 8002-8012
+  --dynamic-port-range 8002-8020
   --entrypoint "$ENTRYPOINT"
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
   --gossip-port 8001
