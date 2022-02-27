@@ -40,7 +40,7 @@ trusted_validators:
 
 enable_bigtable: "false"
 bigtable_credentials_path: ~/.mainnet-beta-bigtable-ro.json
-storage_bucket: "{{ cluster }}-{{ host_name }}"
+storage_bucket: "{{ cluster | default('mainnet-beta') }}-{{ host_name }}"
 enable_minimum_minutes-between_archive: "false"
 
 rust_log: "info,solana_runtime::bank::executor_cache=trace"
@@ -54,4 +54,4 @@ rpc_health_check_slot_distance: "200"
 enable_rayon_hack: "false"
 rayon_threads: 8
 enable_synth_alert: "false"
-synth_slack_webhook: web_hook
+synth_slack_webhook: webhook

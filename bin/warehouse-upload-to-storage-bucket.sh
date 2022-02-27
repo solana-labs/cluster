@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -x
 set -e
 shopt -s nullglob
 
@@ -15,9 +16,6 @@ panic() {
 #shellcheck source=/dev/null
 source ~/service-env.sh
 
-#shellcheck source=/dev/null
-source ~/service-env-warehouse-*.sh
-
 #shellcheck source=./configure-metrics.sh
 source "$here"/configure-metrics.sh
 
@@ -26,7 +24,7 @@ if [[ -z $STORAGE_BUCKET ]]; then
   exit 1
 fi
 
-identity_keypair=~/warehouse-identity-$ZONE.json
+identity_keypair=/home/sol/identity/internal-rpc-am6-1-identity.json
 identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
 
 datapoint_error() {
@@ -67,11 +65,11 @@ while true; do
       cd "$(dirname "$rocksdb")"
       declare archive_dir=$PWD
 
-      if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
+      if [[  $ENABLE_BIGTABLE = true ]]; then
         if [[ ! -f "$archive_dir"/.bigtable ]]; then
           echo "Uploading $archive_dir to BigTable"
           SECONDS=
-          while ! timeout 48h solana-ledger-tool --ledger "$archive_dir" bigtable upload; do
+          while ! timeout 48h solana-ledger-tool --ledger "$archive_dir" bigtable upload --allow-missing-metadata; do
             echo "bigtable upload failed..."
             datapoint_error bigtable-upload-failure
             sleep 30
@@ -100,11 +98,16 @@ while true; do
   killall gsutil || true
 
   SECONDS=
-  while ! timeout 8h gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
-    echo "gsutil rsync failed..."
-    datapoint_error gsutil-rsync-failure
-    sleep 30
-  done
+  (
+#  	export GOOGLE_APPLICATION_CREDENTIALS=
+	set -x
+	  while ! timeout 8h gsutil -m rsync -r ~/"$STORAGE_BUCKET" gs://"$STORAGE_BUCKET"/; do
+		  exit 1
+	    echo "gsutil rsync failed..."
+	    datapoint_error gsutil-rsync-failure
+	    sleep 30
+	  done
+  )
   echo Ledger upload to storage bucket took $SECONDS seconds
   datapoint ledger-upload-complete "duration_secs=$SECONDS"
   rm -rf ~/"$STORAGE_BUCKET"

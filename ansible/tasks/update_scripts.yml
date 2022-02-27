@@ -9,7 +9,7 @@
 
 - name: copy basic scripts
   template:
-    src: "~/templates/scripts/{{ item }}"
+    src: scripts/{{ item }}
     dest: "/home/sol/{{ item }}"
     owner: sol
     group: sol
@@ -24,13 +24,19 @@
     - "update"
 
 - name: copy scripts
-  copy:
-    src: "~/templates/scripts/bin/{{ item}}"
+  template:
+    src: scripts/bin/{{ item}}
     dest: "/home/sol/bin/{{ item }}"
     owner: sol
     group: sol
     mode: 0755
   with_items:
+    - "api.sh"
+    - "validator.sh"
+    - "warehouse.sh"
+    - "entrypoint.sh"
+    - "watchtower.sh"
+    - "warehouse-upload-to-storage-bucket.sh"
     - "check-hostname.sh"
     - "configure-metrics.sh"
     - "hc"
@@ -45,18 +51,3 @@
     - "watchtower.service"
     - "solana-ping-alert"
     - "synthetic-slot-check"
-
-- name: copy scripts
-  template:
-    src: "~/templates/scripts/bin/{{ item}}"
-    dest: "/home/sol/bin/{{ item }}"
-    owner: sol
-    group: sol
-    mode: 0755
-  with_items:
-    - "api.sh"
-    - "validator.sh"
-    - "warehouse.sh"
-    - "entrypoint.sh"
-    - "watchtower.sh"
-    - "warehouse-upload-to-storage-bucket.sh"

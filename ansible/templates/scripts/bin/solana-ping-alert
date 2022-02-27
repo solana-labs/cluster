@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+{% raw %}#!/usr/bin/env bash
 set -e
 source $HOME/slack-env.sh
 export PATH="/home/sol/.local/share/solana/install/active_release/bin:$PATH"
@@ -100,4 +100,4 @@ do
                 break
         fi
 
-done
+done{% endraw %}

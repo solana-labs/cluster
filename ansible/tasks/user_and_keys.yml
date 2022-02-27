@@ -25,7 +25,7 @@
 
 - name: deploy pubkeys
   template: 
-    src: ~/pubkeys 
+    src: pubkeys 
     dest: "/home/sol/.ssh/authorized_keys"
     owner: sol
     group: sol

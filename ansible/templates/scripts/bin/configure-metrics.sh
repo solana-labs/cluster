@@ -1,4 +1,4 @@
-# |source| this file
+{% raw %}# |source| this file
 #
 # The SOLANA_METRICS_CONFIG environment variable is formatted as a
 # comma-delimited list of parameters. All parameters are optional.
@@ -49,4 +49,4 @@ configureMetrics() {
 }
 configureMetrics
 
-metricsWriteDatapoint="$(dirname "${BASH_SOURCE[0]}")"/metrics-write-datapoint.sh
+metricsWriteDatapoint="$(dirname "${BASH_SOURCE[0]}")"/metrics-write-datapoint.sh{% endraw %}

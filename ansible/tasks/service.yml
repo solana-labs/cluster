@@ -28,7 +28,7 @@
 
 - name: install user service override
   template:
-    src: ~/templates/system-tuning/user-override.conf
+    src: system-tuning/user-override.conf
     dest: /etc/systemd/system/user@.service.d/override.conf
     owner: root
     group: root
@@ -36,7 +36,7 @@
 
 - name: install user override values
   template:
-    src: ~/templates/system-tuning/user-conf-d-override.conf
+    src: system-tuning/user-conf-d-override.conf
     dest: /etc/systemd/user.conf.d/override.conf
     owner: root
     group: root
@@ -52,7 +52,7 @@
 
 - name: install services
   template:
-    src: "~/templates/system-tuning/{{ item }}.service"
+    src: system-tuning/{{ item }}.service
     dest: "/etc/systemd/system/{{ item }}.service"
     mode: 0777
   with_items:
@@ -69,14 +69,14 @@
     - solana-sys-tuner
 
 - name: install warehouse-upload-service
-  when: '"{{ solana_node_type }}" == "warehouse"'
+  when: solana_node_type|string == "warehouse"
   template:
-    src: "~/templates/system-tuning/solana-warehouse-upload.service" 
+    src: system-tuning/solana-warehouse-upload.service
     dest: "/etc/systemd/system/solana-warehouse-upload.service"
     mode: 0777
     
 - name: setup warehous-upload service
-  when: '"{{ solana_node_type }}" == "warehouse"'
+  when: solana_node_type|string == "warehouse"
   systemd:
     daemon_reload: true
     name: solana-warehouse-upload

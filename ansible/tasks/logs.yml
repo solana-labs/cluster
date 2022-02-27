@@ -9,7 +9,7 @@
 
 - name: setup logrotation
   template:
-    src: ~/templates/system-tuning/solana-log-rotation
+    src: system-tuning/solana-log-rotation
     dest: /etc/logrotate.d/solana
   when: "ansible_service_mgr == 'systemd'" 
             

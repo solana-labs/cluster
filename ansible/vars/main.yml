@@ -12,7 +12,7 @@ solana_accounts_location: /mnt/accounts
 solana_tmpfs_size: 300G
 
 # Solana variables
-solana_node_type: api
+solana_node_type: validator
 solana_installer_version: v1.8.14
 solana_version: stable
 solana_ledger_location: /home/sol/ledger

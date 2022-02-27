@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 set -ex
 
 #shellcheck source=/dev/null
@@ -12,9 +12,9 @@ if [[ -n $SOLANA_INSTALL_UPDATE_MANIFEST ]]; then
   done
 fi
 
-identity_keypair=~/api-identity.json
-identity_pubkey=$(solana-keygen pubkey $identity_keypair)
-ledger_dir=~/ledger
+identity_keypair=/home/sol/identity/internal-rpc-am6-1-identity.json
+identity_pubkey=$(solana-keygen pubkey "$identity_keypair")
+ledger_dir=/home/sol/ledger
 
 # Delete any zero-length snapshots that can cause validator startup to fail
 find "$ledger_dir" -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
@@ -22,12 +22,12 @@ find "$ledger_dir" -name 'snapshot-*' -size 0 -print -exec rm {} \; || true
 
 args=(
   --gossip-port 8001
-  --dynamic-port-range 8002-8020
+  --dynamic-port-range 8002-8015
   --entrypoint "${ENTRYPOINT}"
   --ledger "$ledger_dir"
   --identity "$identity_keypair"
   --limit-ledger-size
-  --log ~/solana-validator.log
+  --log /home/sol/logs/solana-validator.log
   --rpc-port 8899
   --enable-rpc-transaction-history
   --expected-genesis-hash "$EXPECTED_GENESIS_HASH"
@@ -37,18 +37,29 @@ args=(
   --skip-poh-verify
 )
 
-if [[ -n $ENABLE_BPF_JIT ]]; then
-  args+=(--bpf-jit)
+if ! [[ $(solana --version) =~ \ 1\.4\.[0-9]+ ]]; then
+  if [[ "$ENABLE_BPF_JIT" = true ]]; then
+    args+=(--bpf-jit)
+  fi
+  if [[ "$DISABLE_ACCOUNTSDB_CACHE" = true ]]; then
+    args+=(--no-accounts-db-caching)
+  fi
+  if [[ "$ENABLE_CPI_AND_LOG_STORAGE" = true ]]; then
+    args+=(--enable-cpi-and-log-storage)
+  fi
+  if [[ -n $DISABLE_ACCOUNTS_DB_INDEX_HASHING ]]; then
+    args+=(--no-accounts-db-index-hashing)
+  fi
+  for entrypoint in "${ENTRYPOINTS[@]}"; do
+    args+=(--entrypoint "$entrypoint")
+  done
 fi
-if [[ -n $DISABLE_ACCOUNTSDB_CACHE ]]; then
-  args+=(--no-accounts-db-caching)
+
+if [[ "$ENABLE_EXCLUDE_KEYS" = true ]]; then
+  for key in "${EXCLUDE_KEYS[@]}"; do
+    args+=(--account-index-exclude-key "$key") 
+  done
 fi
-if [[ -n $ENABLE_CPI_AND_LOG_STORAGE ]]; then
-  args+=(--enable-cpi-and-log-storage)
-fi
-for entrypoint in "${ENTRYPOINTS[@]}"; do
-  args+=(--entrypoint "$entrypoint")
-done
 
 for tv in "${TRUSTED_VALIDATOR_PUBKEYS[@]}"; do
   [[ $tv = "$identity_pubkey" ]] || args+=(--trusted-validator "$tv")
@@ -70,23 +81,14 @@ if [[ -n $EXPECTED_SHRED_VERSION ]]; then
   args+=(--expected-shred-version "$EXPECTED_SHRED_VERSION")
 fi
 
-if [[ -n $GOOGLE_APPLICATION_CREDENTIALS ]]; then
+if [[ "$ENABLE_BIGTABLE" = true ]]; then
   args+=(--enable-rpc-bigtable-ledger-storage)
 fi
 
-
-for hard_fork in "${HARD_FORKS[@]}"; do
-  args+=(--hard-fork "$hard_fork")
-done
-
-if [[ -n $EXPECTED_BANK_HASH ]]; then
+if [[ $RESTART = true ]]; then
   args+=(--expected-bank-hash "$EXPECTED_BANK_HASH")
-  if [[ -n $WAIT_FOR_SUPERMAJORITY ]]; then
-    args+=(--wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY")
-  fi
-elif [[ -n $WAIT_FOR_SUPERMAJORITY ]]; then
-  echo "WAIT_FOR_SUPERMAJORITY requires EXPECTED_BANK_HASH be specified as well!" 1>&2
-  exit 1
+  args+=(--wait-for-supermajority "$WAIT_FOR_SUPERMAJORITY")
+  args+=(--hard-fork "$hard_fork")
 fi
 
 if [[ -n "$RPC_HEALTH_CHECK_SLOT_DISTANCE" ]]; then
@@ -107,15 +109,15 @@ else
   args+=(--no-voting)
 fi
 
-if [[ -f "$ledger_dir"/genesis.bin ]]; then
+if [[ -d "$ledger_dir"/genesis.bin ]]; then
   args+=(--no-genesis-fetch)
 fi
 if [[ -d "$ledger_dir"/snapshot ]]; then
   args+=(--no-snapshot-fetch)
 fi
 
-if [[ -w /mnt/solana-accounts/ ]]; then
-  args+=(--accounts /mnt/solana-accounts)
+if [[ -w /mnt/accounts ]]; then
+  args+=(--accounts /mnt/accounts)
 fi
 
 exec solana-validator "${args[@]}"
