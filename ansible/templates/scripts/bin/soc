@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+cd ~
+. service-env.sh
+set -x
+solana --url "$RPC_URL" catchup ~/identity/*identity*json http://127.0.0.1:8899 ${@}

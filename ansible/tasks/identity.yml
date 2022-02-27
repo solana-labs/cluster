@@ -1,0 +1,41 @@
+---
+#Setup sol user and deploy pubkeys
+- name: check if pubkey exists
+  stat:
+    path: "{{ solana_public_key }}"
+  register: identity_pubkey
+
+- name: create identity directory
+  file:
+    path: "{{ solana_identity_directory }}" 
+    state: directory
+    mode: 0750
+    owner: sol
+    group: sol
+
+- name: create pubkey
+  command: "{{ solana_bin_path }}/solana-keygen new -o {{ solana_public_key }}  --no-bip39-passphrase -s"
+  become: true
+  become_user: sol
+  args:
+    chdir: "{{ solana_identity_directory }}"
+    creates: "{{ solana_public_key }}"
+  when: not identity_pubkey.stat.exists
+
+- name: set keypair to default
+  command: "{{ solana_bin_path }}/solana config set --keypair {{ solana_public_key }}"
+  become: true
+  become_user: sol
+  args:
+    chdir: "{{ solana_identity_directory }}"
+  when: not identity_pubkey.stat.exists
+
+- name: check solana pubkey
+  command: "{{ solana_bin_path }}/solana-keygen pubkey {{ solana_public_key }}"
+  register: res_pubkey
+  when: not identity_pubkey.stat.exists
+
+- name: save public key hash
+  set_fact:
+    solana_public_key_hash: "{{ res_pubkey.stdout }}"
+  when: not identity_pubkey.stat.exists

@@ -1,0 +1,16 @@
+---
+# Create tmfs and setup accounts
+- name: create accounts tmpfs filesystem mount point
+  file:
+    dest: "{{ solana_accounts_location }}"
+    owner: sol
+    group: sol
+    state: directory
+
+- name: mount accounts tmpfs
+  mount:
+    name: "{{ solana_accounts_location }}"
+    src: tmpfs
+    fstype: tmpfs
+    opts: "size={{ solana_tmpfs_size }}"
+    state: mounted

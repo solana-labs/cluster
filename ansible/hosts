@@ -1,0 +1,96 @@
+# Ansible-hosts 
+
+# Mainnet-beta machines
+[mainnet]
+be ansible_host=34.83.231.102 # entrypoint / mainnet-beta.solana.com
+bt ansible_host=34.82.107.240 # watchtower / _
+bv1 ansible_host=145.40.67.83 # validator-us-sv15 / 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2
+bv2 ansible_host=147.75.38.117 # validator-us-ny5 / GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ
+bv3 ansible_host=145.40.93.177 # validator-europe-fr2 / DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ
+bv4 ansible_host=86.109.15.59 # validator-asia-sg1 / CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S
+bvb ansible_host=136.144.50.197 # beta-validator-us-ny5 / betaVcnkBhHKaWx9o6LoSYrGaoDCskQLm94cUVWqDLS
+bve ansible_host=86.109.1.169 # edge-validator-us-sv15 / edge8WksfN71qYDJ1e4fCy2WfKg19fXU5zuztDi9uTM
+bw1 ansible_host=147.75.39.119 # warehouse-us-ny5 / bw1jUC6vNYzn9JzBqxv9RzTXM3DuyAoTR4ME5U8YLRM
+bw2 ansible_host=145.40.93.71 # warehouse-europe-fr2 / bw2u4jP38LmZNaygDQprmjTyXDxmcHSYmLPTXJt56Ra
+bw3 ansible_host=86.109.15.45 # warehouse-asia-sg1 / bw3QYExsu2i44qHWuLdZkAqUEgKVjkcNknzdaW83gJE
+
+# Testnet machines
+[testnet]
+te ansible_host=35.203.170.30 # entrypoint / _
+tt ansible_host=34.105.77.66 # watchtower / _
+tv ansible_host=139.178.68.207 # testnet-validator-us-sv15 / 5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on
+tw ansible_host=145.40.67.19 # testnet-warehouse-us-sv15 / twP716sMjTFynrZRSCKkHhoeHaQEXnR2bzqDEzuxP81
+
+# Devnet machines
+[devnet]
+de ansible_host=35.197.53.105 # entrypoint / _
+dt ansible_host=34.83.120.171 # watchtower / _
+dv1 ansible_host=145.40.71.85 # devnet-validator-asia-sg1 / dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92
+dv2 ansible_host=136.144.49.15 # devnet-validator-europe-fr2 / dv2eQHeP4RFrJZ6UeiZWoc3XTtmtZCUKxxCApCDcRNV
+dv3 ansible_host=147.75.55.147 # devnet-validator-us-da11 / dv3qDFk1DTF36Z62bNvrCXe9sKATA6xvVy6A798xxAS
+dv4 ansible_host=147.75.105.51 # devnet-validator-us-ny5 / dv4ACNkpYPcE3aKmYDqZm9G5EB3J4MRoeE7WNDRBVJB
+dw ansible_host=145.40.65.193 # devnet-warehouse-us-ny5 / dw1xbcZQHmzA2zEPEqECp3SswUWdQ5sbdjBrKMEu7gK
+
+# Development machines
+[development]
+dev1 ansible_host=145.40.77.67 # dev-server-da11 / _
+dev2 ansible_host=147.75.38.57 # dev-server-ny5 / _
+dev3 ansible_host=147.75.49.103 # dev-server-sv15 / _
+dev4 ansible_host=147.75.84.251 # dev-server-sv15 / _
+dev5 ansible_host=145.40.71.95 # dev-server-sg1 / _
+dev6 ansible_host=147.75.54.185 # accounts-filler-count-0 / _
+dev7 ansible_host=145.40.70.223 # accounts-filler-count-100m / _
+dev8 ansible_host=147.75.55.201 # accounts-filler-count-1b / _
+dev9 ansible_host=139.178.89.91 # accounts-filler-count-200m / _
+
+# San Francisco machines
+[sf_colos]
+froome ansible_host=66.211.101.194 ansible_port=10912
+valverde ansible_host=66.211.101.194 ansible_port=10911
+sagan ansible_host=66.211.101.194 ansible_port=10909
+nibali ansible_host=66.211.101.194 ansible_port=10913
+bernal ansible_host=66.211.101.194 ansible_port=10914
+bananas ansible_host=66.211.101.194 ansible_port=10918
+kong ansible_host=66.211.101.194 ansible_port=10919
+achilles ansible_host=66.211.101.194 ansible_port=10920
+merckx ansible_host=66.211.101.194 ansible_port=10915
+wiggins ansible_host=66.211.101.194 ansible_port=10916
+lemond ansible_host=66.211.101.194 ansible_port=10917
+
+# Devner machines
+[denver_colos]
+dumoulin ansible_host=216.24.140.149
+foosball ansible_host=216.24.140.150
+pingpong ansible_host=216.24.140.151
+airhockey ansible_host=216.24.140.152
+billiards ansible_host=216.24.140.153
+pacman ansible_host=216.24.140.154
+asteroids ansible_host=216.24.140.155
+
+# Canaries
+[canaries]
+canary-am6-1 ansible_host=147.75.80.15 # canary-am6-1 / can1Jv6DcJ7M2s8EwAAozaApoUPcv84x7qywZrsKJrc
+canary-am6-2 ansible_host=147.75.80.133 # canary-am6-2 / can2QvayCZC8YmsgKV1k3kmtECVpYk14Qk7uji7ZKSX
+canary-da11-1 ansible_host=145.40.81.33 # canary-da11-1 / can3xttFD2LRwCxd2NiMoxZj6ery4QjHiHGrcZqNDT5
+canary-ny5-1 ansible_host=147.75.72.131 # canary-ny5-1 / can4XuJr1z5xuYThh9vmLZPNgNvYSYsDt5H1tD3eFrZ
+canary-ny5-2 ansible_host=147.75.194.211 # canary-ny5-2 / can5d2LgSrHLEfcqM6BQxEG6CGHj4jv35UjF7hEWez7
+canary-sg1-1 ansible_host=145.40.117.143 # canary-sg1-1 / can6LcdcHy5oEifG6uE6LnHN4npcSqKxouiek1dYjQx
+canary-sv15-1 ansible_host=139.178.89.189 # canary-sv15-1 / can7J7Kpuw7jTQkGAfpXs56G7fp2jTDE4Zfwd7L3fHi
+
+# Kin
+[kin]
+kin-rpc-am6-1 ansible_host=147.75.100.131 # kin-rpc-am6-1 / kin7bbeezLMqZmFgZGFygEpdV9aeziaukMpGVKbTUx4
+kin-rpc-da11-1 ansible_host=139.178.85.7 # kin-rpc-da11-1 / kin6JyScgU7TrpHqxgZRhVB4cCZhGNQhTDRVNCiARCA
+kin-spare-sg1-1 ansible_host=145.40.117.157 # kin-spare-sg1-1 / kin52jAhScxJHbs3j9YdBFupe24MMbZJeHFDrTh49Pg
+kin-validator-am6-1 ansible_host=145.40.68.91 # kin-validator-am6-1 / kin1npCDwh5z1XdiKKWGvUbA4ikixoSTFTVxe1JJE4L
+kin-validator-da11-1 ansible_host=145.40.76.233 # kin-validator-da11-1 / kin2GyELWdJFcRaJ22J7W2WMeXTu42ayzyDozWT8EwJ
+kin-validator-ny5-1 ansible_host=147.75.74.211 # kin-validator-ny5-1 / kin37txQPjmoDWJ9Qa2LAWWvBhNWxdRzhkKTbkQc72D
+kin-validator-sg1-1 ansible_host=145.40.117.153 # kin-validator-sg1-1 / kin4eZkXGJShuv7UGxBXsMaLHXwPjGFM5Mnm3cWh3gc
+
+# RPC
+[rpc]
+internal-rpc-am6-1 ansible_host=147.75.101.141 # internal-rpc-am6-1 / api1qXA9LF3FqTwiCpqBJAPTKaU7DjTmgj66zB9Bp4N
+internal-rpc-sg1-1 ansible_host=145.40.117.159 # internal-rpc-sg1-1 / api2zsucTM36RiJsbHYJKw99w9suW5wGEzv23ymLnbr
+internal-rpc-sv15-1 ansible_host=139.178.70.87 # internal-rpc-sv15-1 / api3T41nsHK2rRKwCi3BeRz6hbBwk75GAmHR2KiWPzp
+
+test-instance ansible_host=35.226.174.206

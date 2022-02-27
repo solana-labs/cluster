@@ -1,0 +1,15 @@
+[Unit]
+Description=Solana Watchtower
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=sol
+LogRateLimitIntervalSec=0
+ExecStart=/home/sol/bin/watchtower.sh
+
+[Install]
+WantedBy=multi-user.target

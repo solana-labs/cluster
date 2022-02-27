@@ -1,0 +1,32 @@
+---
+#Create SOL user and deploy keys
+- name: create sol group
+  group:
+    name: sol
+    state: present
+
+- name: allow sol group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%sol ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: create sol user
+  user: 
+    name: sol
+    password: '!'
+    shell: /bin/bash
+    groups: sol
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- name: deploy pubkeys
+  template: 
+    src: ~/pubkeys 
+    dest: "/home/sol/.ssh/authorized_keys"
+    owner: sol
+    group: sol
+    mode: 0755

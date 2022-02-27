@@ -1,0 +1,20 @@
+---
+#Update apt packages and install dependencies
+- name: update apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 
+
+- name: install dependencies
+  apt:
+    pkg: ['libssl-dev', 'libudev-dev', 'pkg-config', 'zlib1g-dev', 'llvm', 'clang', 'make', 'git']
+    state: present 
+
+- name: Update apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 

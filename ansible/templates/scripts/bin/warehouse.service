@@ -1,0 +1,16 @@
+[Unit]
+Description=Solana Warehouse Node
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=sol
+LimitNOFILE=2000000
+LogRateLimitIntervalSec=0
+StartLimitIntervalSec=0
+ExecStart=/home/sol/bin/warehouse.sh
+
+[Install]
+WantedBy=multi-user.target

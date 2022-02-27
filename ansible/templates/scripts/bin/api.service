@@ -1,0 +1,16 @@
+[Unit]
+Description=Solana API Node
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=sol
+LimitNOFILE=2000000
+StartLimitIntervalSec=0
+LogRateLimitIntervalSec=0
+ExecStart=/home/sol/bin/api.sh
+
+[Install]
+WantedBy=multi-user.target

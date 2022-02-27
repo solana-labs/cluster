@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -e
+source $HOME/slack-env.sh
+export PATH="/home/sol/.local/share/solana/install/active_release/bin:$PATH"
+
+LOSS_THREHOLD=20
+PING_TIMES=10
+PING_URL="http://api.internal.mainnet-beta.solana.com"
+CONSECUTIVE_FAIL_TIMES=5
+RETRY_WAIT_SEC=5
+
+# output config
+# write every ping result to the log
+WRITE_LOG_INFO=true
+LOG_PATH="$HOME/solana-ping-alert.log"
+PING_ERROR_FILE="$PWD/ping-alert.err"
+error_parse="{ hostname: $HOSTNAME, error_message: parsing error. Solana output may be changed. Check $LOG_PATH}"
+
+if [[ -z "$PING_SLACK_WEBHOOK"  ]];then
+	echo "ERROR : SYNTH_SLACK_WEBHOOK=$PING_SLACK_WEBHOOK"
+	exit 1
+fi
+
+slack_alert(){
+        if $SLACK_ALERT;then
+                sdata=$(jq --null-input --arg val "$slack_text" '{"text":$val}')
+                curl -X POST -H 'Content-type: application/json' --data "$sdata" $PING_SLACK_WEBHOOK
+        fi
+}
+
+solana_ping(){
+	ping_result=$(solana ping --url $PING_URL -c $PING_TIMES 2>$PING_ERROR_FILE | awk '($1 == "confirmation" || $2 == "transactions") { if ($1 == "confirmation"){cf=$0;}else{txs=$1;txc=$4;txl=$7}; } END {printf "%s;%s;%s;%s",txs,txc,txl,cf}')
+        # testing purpose
+        # ping_result=$(cat $HOME/new-scripts/ping-error.txt | awk '($1 == "confirmation" || $2 == "transactions") { if ($1 == "confirmation"){cf=$0;}else{txs=$1;txc=$4;txl=$7}; } END {printf "%s;%s;%s;%s",txs,txc,txl,cf}')
+	if $WRITE_LOG_INFO;then
+                echo $(date +%F%T) "result $ping_result" | tee -a $LOG_PATH
+        fi
+
+}
+
+over_threhold_count=0
+error_ping_count=0
+error_parse_count=0
+
+for retry in $(seq 1 $(( $CONSECUTIVE_FAIL_TIMES+1)) );
+do       
+        echo retry=$retry
+        # alert conditions
+        if [[ $error_ping_count -ge $CONSECUTIVE_FAIL_TIMES  ]];then
+		err_msg=$(cat $PING_ERROR_FILE)
+                slack_text="{ hostname: $HOSTNAME, error_message: $err_msg }"
+		echo slack_text: $slack_text
+                slack_alert
+                break
+        elif [[ $over_threhold_count -ge $CONSECUTIVE_FAIL_TIMES  ]];then
+		if [[ -z $missing_data ]];then
+			slack_text="{ hostname: $HOSTNAME, tx_submitted: ${values[0]}, tx_confirmed: ${values[1]}, tx_loss: ${values[2]}, confirmation: ${values[4]}${values[5]}${values[6]} }"
+		else
+			warn_msg="check log if data missing"
+			slack_text="{ hostname: $HOSTNAME, tx_submitted: ${values[0]}, tx_confirmed: ${values[1]}, tx_loss: ${values[2]}, confirmation: ${values[4]}${values[5]}${values[6]}, warn: $warn_msg }"
+		fi
+		echo slack_text: $slack_text
+                slack_alert
+                break
+        fi
+
+        if [[ $retry -gt 1 ]];then
+                sleep $RETRY_WAIT_SEC
+        fi
+
+        solana_ping
+
+        ping_result_len=${#ping_result}
+        ## ping_result is ";;;" or ""
+        if [[ ping_result_len -lt 4 ]];then
+        	error_ping_count=$error_ping_count+1
+		err_msg=$(cat $PING_ERROR_FILE)
+                echo $(date +%F%T) "ERROR  ping_result_len < 4, ping_result=$ping_result. error message: $err_msg" | tee -a $LOG_PATH
+                continue
+        fi
+
+        values=(`echo $ping_result | tr ';' ' '` )  
+        values_len=${#values[@]}
+	# 5;0;100.0%; missing some data
+        if [[ values_len -ne 8 ]];then
+                values_len=${#values[@]}
+		missing_data=$ping_result
+                echo $(date +%F%T) "ERROR  values_len!=8, values_len=$values_len,  values=$values" | tee -a $LOG_PAT
+	else 
+		missing_data=""
+        fi
+
+        tx_loss=${values[2]}
+        tx_loss_value=${tx_loss/\%/}
+
+        if (( $(echo "$tx_loss_value >= $LOSS_THREHOLD" | bc) )); then
+                over_threhold_count=$(echo "$over_threhold_count+1" | bc)
+                echo $(date +%F%T) "over_threhold_count=$over_threhold_count $ping_result" | tee -a $LOG_PATH
+        else
+                break
+        fi
+
+done

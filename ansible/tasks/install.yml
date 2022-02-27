@@ -1,0 +1,46 @@
+---
+#Setup solana cli and clone repo
+- name: download solana-installer
+  get_url:
+    url: "https://raw.githubusercontent.com/solana-labs/solana/{{ solana_installer_version }}/install/solana-install-init.sh"
+    dest: /usr/local/sbin/solana-install-init.sh
+    mode: 0755
+    owner: root
+    group: root
+
+- name: install solana
+  command: "/usr/local/sbin/solana-install-init.sh {{ solana_version }}"
+  args:
+    chdir: /home/sol/
+  become: true
+  become_user: sol
+  register: install_output
+
+- name: debug
+  debug: var=install_output
+
+- name: ensure solana storage directories are avaiable
+  file:
+    path: "{{ item }}"
+    owner: sol
+    group: sol
+    mode: 0755
+    state: directory
+  with_items:
+    - "/home/sol/bin"
+    - "/home/sol/src"
+    - "{{ solana_accounts_location}}"
+   
+- name: check it solana src exists
+  stat:
+    path: "/home/sol/src/solana"
+  register: solana_repository
+
+- name: clone solana src
+  git:
+    repo: https://github.com/solana-labs/solana.git
+    dest: /home/sol/src/solana
+    clone: yes
+  become: true
+  become_user: sol
+  when: not solana_repository.stat.exists

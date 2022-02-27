@@ -1,0 +1,42 @@
+---
+#Setup UFW firewall rules
+- name: install UFW firewall
+  apt:
+    name: ufw
+    state: present
+
+- name: enable UFW service
+  systemd:
+    daemon_reload: true
+    name: ufw
+    enabled: yes
+
+- name: Allow SSH  traffic
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: ssh
+
+- name: Allow specific traffic
+  community.general.ufw:
+    rule: allow
+    proto: "{{ item.protocol }}"
+    port: "{{ item.port }}"
+    src: "{{ item.sourceip }}"
+  with_items:
+    - {'protocol':'tcp','port':'80','sourceip':'any'}
+    - {'protocol':'tcp','port':'443','sourceip':'any'}
+    - {'protocol':'tcp','port':'8080','sourceip':'any'}
+    - {'protocol':'tcp','port':'8443','sourceip':'any'}
+    - {'protocol':'tcp','port':'8000:8015','sourceip':'any'}
+    - {'protocol':'tcp','port':'9100','sourceip':'any'}
+    - {'protocol':'tcp','port':'1234','sourceip':'any'}
+    - {'protocol':'tcp','port':'8899:8900','sourceip':'any'}
+    - {'protocol':'udp','port':'8000:8015','sourceip':'any'}
+    - {'protocol':'udp','port':'9100','sourceip':'any'}
+    - {'protocol':'udp','port':'1234','sourceip':'any'}
+    - {'protocol':'udp','port':'8899:8900','sourceip':'any'}
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

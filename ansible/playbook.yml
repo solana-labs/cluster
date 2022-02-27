@@ -1,0 +1,70 @@
+---
+
+- hosts: "{{ host_name }}"
+  remote_user: root
+  become: true
+  vars_files:
+    - ~/vars/{{ cluster }}.yml
+    - ~/vars/main.yml
+  tasks:
+
+# Update OS packages and dependencies
+  - include: ~/tasks/dependencies.yml
+    tags: 
+      - install_dependencies
+
+# Set up a sol user and deploy keys
+  - include: ~/tasks/user_and_keys.yml
+    tags:
+      - deploy_keys
+
+# Install rust
+  - include: ~/tasks/rust.yml
+    when: install_rust is defined and install_rust
+    tags:
+      - install_rust
+
+# Setup account on tmpfs
+  - include: ~/tasks/accounts.yml
+    tags:
+      - setup_accounts
+
+# Install solana cli
+  - include: ~/tasks/install.yml
+    tags:
+      - solana_install
+
+# Setup logs directory and log rotation
+  - include: ~/tasks/logs.yml
+    tags:
+      - configure_logs
+
+# Set cpu optimisations
+#  - include: ~/tasks/optimizations.yml
+#    tags:
+#      - cpu_optimizations
+
+# Setup identity
+  - include: ~/tasks/identity.yml
+    tags:
+      - setup_identity
+
+# Setup service files
+  - include: ~/tasks/service.yml
+    tags:
+      - solana_service
+
+# Tuning parameter
+  - include: ~/tasks/tuning.yml
+    tags:
+      - solana_tuning
+
+# Firewall rules
+  - include: ~/tasks/firewall.yml
+    tags:
+      - setup_firewall
+
+# Update scripts
+  - include: ~/tasks/update_scripts.yml
+    tags:
+      - update_scripts

@@ -1,0 +1,34 @@
+---
+
+# Performance optimisations
+
+cpu_governor: performance
+sysctl_optimisations: {}
+
+# Install rust?
+install_rust: true
+
+# Tmpfs for accounts
+solana_accounts_location: /mnt/accounts
+solana_tmpfs_size: 300G
+
+# Solana variables
+solana_installer_version: v1.8.13
+solana_version: stable
+solana_ledger_location: /home/sol/ledger
+solana_realtime_scheduler: false
+solana_generate_keypair: false
+solana_public_key: /home/sol/identity/{{ host_name }}-identity.json
+solana_identity_directory: /home/sol/identity
+solana_gossip_port: '8001'
+solana_rpc_port: '8899'
+solana_dynamic_port_range: '8002-8012'
+solana_limit_ledger_size: ''
+solana_network: mainnet
+solana_enabled_services:
+solana_bin_path: /home/sol/.local/share/solana/install/active_release/bin
+solana_disabled_services: []
+
+# Setup logs
+log_rotation: true
+solana_logs_location: /home/sol/logs

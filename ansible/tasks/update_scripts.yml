@@ -1,0 +1,62 @@
+---
+#Update scripts
+- name: create bin directory
+  file:
+    path: "/home/sol/bin"
+    state: directory
+    owner: sol
+    group: sol
+
+- name: copy basic scripts
+  template:
+    src: "~/templates/scripts/{{ item }}"
+    dest: "/home/sol/{{ item }}"
+    owner: sol
+    group: sol
+    mode: 0755
+  with_items:
+    - "fetch-snapshot.sh"
+    - "journalctl"
+    - "restart"
+    - "service-env.sh"
+    - "sol"
+    - "stop"
+    - "update"
+
+- name: copy scripts
+  copy:
+    src: "~/templates/scripts/bin/{{ item}}"
+    dest: "/home/sol/bin/{{ item }}"
+    owner: sol
+    group: sol
+    mode: 0755
+  with_items:
+    - "check-hostname.sh"
+    - "configure-metrics.sh"
+    - "hc"
+    - "metrics-write-datapoint.sh"
+    - "print-keys.sh"
+    - "soc"
+    - "solana-sys-tuner.sh"
+    - "tf"
+    - "validator.service"
+    - "warehouse-upload-to-storage-bucket.service"
+    - "warehouse.service"
+    - "watchtower.service"
+    - "solana-ping-alert"
+    - "synthetic-slot-check"
+
+- name: copy scripts
+  template:
+    src: "~/templates/scripts/bin/{{ item}}"
+    dest: "/home/sol/bin/{{ item }}"
+    owner: sol
+    group: sol
+    mode: 0755
+  with_items:
+    - "api.sh"
+    - "validator.sh"
+    - "warehouse.sh"
+    - "entrypoint.sh"
+    - "watchtower.sh"
+    - "warehouse-upload-to-storage-bucket.sh"

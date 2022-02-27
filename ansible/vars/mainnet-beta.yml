@@ -1,0 +1,57 @@
+---
+
+restart: "false"
+wait_for_supermajority: 96542804
+expected_bank_hash: 5x6cLLsvsEbgbQxQNPoT1LvbTfYrx22kpXyzRxLKAMN3
+expected_shred_version: 8573
+hard_fork: 96542805
+genesis_hash: 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d
+
+metrics_config: host=https://metrics.solana.com:8086,db=mainnet-beta,u=mainnet-beta_write,p=password
+path: /home/sol/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+rpc_url: https://api.mainnet-beta.solana.com
+entrypoint_host: mainnet-beta.solana.com
+entrypoint_port: 8001
+entrypoint: mainnet-beta.solana.com:8001
+entrypoints:
+   entrypoint.mainnet-beta.solana.com:8001
+   entrypoint2.mainnet-beta.solana.com:8001
+   entrypoint3.mainnet-beta.solana.com:8001
+   entrypoint4.mainnet-beta.solana.com:8001
+   entrypoint5.mainnet-beta.solana.com:8001
+
+enable_account_indexes: "false"
+enable_cpi_and_log_storage: "false"
+account_indexes:
+   program-id
+   spl-token-owner
+   spl-token-mint
+
+enable_exclude_keys: "false"
+index_exclude_keys:
+   kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6
+   TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+
+trusted_validators:
+   7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2
+   GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ
+   DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ
+   CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S
+
+enable_bigtable: "false"
+bigtable_credentials_path: ~/.mainnet-beta-bigtable-ro.json
+storage_bucket: "{{ cluster }}-{{ host_name }}"
+enable_minimum_minutes-between_archive: "false"
+
+rust_log: "info,solana_runtime::bank::executor_cache=trace"
+rust_backtrace: 1
+enable_bpf_jit: "false"
+disable_accountsdb_cache: "false"
+disable_accounts_db_index_hashing: "false"
+enable_rpc_health_check_slot_distance: "false"
+rpc_health_check_slot_distance: "200"
+
+enable_rayon_hack: "false"
+rayon_threads: 8
+enable_synth_alert: "false"
+synth_slack_webhook: web_hook

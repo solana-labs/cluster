@@ -1,0 +1,56 @@
+---
+
+restart: "false"
+wait_for_supermajority: 110973418
+expected_bank_hash: WVDsuJJbhcdqH6vQrpZi5GYoPnMAaKw4THMtwes77DS
+expected_shred_version: 12339
+hard_fork: 0
+genesis_hash: 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY
+
+metrics_config: host=http://35.222.139.230:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea
+path: /home/sol/.local/share/solana/install/active_release/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+rpc_url: https://api.testnet.solana.com/
+entrypoint_host: entrypoint.testnet.solana.com
+entrypoint_port: 8001
+entrypoint: entrypoint.testnet.solana.com:8001
+entrypoints:
+   entrypoint2.testnet.solana.com:8001
+   entrypoint3.testnet.solana.com:8001
+
+enable_account_indexes: "false"
+enable_cpi_and_log_storage: "false"
+account_indexes:
+   program-id
+   spl-token-owner
+   spl-token-mint
+
+enable_exclude_keys: "false"
+index_exclude_keys:
+   kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6
+   TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+
+trusted_validators:
+   eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ
+   9YVpEeZf8uBoUtzCFC6SSFDDqPt16uKFubNhLvGxeUDy
+   4958nAd4Gp1MZQEg97b7prdDKAgC5Ab3iQtNzAWyHqEV
+   4jhyvbBHbsRDF6och7pDQ7ahYTUr7wNkAYJTLLuMUtku
+   D2ULkLgZk1d6RW3Wmd14vFNfkBgi6NMM8CDNsNuNXvfV
+   Bszp6hDL19ymPZ8efp9venQYb4ae2rRmEtVp4aG6k8nx
+
+enable_bigtable: "false"
+bigtable_credentials_path: ~/.mainnet-beta-bigtable-ro.json
+storage_bucket: "{{ cluster }}-{{ host_name }}"
+enable_minimum_minutes-between_archive: "false"
+
+rust_log: "info,solana_runtime::bank::executor_cache=trace"
+rust_backtrace: 1
+enable_bpf_jit: "false"
+disable_accountsdb_cache: "false"
+disable_accounts_db_index_hashing: "false"
+enable_rpc_health_check_slot_distance: "false"
+rpc_health_check_slot_distance: "200"
+
+enable_rayon_hack: "false"
+rayon_threads: 8
+enable_synth_alert: "false"
+synth_slack_webhook: https://hooks.slack.com/services/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

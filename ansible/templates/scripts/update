@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Software update
+
+if [[ -z $1 ]]; then
+  echo "Usage: $0 [version]"
+  exit 1
+fi
+set -ex
+if [[ $USER != sol ]]; then
+  sudo --login -u sol -- solana-install init "$@"
+else
+  solana-install init "$@"
+fi
+sudo systemctl daemon-reload
+sudo systemctl restart sol
+sudo systemctl --no-pager status sol

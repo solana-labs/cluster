@@ -1,0 +1,36 @@
+---
+#Setup CPU governor to performance
+- name: install linux kernel tools
+  apt:
+    pkg: ["linux-tools-{{ ansible_kernel }}", "inotify-tools", "htop", "iotop", "powertop", "cpufrequtils"]
+    state: present
+
+- name: disable ondemand governor (get performance governor)
+  systemd:
+    name: ondemand
+    enabled: no
+    state: stopped
+
+- name: ensure cpu governor is set
+  copy:
+    content: "GOVERNOR=\"{{ cpu_governor }}\""
+    dest: /etc/default/cpufrequtils
+    owner: root
+    group: root
+    mode: 0644
+  when: cpu_governor != "bios"
+
+- name: ensure cpu governor is enabled
+  command: "cpupower frequency-set --governor {{ cpu_governor }}"
+  become: true
+  become_user: root
+  when: cpu_governor != "bios"
+
+- name:  ensure sysctl is set to sufficiently high value
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop: "{{ sysctl_optimisations|dict2items }}"

@@ -1,0 +1,83 @@
+---
+#Setup system services
+- name: ensure xdg runtime dir is set in bashrc
+  lineinfile:
+    path: "/home/sol/.bashrc"
+    regexp: "^export XDG_RUNTIME_DIR"
+    line: "export XDG_RUNTIME_DIR=/run/user/$(id -u)"
+
+- name: ensure solana user can use lingering systemd
+  command: loginctl enable-linger sol
+
+- name: ensure solana user is part of systemd-journal group
+  user:
+    name: sol
+    groups: systemd-journal
+    append: yes
+
+- name: ensure sol directories exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - "/etc/systemd/system/user@.service.d/"
+    - "/etc/systemd/user.conf.d/"
+
+- name: install user service override
+  template:
+    src: ~/templates/system-tuning/user-override.conf
+    dest: /etc/systemd/system/user@.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: install user override values
+  template:
+    src: ~/templates/system-tuning/user-conf-d-override.conf
+    dest: /etc/systemd/user.conf.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: ensure systemd user dir is available
+  file:
+    path: "/home/sol/.config/systemd/user/"
+    owner: sol
+    group: sol
+    mode: 0750
+    state: directory
+
+- name: install services
+  template:
+    src: "~/templates/system-tuning/{{ item }}.service"
+    dest: "/etc/systemd/system/{{ item }}.service"
+    mode: 0777
+  with_items:
+    - sol
+    - solana-sys-tuner
+
+- name: setup services
+  systemd:
+    daemon_reload: true
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - sol
+    - solana-sys-tuner
+
+- name: install warehouse-upload-service
+  when: '"{{ solana_node_type }}" == "warehouse"'
+  template:
+    src: "~/templates/system-tuning/solana-warehouse-upload.service" 
+    dest: "/etc/systemd/system/solana-warehouse-upload.service"
+    mode: 0777
+    
+- name: setup warehous-upload service
+  when: '"{{ solana_node_type }}" == "warehouse"'
+  systemd:
+    daemon_reload: true
+    name: solana-warehouse-upload
+    enabled: yes

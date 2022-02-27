@@ -1,0 +1,15 @@
+[Unit]
+Description=Solana System Tuner
+After=network.target
+Before=sol.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/home/sol/bin/solana-sys-tuner.sh
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=sol.service

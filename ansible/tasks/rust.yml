@@ -1,0 +1,46 @@
+---
+#Setup rust
+- name: change /home/sol ownsership
+  ansible.builtin.file:
+    path: /home/sol
+    owner: sol
+    group: sol
+    mode: '0755'
+    recurse: yes
+    state: directory
+
+- name: install rust dependencies
+  apt:
+    pkg: ['libssl-dev', 'libudev-dev', 'pkg-config', 'zlib1g-dev', 'llvm', 'clang', 'make', 'acl']
+
+- name: download rust installer
+  get_url:
+    url: "https://sh.rustup.rs"
+    dest: /usr/local/sbin/rustup-install.sh
+    mode: 0755
+    owner: root
+    group: root
+
+- name: install rust
+  command: "/usr/local/sbin/rustup-install.sh -y"
+  args:
+    chdir: /home/sol/
+  become: true
+  become_user: sol
+  register: install_output
+
+- name: debug
+  debug: var=install_output
+
+- name: install rustfmt
+  command: rustup component add rustfmt
+  args:
+    chdir: /home/sol/
+  environment:
+    PATH: /bin:/usr/bin:/usr/local/bin:/home/sol/.cargo/bin
+  become: true
+  become_user: sol
+  register: rustup_output
+
+- name: debug
+  debug: var=rustup_output

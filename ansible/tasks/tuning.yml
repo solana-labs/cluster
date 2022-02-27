@@ -1,0 +1,38 @@
+---
+#Setup otimizations
+- name: solana udp buffer
+  template:
+    src: ~/templates/system-tuning/20-solana-udp-buffers.conf
+    dest: /etc/sysctl.d/20-solana-udp-buffers.conf
+
+- name: solana-mmaps
+  template:
+    src: ~/templates/system-tuning/20-solana-mmaps.conf
+    dest: /etc/sysctl.d/20-solana-mmaps.conf
+
+- name: solana-nofiles
+  template:
+    src: ~/templates/system-tuning/90-solana-nofiles.conf
+    dest: /etc/security/limits.d/90-solana-nofiles.conf
+
+- name: load parameters
+  shell: |
+    sysctl -p /etc/sysctl.d/20-solana-mmaps.conf
+    sysctl -p /etc/sysctl.d/20-solana-udp-buffers.conf
+    systemctl daemon-reload
+
+- name: copy bashsr
+  copy:
+    src: ~/templates/system-tuning/bashrc
+    dest: "/home/sol/.bashrc"
+    owner: sol
+    group: sol
+    mode: 0755
+
+- name: copy profile
+  copy:
+    src: ~/templates/system-tuning/profile
+    dest: "/home/sol/.profile"
+    owner: sol
+    group: sol
+    mode: 0755

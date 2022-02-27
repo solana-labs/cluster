@@ -1,0 +1,15 @@
+[Unit]
+Description=Solana Entrypoint
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=sol
+StartLimitIntervalSec=0
+LogRateLimitIntervalSec=0
+ExecStart=/home/sol/bin/entrypoint.sh
+
+[Install]
+WantedBy=multi-user.target

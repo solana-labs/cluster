@@ -1,0 +1,20 @@
+---
+#Setup logs directory and logration
+- name: create log directory
+  file:
+    path: "{{ solana_logs_location }}"
+    state: directory
+    owner: sol
+    group: sol
+
+- name: setup logrotation
+  template:
+    src: ~/templates/system-tuning/solana-log-rotation
+    dest: /etc/logrotate.d/solana
+  when: "ansible_service_mgr == 'systemd'" 
+            
+- name: restart service
+  service:
+    daemon_reload: yes
+    name: logrotate
+    state: restarted

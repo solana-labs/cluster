@@ -1,0 +1,69 @@
+---
+
+- name: Gather variables on basis of solana network
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ cluster }}.yml"
+
+# Update OS packages and dependencies
+- include: dependencies.yml
+  tags: 
+    - install_dependencies
+
+# Set up a sol user and deploy keys
+- include: user_and_keys.yml
+  tags:
+    - solana_configure
+    - solana_install
+    - solana_run
+
+# Install rust
+- include: rust.yml
+  when: install_rust is defined and install_rust
+  tags:
+    - solana_install
+
+# Setup account on tmpfs
+- include: accounts.yml
+  tags:
+    - solana_configure
+
+# Install solana cli
+- include: install.yml
+  tags:
+    - solana_install
+
+# Setup logs directory and log rotation
+- include: logs.yml
+  tags:
+    - solana_configure
+
+# Set cpu optimisations
+- include: optimizations.yml
+  tags:
+    - solana_configure
+
+# Setup identity
+- include: identity.yml
+  tags:
+    - solana_configure
+
+# Setup service files
+- include: service.yml
+  tags:
+    - solana_run
+
+# Tuning parameter
+- include: tuning.yml
+  tags:
+    - solana_configure
+
+# Firewall rules
+- include: firewall.yml
+  tags:
+    - solana_configure
+
+# Update scripts
+- include: update_scripts.yml
+  tags:
+    - solana_configuration
